@@ -130,6 +130,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   NOMBRE_PARADA_GEOCERCA <- c()
   for(i in 1:20){ # 20 primeras posiciones del autobús
 
+    print(i)
+
     # Posición bus
     posicion_bus <- st_sfc(st_point(c(df_datos_bus$lon[i], df_datos_bus$lat[i])), crs = 4326)
 
@@ -158,13 +160,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       df_geocercas <- data.frame(id_parada, nombre_parada, id_geocerca, id_posicion_geocerca, geocercas)
 
       # ID parada donde se encuenta el bus actualmente
-      id_parada_deteccion_bus <- df_geocercas$id_parada[df_geocercas$id_geocerca == id_geocerca_actual]
-      nombre_parada_deteccion_bus <- df_geocercas$nombre_parada[df_geocercas$id_geocerca == id_geocerca_actual]
+      id_parada_detección_bus <- df_geocercas$id_parada[df_geocercas$id_geocerca == id_geocerca_actual]
+      nombre_parada_detección_bus <- df_geocercas$nombre_parada[df_geocercas$id_geocerca == id_geocerca_actual]
 
       # Volcado en arrays
       ID_GEOCERCA <- c(ID_GEOCERCA, id_geocerca_actual) # Volcado id geocerca en array geocercas
-      NOMBRE_PARADA_GEOCERCA <- c(NOMBRE_PARADA_GEOCERCA, nombre_parada_deteccion_bus) # Volcado nombre parada en array geocercas
-      ID_PARADA <- c(ID_PARADA, id_parada_deteccion_bus)
+      NOMBRE_PARADA_GEOCERCA <- c(NOMBRE_PARADA_GEOCERCA, nombre_parada_detección_bus) # Volcado nombre parada en array geocercas
+      ID_PARADA <- c(ID_PARADA, id_parada_detección_bus)
     }else{
       # Volcado en arrays
       ID_GEOCERCA <- c(ID_GEOCERCA, NA) # Volcado id geocerca en array geocercas
@@ -184,7 +186,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Get sentido en función de si ha partido de una de las paradas iniciales
   if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
     # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lon[1] - df_datos_bus$lon[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud en negativa, está bajando
+    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud en negativa, está bajando
       sentido <- 0
     }else{
       sentido <- 1
@@ -198,13 +200,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
 
     # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lon[1] - df_datos_bus$lon[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud en negativa, está bajando
-      sentido_lon <- 0
+    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud en negativa, está bajando
+      sentido_lat <- 0
     }else{
-      sentido_lon <- 1
+      sentido_lat <- 1
     }
 
-    sentido <- sentido_lon + sentido_parada
+    sentido <- sentido_lat + sentido_parada
     if(sentido == 0 | sentido == 2){ # Se ha obtenido correctamente el sentido del bus
       if(sentido == 2){
         sentido <- 1
@@ -224,6 +226,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
+
+
   #------------------------------------------------------------------------------
   # 3) - ACTUALIZACIÓN TIEMPOS DE LLEGADA A CADA PARADA
   #-----------------------------------------------------------------------------
@@ -231,27 +235,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Referencias tiempos
   if(linea == 1){
     if(sentido == 0){
-      #df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L1.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L1",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L1.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      #df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L1.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L1",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-      }
+      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L1.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+    }
   }else if(linea == 2){
     if(sentido == 0){
-      #df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L2.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L2",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L2.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      #df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L2.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L2",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L2.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 3){
     if(sentido == 0){
-      #df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L3.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L3",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L3.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      #df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L3.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L3",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L3.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }
 
@@ -310,13 +308,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       df_geocercas <- data.frame(id_parada, nombre_parada, id_geocerca, id_posicion_geocerca, geocercas)
 
       # ID parada donde se encuenta el bus actualmente
-      id_parada_deteccion_bus <- df_geocercas$id_parada[df_geocercas$id_geocerca == id_geocerca_actual]
-      nombre_parada_deteccion_bus <- df_geocercas$nombre_parada[df_geocercas$id_geocerca == id_geocerca_actual]
+      id_parada_detección_bus <- df_geocercas$id_parada[df_geocercas$id_geocerca == id_geocerca_actual]
+      nombre_parada_detección_bus <- df_geocercas$nombre_parada[df_geocercas$id_geocerca == id_geocerca_actual]
 
       # Volcado en arrays
       ID_GEOCERCA <- c(ID_GEOCERCA, id_geocerca_actual) # Volcado id geocerca en array geocercas
-      NOMBRE_PARADA_GEOCERCA <- c(NOMBRE_PARADA_GEOCERCA, nombre_parada_deteccion_bus) # Volcado nombre parada en array geocercas
-      ID_PARADA <- c(ID_PARADA, id_parada_deteccion_bus)
+      NOMBRE_PARADA_GEOCERCA <- c(NOMBRE_PARADA_GEOCERCA, nombre_parada_detección_bus) # Volcado nombre parada en array geocercas
+      ID_PARADA <- c(ID_PARADA, id_parada_detección_bus)
     }else{
       # Volcado en arrays
       ID_GEOCERCA <- c(ID_GEOCERCA, NA) # Volcado id geocerca en array geocercas
@@ -336,8 +334,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   ultima_posicion_en_geocerca <- df_datos_sin_paradas_duplicadas[1,]
 
   tiempos_a_marquesinas_restantes <- df_tiempos[df_tiempos$ID_PARADA == ultima_posicion_en_geocerca$ID_PARADA,]
-  tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] > 0]
-
+  #tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] > 0]
+  tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] < 0] <- "-"
+  tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] == 0] <- "-"
 
 
   #------------------------------------------------------------------------------
@@ -366,9 +365,54 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   orden_columnas_tiempos <- 2 + orden_columnas_tiempos
   tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
 
+
+
+
+
+
+  # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
+
+  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  df_valor_atributos_actual <- df[df$data.type == "parada",]
+
+  df_valor_atributos_actual <- df_valor_atributos_actual[which(df_valor_atributos_actual$data.name %in% nombre_paradas_objetivo),]
+
+  if(linea == 1){
+    keys <- URLencode(c("tiempo_llegada_linea_1"))
+  }else if(linea == 2){
+    keys <- URLencode(c("tiempo_llegada_linea_2"))
+  }else if(linea == 3){
+    keys <- URLencode(c("tiempo_llegada_linea_3"))
+  }
+
+  df_tiempos_actuales <- data.frame()
+  nombre_parada <- c()
+  for(i in 1:nrow(df_valor_atributos_actual)){
+    nombre_parada <- c(nombre_parada, df_valor_atributos_actual$data.name[i])
+    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    # Tratamiento datos. De raw a dataframe
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    df_tiempos_actuales <- rbind(df_tiempos_actuales,df)
+  }
+  df_tiempos_actuales$name <- nombre_parada
+  df_tiempos_actuales <- df_tiempos_actuales[order(df_tiempos_actuales$name, decreasing = FALSE),]
+
+
+
   # 4) Creación atributos tiempo_llegada_linea_x
   for(i in 1:nrow(df_activos)){
-    print(i)
+
+    # Comprobación de si existe ya un tiempo asignado
+    if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a la siguiente vuelta del for. Solo escribo si hay "-"
+      next
+    }
+
     if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
       tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
     }else{
