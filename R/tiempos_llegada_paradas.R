@@ -21,6 +21,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   id_dispositivo <- as.character(id_dispositivo)
   linea <- as.numeric(linea)
 
+  return(0)
+
   # ------------------------------------------------------------------------------
   # 0) - REFERENCIA PARADAS
   # ------------------------------------------------------------------------------
