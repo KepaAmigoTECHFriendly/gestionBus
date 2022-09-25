@@ -27,7 +27,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
   #df_paradas <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/paradas_bus_plasencia.csv", sep = ",")
-  ficheros_en_ruta <- as.character(list.files(system.file('extdata', package = 'gestionBus'), full.names = TRUE))
+  ficheros_en_ruta <- list.files(system.file('extdata', package = 'gestionBus'), full.names = TRUE)
   posicion_fichero <- grep("paradas_bus_plasencia",ficheros_en_ruta)
   df_paradas <- read.csv(as.character(ficheros_en_ruta[posicion_fichero]), sep = ",")
 
