@@ -219,7 +219,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-  # CÁLCULO DE TIEMPOS UNA VEZ CONOCIDO EL SENTIDO DEL BUS
+  # RECOGIDA DE PARADAS UNA VEZ CONOCIDO EL SENTIDO Y LA LÍNEA DEL BUS
   df_trabajo_paradas <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == sentido | df_trabajo_paradas_linea_objetivo$sentido >=2,]
 
 
@@ -410,8 +410,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   for(i in 1:nrow(df_activos)){
 
     # Comprobación de si existe ya un tiempo asignado
-    if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a la siguiente vuelta del for. Solo escribo si hay "-"
-      next
+    if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
+      if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelto
+        next
+      }else{
+        if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
+          next
+        }
+      }
     }
 
     if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
