@@ -26,7 +26,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # ------------------------------------------------------------------------------
 
 
-  #df_paradas <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/paradas_bus_plasencia.csv", sep = ",")
   ficheros_en_ruta <- list.files(system.file('extdata', package = 'gestionBus'), full.names = TRUE)
   posicion_fichero <- grep("paradas_bus_plasencia",ficheros_en_ruta)
   df_paradas <- read.csv(as.character(ficheros_en_ruta[posicion_fichero]), sep = ",")
@@ -236,21 +235,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Referencias tiempos
   if(linea == 1){
     if(sentido == 0){
-      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L1.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L1.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L1.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L1.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 2){
     if(sentido == 0){
-      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L2.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L2.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L2.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L2.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 3){
     if(sentido == 0){
-      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_bajada_L3.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L3.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv("/home/kepa/TECH friendly/PROYECTOS/DTIS/DTI - Plasencia/Programas/C3 - Gestión autobuses/Datos lineas/Matriz_tiempos_minutos_paradas/matriz_tiempos_subida_L3.csv", sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L3.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }
 
