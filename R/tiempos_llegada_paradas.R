@@ -90,6 +90,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Tratamiento datos. De raw a dataframe
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
+  print(df)
   df <- df[,-c(3,5)]
 
   colnames(df) <- c("ts","lat","lon","spe")
