@@ -93,7 +93,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df <- df[,-c(3,5)]
 
   colnames(df) <- c("ts","lat","lon","spe")
-  df <- df[-grep(" km/h",df$spe),]
+  df$spe <- gsub("*. km/h","",df$spe)
+  df$spe <- as.numeric(df$spe)
+  #df <- df[-grep(" km/h",df$spe),]
   df <- df[df$lat != "none",]
   df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
 
@@ -103,8 +105,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # Si no hay datos, se termina el programa
   if(nrow(df_datos_bus) == 0){
+    print("------------ NO HAY DATOS DEL AUTOBÚS EN LA ÚLTIMA HORA --------------")
     return(0)
   }
+
+  print("------------ RECOGIENDO DATOS DEL AUTOBÚS --------------")
 
 
   #------------------------------------------------------------------------------
