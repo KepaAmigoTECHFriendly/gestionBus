@@ -87,6 +87,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
   peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
+  print("------- REALIZADA PETICION-----------------")
+
   # Tratamiento datos. De raw a dataframe
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
