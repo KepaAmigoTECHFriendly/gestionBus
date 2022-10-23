@@ -43,6 +43,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_paradas_linea_3_bajada <- df_paradas[df_paradas$linea_3 == 1 & (df_paradas$sentido == 0 | df_paradas$sentido >=2),]
 
 
+  print("------------ Entro a petición token de acceso ----------------")
+
+
 
 
 
@@ -61,6 +64,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   resultado_peticion_token <- httr::content(post)
   auth_thb <- paste("Bearer",resultado_peticion_token$token)
+
+
+
+  print("------------ Éxito petición token de acceso ----------------")
 
 
   # ------------------------------------------------------------------------------
