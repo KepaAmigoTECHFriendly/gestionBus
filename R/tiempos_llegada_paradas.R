@@ -19,12 +19,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # Datos recogidos por plataforma
   id_dispositivo <- as.character(id_dispositivo)
-  linea <- as.numeric(linea)
+  if(grepl("Último", linea)){
+    linea <- as.numeric(gsub(" - Último trayecto","",linea))
+  }else if(linea == "Fuera de servicio"){
+    return(0)
+  }else{
+    linea <- as.numeric(linea)
+  }
+
 
   # ------------------------------------------------------------------------------
   # 0) - REFERENCIA PARADAS
   # ------------------------------------------------------------------------------
-
 
   ficheros_en_ruta <- list.files(system.file('extdata', package = 'gestionBus'), full.names = TRUE)
   posicion_fichero <- grep("paradas_bus_plasencia",ficheros_en_ruta)
@@ -44,9 +50,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
   print("------------ Entro a petición token de acceso ----------------")
-
-
-
 
 
 
@@ -71,12 +74,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
   # ------------------------------------------------------------------------------
-  # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBUS
+  # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBÚS
   # ------------------------------------------------------------------------------
 
-
-  #fecha_1 <- "2022-07-24 13:55:00"
-  #fecha_2 <- "2022-07-24 13:58:00"
   fecha_1 <- Sys.time() - 60*20 # Timestamp actual menos 20 mins
   fecha_2 <- Sys.time()
 
@@ -87,7 +87,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
   peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
-  print("------- REALIZADA PETICION-----------------")
+  print("------- REALIZADA PETICIÓN RECOGIDA DATOS BÚS-----------------")
 
   # Tratamiento datos. De raw a dataframe
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -112,14 +112,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     return(0)
   }
 
-  print("------------ RECOGIENDO DATOS DEL AUTOBÚS --------------")
+  print("------------ RECIBIDOS DATOS DEL AUTOBÚS --------------")
 
 
   #------------------------------------------------------------------------------
-  # 2) - OBTENCIÓN DEL SENTIDO DEL AUTOBUS
-  #-----------------------------------------------------------------------------
-  # Creación de geocercas
+  # 2) - OBTENCIÓN DEL SENTIDO DEL AUTOBÚS
+  #------------------------------------------------------------------------------
 
+  # Creación de geocercas
   # Generación de dataframe con paradas en base a la línea en la que está circulando el bus
   posicion_columna_linea_objetivo <- grep(paste("linea_",linea,sep = ""), colnames(df_paradas))
   df_trabajo_paradas_linea_objetivo <- df_paradas[df_paradas[,posicion_columna_linea_objetivo] == 1,]
@@ -204,9 +204,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }else{
       sentido <- 1
     }
-  }else{
+  }else{  # En los registros, el autobús estaba en una de las paradas de inicio
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
-    if(id_parada_inicial == 48 | id_parada_inicial == 55){ # La DATA o Hospital
+    if(id_parada_inicial == 48 | id_parada_inicial == 55){ # La DATA u Hospital
       sentido_parada <- 0  # Bajando
     }else{
       sentido_parada <- 1  # Subiendo
@@ -233,6 +233,38 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # RECOGIDA DE PARADAS UNA VEZ CONOCIDO EL SENTIDO Y LA LÍNEA DEL BUS
   df_trabajo_paradas <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == sentido | df_trabajo_paradas_linea_objetivo$sentido >=2,]
+
+
+  # POST ACTUALIZACIÓN ATRIBUTO parada_destino UNA VEZ QUE SE CONOCE LA LÍNEA Y EL SENTIDO
+  if(linea == 1){
+    if(sentido == 0){
+      parada_destino <- "Hospital Psiquiátrico"
+    }else{
+      parada_destino <- "Polígono La Data"
+    }
+  }else if(linea == 2){
+    if(sentido == 0){
+      parada_destino <- "Renfe"
+    }else{
+      parada_destino <- "Hospital Virgen del Puerto"
+    }
+  }else if(linea == 3){
+    if(sentido == 0){
+      parada_destino <- "PIR Los Monges"
+    }else{
+      parada_destino <- "Hospital Virgen del Puerto"
+    }
+  }
+
+  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
+  json_envio_plataforma <- paste('{"parada_destino":"', parada_destino,'"',
+                                 '}',sep = "")
+  post <- httr::POST(url = url,
+                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                     body = json_envio_plataforma,
+                     verify= FALSE,
+                     encode = "json",verbose()
+  )
 
 
 
