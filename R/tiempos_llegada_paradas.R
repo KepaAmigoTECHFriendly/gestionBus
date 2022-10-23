@@ -145,8 +145,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   NOMBRE_PARADA_GEOCERCA <- c()
   for(i in 1:20){ # 20 primeras posiciones del autobús
 
-    print(i)
-
     # Posición bus
     posicion_bus <- st_sfc(st_point(c(df_datos_bus$lon[i], df_datos_bus$lat[i])), crs = 4326)
 
@@ -292,8 +290,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # BUCLE POR CADA UNO DE LOS REGISTROS DE POSICIÓN DEL AUTOBUS
   for(i in 1:nrow(df_datos_bus)){
-
-    print(i)
 
     # Posición bus
     posicion_bus <- st_sfc(st_point(c(df_datos_bus$lon[i], df_datos_bus$lat[i])), crs = 4326)
