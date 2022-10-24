@@ -226,7 +226,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     df <- as.data.frame(df)
-    if(grepl("sentido",df$key)){
+    if(any(grepl("sentido",df$key))){
       sentido <- df$value[2]
     }else{  # No hay atributo de sentido previamente calculado, por lo que es necesario calcularlo por diferencia de latitudes
       if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
