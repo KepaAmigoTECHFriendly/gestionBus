@@ -193,40 +193,73 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
-  df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = FALSE),]  # Orden por ts
+  df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts
 
 
-
-  # Get sentido en función de si ha partido de una de las paradas iniciales
-  if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
-    # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
-      sentido <- 0
-    }else{
-      sentido <- 1
-    }
-  }else{
-    id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
-    if(id_parada_inicial == 48 | id_parada_inicial == 55){ # La DATA o Hospital
-      sentido_parada <- 0  # Bajando
-    }else{
-      sentido_parada <- 1  # Subiendo
-    }
-
-    # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
-      sentido_lat <- 0
-    }else{
-      sentido_lat <- 1
-    }
-
-    sentido <- sentido_lat + sentido_parada
-    if(sentido == 0 | sentido == 2){ # Se ha obtenido correctamente el sentido del bus
-      if(sentido == 2){
-        sentido <- 1
+  # CÁLCULO SENTIDO
+  # Cálculo sentido si está en parada de inicio
+  if(nrow(df_datos_sin_paradas_duplicadas) != 0){  # El bus se encuentra en una parada de inicio
+    id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
+    if(linea == 1){
+      if(id_parada_inicial == 55){ # La Data
+        sentido_parada <- 0  # Bajando
+      }else if(id_parada_inicial == 68 | id_parada_inicial == 47){ # Hospital Psiquiatrico o SEPEI Bomberos
+        sentido_parada <- 1  # Subiendo
       }
-    }else{
-      return(0)  # No se puede asegurar el sentido del autobus
+    }else if(linea == 2){
+      if(id_parada_inicial == 48){ # Hospital virgen del puerto
+        sentido_parada <- 0  # Bajando
+      }else if(id_parada_inicial == 39){ # Renfe / Estación de tren
+        sentido_parada <- 1  # Subiendo
+      }
+    }else if(linea == 3){
+      if(id_parada_inicial == 48){ # Hospital virgen del puerto
+        sentido_parada <- 0  # Bajando
+      }else if(id_parada_inicial == 69 | id_parada_inicial == 17){ # PIR los monges o Carretera Trujillo
+        sentido_parada <- 1  # Subiendo
+      }
+    }
+  }else{ # El bus está en trayecto. Para coger el sentido, es necesario recoger el atributo
+    keys <- URLencode(c("parada_destino,sentido"))
+    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    # Tratamiento datos. De raw a dataframe
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    if(grepl("sentido",df$key)){
+      sentido <- df$value[2]
+    }else{  # No hay atributo de sentido previamente calculado, por lo que es necesario calcularlo por diferencia de latitudes
+      if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
+        # Comprobación de sentido por diferencia de longitudes
+        if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
+          sentido <- 0
+        }else{
+          sentido <- 1
+        }
+      }else{
+        id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
+        if(id_parada_inicial == 48 | id_parada_inicial == 55 | id_parada_inicial == 47 | id_parada_inicial == 68 | id_parada_inicial == 39 | id_parada_inicial == 69){ # Paradas de salida
+          sentido_parada <- 0  # Bajando
+        }else{
+          sentido_parada <- 1  # Subiendo
+        }
+
+        # Comprobación de sentido por diferencia de longitudes
+        if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
+          sentido_lat <- 0
+        }else{
+          sentido_lat <- 1
+        }
+
+        sentido <- sentido_lat + sentido_parada
+        if(sentido == 0 | sentido == 2){ # Se ha obtenido correctamente el sentido del bus
+          if(sentido == 2){
+            sentido <- 1
+          }
+        }else{
+          return(0)  # No se puede asegurar el sentido del autobus
+        }
+      }
     }
   }
 
@@ -235,7 +268,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # RECOGIDA DE PARADAS UNA VEZ CONOCIDO EL SENTIDO Y LA LÍNEA DEL BUS
   df_trabajo_paradas <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == sentido | df_trabajo_paradas_linea_objetivo$sentido >=2,]
-
 
   # POST ACTUALIZACIÓN ATRIBUTO parada_destino UNA VEZ QUE SE CONOCE LA LÍNEA Y EL SENTIDO
   if(linea == 1){
@@ -259,7 +291,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   }
 
   url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
-  json_envio_plataforma <- paste('{"parada_destino":"', parada_destino,'"',
+  json_envio_plataforma <- paste('{"parada_destino":"', parada_destino,'",', '"sentido":', sentido,
                                  '}',sep = "")
   post <- httr::POST(url = url,
                      add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
