@@ -202,21 +202,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
     if(linea == 1){
       if(id_parada_inicial == 55){ # La Data
-        sentido_parada <- 0  # Bajando
+        sentido <- 0  # Bajando
       }else if(id_parada_inicial == 68 | id_parada_inicial == 47){ # Hospital Psiquiatrico o SEPEI Bomberos
-        sentido_parada <- 1  # Subiendo
+        sentido <- 1  # Subiendo
       }
     }else if(linea == 2){
       if(id_parada_inicial == 48){ # Hospital virgen del puerto
-        sentido_parada <- 0  # Bajando
+        sentido <- 0  # Bajando
       }else if(id_parada_inicial == 39){ # Renfe / Estación de tren
-        sentido_parada <- 1  # Subiendo
+        sentido <- 1  # Subiendo
       }
     }else if(linea == 3){
       if(id_parada_inicial == 48){ # Hospital virgen del puerto
-        sentido_parada <- 0  # Bajando
+        sentido <- 0  # Bajando
       }else if(id_parada_inicial == 69 | id_parada_inicial == 17){ # PIR los monges o Carretera Trujillo
-        sentido_parada <- 1  # Subiendo
+        sentido <- 1  # Subiendo
       }
     }
   }else{ # El bus está en trayecto. Para coger el sentido, es necesario recoger el atributo
