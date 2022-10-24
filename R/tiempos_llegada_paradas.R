@@ -229,7 +229,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     df <- as.data.frame(df)
     if(any(grepl("sentido",df$key))){
-      sentido <- df$value[2]
+      sentido <- as.numeric(df$value[grep("sentido",df$key)])
     }else{  # No hay atributo de sentido previamente calculado, por lo que es necesario calcularlo por diferencia de latitudes
       if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
         # Comprobación de sentido por diferencia de longitudes
@@ -504,25 +504,26 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
           }
         }
-      }
-
-      # Comprobación de si existe ya un tiempo asignado
-      if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
-        if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelta
-          next
-        }else{
-          if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
+      }else{  # Si no tiene un valor == "En parada"
+        # Comprobación de si existe ya un tiempo asignado
+        if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
+          if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelta
             next
+          }else{
+            if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
+              next
+            }
           }
         }
       }
-
       if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
         tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
       }else{
         tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
       }
-    }
+    } # Cierre else de no tiene valor == "En parada"
+
+
 
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
     if(linea == 1){
