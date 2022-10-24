@@ -139,6 +139,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   paradas_separadas_id <- st_cast(paradas_utm, "POINT")
   geocercas <- st_buffer(paradas_separadas_id, 70)
 
+  df_datos_bus <- df_datos_bus[order(df_datos_bus$ts, decreasing = TRUE),]  # Orden datos bus decreciente por marca temporal
+
   # Bucle para cada uno de los registros de posición capturados del autobus
   ID_GEOCERCA <- c()
   ID_PARADA <- c()
