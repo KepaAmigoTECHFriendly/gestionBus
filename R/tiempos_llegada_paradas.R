@@ -143,7 +143,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   ID_GEOCERCA <- c()
   ID_PARADA <- c()
   NOMBRE_PARADA_GEOCERCA <- c()
-  for(i in 1:20){ # 20 primeras posiciones del autobús
+  for(i in 1:30){ # 30 primeras posiciones del autobús
 
     # Posición bus
     posicion_bus <- st_sfc(st_point(c(df_datos_bus$lon[i], df_datos_bus$lat[i])), crs = 4326)
@@ -196,13 +196,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = FALSE),]  # Orden por ts
 
 
+
   # Get sentido en función de si ha partido de una de las paradas iniciales
   if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
     # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud es negativa, está bajando
-      sentido <- 1
-    }else{
+    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
       sentido <- 0
+    }else{
+      sentido <- 1
     }
   }else{
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
@@ -213,10 +214,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
 
     # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud es negativa, está bajando
-      sentido_lat <- 1
-    }else{
+    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
       sentido_lat <- 0
+    }else{
+      sentido_lat <- 1
     }
 
     sentido <- sentido_lat + sentido_parada
@@ -228,6 +229,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       return(0)  # No se puede asegurar el sentido del autobus
     }
   }
+
 
 
 
