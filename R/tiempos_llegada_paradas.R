@@ -407,6 +407,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   orden_columnas_tiempos <- order(orden_columnas_tiempos, decreasing = FALSE)
   orden_columnas_tiempos <- 2 + orden_columnas_tiempos
   tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
+  # Asignación de indentificador bus en parada actual
+  tiempos_a_marquesinas_restantes[,which(colnames(tiempos_a_marquesinas_restantes) %in% tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA)] <- "en_parada"
 
 
 
@@ -451,21 +453,39 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 4) Creación atributos tiempo_llegada_linea_x
   for(i in 1:nrow(df_activos)){
 
-    # Comprobación de si existe ya un tiempo asignado
-    if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
-      if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelto
-        next
-      }else{
-        if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
-          next
+    # CUANDO LLEGA A LA FILA DE LA PARADA EN LA QUE SE ENCUENTRA, SE REGISTRA UN VALOR = en_parada
+    if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada"){
+      tiempo_atributos <- "En parada"
+    }else{
+      # Comprobación de si en la plataforma está asignado el valor "En parada"
+      if(df_tiempos_actuales$value[i] == "En parada"){ # Si en la plataforma está el registro de "En parada"
+        if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, escribo este registro
+          tiempo_atributos <- tiempos_a_marquesinas_restantes[,(i+2)]
+        }else{  # Si hay número a registrar
+          if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+          }else{
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+          }
         }
       }
-    }
 
-    if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
-      tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
-    }else{
-      tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+      # Comprobación de si existe ya un tiempo asignado
+      if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
+        if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelta
+          next
+        }else{
+          if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
+            next
+          }
+        }
+      }
+
+      if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
+        tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+      }else{
+        tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+      }
     }
 
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
