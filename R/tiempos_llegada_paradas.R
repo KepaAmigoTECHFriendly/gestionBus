@@ -199,24 +199,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Get sentido en función de si ha partido de una de las paradas iniciales
   if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
     # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud en negativa, está bajando
-      sentido <- 0
-    }else{
+    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud es negativa, está bajando
       sentido <- 1
+    }else{
+      sentido <- 0
     }
-  }else{  # En los registros, el autobús estaba en una de las paradas de inicio
+  }else{
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
-    if(id_parada_inicial == 48 | id_parada_inicial == 55){ # La DATA u Hospital
+    if(id_parada_inicial == 48 | id_parada_inicial == 55){ # La DATA o Hospital
       sentido_parada <- 0  # Bajando
     }else{
       sentido_parada <- 1  # Subiendo
     }
 
     # Comprobación de sentido por diferencia de longitudes
-    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud en negativa, está bajando
-      sentido_lat <- 0
-    }else{
+    if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última longitud es negativa, está bajando
       sentido_lat <- 1
+    }else{
+      sentido_lat <- 0
     }
 
     sentido <- sentido_lat + sentido_parada
