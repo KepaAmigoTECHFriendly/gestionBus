@@ -77,7 +77,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBÚS
   # ------------------------------------------------------------------------------
 
-  fecha_1 <- Sys.time() - 60*20 # Timestamp actual menos 20 mins
+  fecha_1 <- Sys.time() - 60*10 # Timestamp actual menos 20 mins
   fecha_2 <- Sys.time()
 
   fecha_1 <- format(as.numeric(as.POSIXct(fecha_1))*1000,scientific = F)
