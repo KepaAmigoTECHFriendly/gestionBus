@@ -17,6 +17,9 @@
 
 tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
+  linea_original <- linea
+  flag_ultimo_trayecto <- grepl("Último", linea_original)
+
   # Datos recogidos por plataforma
   id_dispositivo <- as.character(id_dispositivo)
   if(grepl("Último", linea)){
@@ -446,6 +449,12 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Asignación de indentificador bus en parada actual
   tiempos_a_marquesinas_restantes[,which(colnames(tiempos_a_marquesinas_restantes) %in% tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
 
+  # Si es el último trayecto del autobús, deja de mostrar información del tiempo de llegada por las paradas por donde ya ha pasado
+  if(flag_ultimo_trayecto == FALSE){
+    tiempos_a_marquesinas_restantes[tiempos_a_marquesinas_restantes == "-"] <- "> 30 minutos"
+  }
+
+
 
 
 
@@ -495,7 +504,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }else{
       # Comprobación de si en la plataforma está asignado el valor "En parada"
       if(df_tiempos_actuales$value[i] == "En parada"){ # Si en la plataforma está el registro de "En parada"
-        if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, escribo este registro
+        if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, escribo este registro
           tiempo_atributos <- tiempos_a_marquesinas_restantes[,(i+2)]
         }else{  # Si hay número a registrar
           if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
@@ -506,8 +515,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
       }else{  # Si no tiene un valor == "En parada"
         # Comprobación de si existe ya un tiempo asignado
-        if(grepl("\\d", df_tiempos_actuales$value[i])){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
-          if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelta
+        if(grepl("\\d", df_tiempos_actuales$value[i]) & tiempos_a_marquesinas_restantes[,(i+2)] != "> 30 minutos"){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
+          if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelta
             next
           }else{
             if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
