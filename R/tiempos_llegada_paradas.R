@@ -143,6 +143,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   geocercas <- st_buffer(paradas_separadas_id, 70)
 
   df_datos_bus <- df_datos_bus[order(df_datos_bus$ts, decreasing = TRUE),]  # Orden datos bus decreciente por marca temporal
+  df_datos_bus <- df_datos_bus[1:10,]
+
 
   # Bucle para cada uno de los registros de posición capturados del autobus
   ID_GEOCERCA <- c()
@@ -195,6 +197,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_bus$ID_GEOCERCA <- ID_GEOCERCA
   df_datos_bus$ID_PARADA <- ID_PARADA
   df_datos_bus$NOMBRE_PARADA_GEOCERCA <- NOMBRE_PARADA_GEOCERCA
+
+  if(!any(!is.na(df_datos_bus$ID_GEOCERCA))){
+    return(0)
+  }
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
