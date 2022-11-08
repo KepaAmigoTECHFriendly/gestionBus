@@ -498,6 +498,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 4) Creación atributos tiempo_llegada_linea_x
   for(i in 1:nrow(df_activos)){
 
+    flag_escritura_en_atributo_tiempo_2 <- FALSE
+
     # CUANDO LLEGA A LA FILA DE LA PARADA EN LA QUE SE ENCUENTRA, SE REGISTRA UN VALOR = en_parada
     if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada"){
       tiempo_atributos <- "En parada"
@@ -520,6 +522,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             next
           }else{
             if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
+              flag_escritura_en_atributo_tiempo_2 <- TRUE
+            }else{
               next
             }
           }
@@ -538,8 +542,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
     if(linea == 1){
-      json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":"', tiempo_atributos,'"',
-                                     '}',sep = "")
+      if(flag_escritura_en_atributo_tiempo_2 == FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }else{
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }
 
       post <- httr::POST(url = url,
                          add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
@@ -550,8 +559,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
 
     if(linea == 2){
-      json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":"', tiempo_atributos,'"',
-                                     '}',sep = "")
+
+      if(flag_escritura_en_atributo_tiempo_2 == FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }else{
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }
 
       post <- httr::POST(url = url,
                          add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
@@ -562,8 +577,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
 
     if(linea == 3){
-      json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":"', tiempo_atributos,'"',
-                                     '}',sep = "")
+
+      if(flag_escritura_en_atributo_tiempo_2 == FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }else{
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }
 
       post <- httr::POST(url = url,
                          add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
@@ -573,5 +594,4 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
     }
   }
-
 }
