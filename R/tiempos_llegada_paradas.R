@@ -471,6 +471,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   df_valor_atributos_actual <- df_valor_atributos_actual[which(df_valor_atributos_actual$data.name %in% nombre_paradas_objetivo),]
 
+
+  # Atributo tiempo de llegada plataforma
+
   if(linea == 1){
     keys <- URLencode(c("tiempo_llegada_linea_1"))
   }else if(linea == 2){
@@ -495,6 +498,36 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
+  #  Atributo tiempo de llegada 2 plataforma
+
+  if(linea == 1){
+    keys <- URLencode(c("tiempo_2_llegada_linea_1"))
+  }else if(linea == 2){
+    keys <- URLencode(c("tiempo_2_llegada_linea_2"))
+  }else if(linea == 3){
+    keys <- URLencode(c("tiempo_2_llegada_linea_3"))
+  }
+
+  df_tiempos_actuales_2 <- data.frame()
+  nombre_parada <- c()
+  for(i in 1:nrow(df_valor_atributos_actual)){
+    nombre_parada <- c(nombre_parada, df_valor_atributos_actual$data.name[i])
+    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    # Tratamiento datos. De raw a dataframe
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    df_tiempos_actuales_2 <- rbind(df_tiempos_actuales_2,df)
+  }
+  df_tiempos_actuales_2$name <- nombre_parada
+  df_tiempos_actuales_2 <- df_tiempos_actuales_2[order(df_tiempos_actuales_2$name, decreasing = FALSE),]
+
+
+
+
+
+
+
   # 4) Creación atributos tiempo_llegada_linea_x
   for(i in 1:nrow(df_activos)){
 
@@ -515,16 +548,16 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
           }
         }
-      }else{  # Si no tiene un valor == "En parada"
+      }else{  # Si valor != "En parada"
         # Comprobación de si existe ya un tiempo asignado
-        if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
+        if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número en plataforma, salto a comprobar si el bus actual tiene número asignado para esa parada
           if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelta
             next
           }else{
-            if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
+            if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, escribo en el segundo atributo.
               flag_escritura_en_atributo_tiempo_2 <- TRUE
             }else{
-              next
+              flag_escritura_en_atributo_tiempo_2 <- FALSE
             }
           }
         }
