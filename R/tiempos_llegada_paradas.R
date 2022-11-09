@@ -198,9 +198,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_bus$ID_PARADA <- ID_PARADA
   df_datos_bus$NOMBRE_PARADA_GEOCERCA <- NOMBRE_PARADA_GEOCERCA
 
-  if(!any(!is.na(df_datos_bus$ID_GEOCERCA))){
-    return(0)
-  }
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
@@ -555,14 +552,16 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
           }
         }
-      }else{  # Si no tiene un valor == "En parada"
+      }else{  # Si valor != "En parada"
         # Comprobación de si existe ya un tiempo asignado
-        if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número, salto a comprobar si el bus actual tiene número asignado para esa parada
+        if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número en plataforma, salto a comprobar si el bus actual tiene número asignado para esa parada
           if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, salto a la siguiente vuelta
             next
           }else{
-            if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, salto.
-              next
+            if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, escribo en el segundo atributo.
+              flag_escritura_en_atributo_tiempo_2 <- TRUE
+            }else{
+              flag_escritura_en_atributo_tiempo_2 <- FALSE
             }
           }
         }
@@ -577,41 +576,59 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     } # Cierre else de no tiene valor == "En parada"
 
 
+
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
     if(linea == 1){
-      json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":"', tiempo_atributos,'"',
-                                     '}',sep = "")
+      if(flag_escritura_en_atributo_tiempo_2 == FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }else{
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }
 
-      #post <- httr::POST(url = url,
-      #                   add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-      #                   body = json_envio_plataforma,
-      #                   verify= FALSE,
-      #                   encode = "json",verbose()
-      #)
+      post <- httr::POST(url = url,
+                         add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                         body = json_envio_plataforma,
+                         verify= FALSE,
+                         encode = "json",verbose()
+      )
     }
 
     if(linea == 2){
-      json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":"', tiempo_atributos,'"',
-                                     '}',sep = "")
 
-      #post <- httr::POST(url = url,
-      #                   add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-      #                   body = json_envio_plataforma,
-      #                   verify= FALSE,
-      #                   encode = "json",verbose()
-      #)
+      if(flag_escritura_en_atributo_tiempo_2 == FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }else{
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }
+
+      post <- httr::POST(url = url,
+                         add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                         body = json_envio_plataforma,
+                         verify= FALSE,
+                         encode = "json",verbose()
+      )
     }
 
     if(linea == 3){
-      json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":"', tiempo_atributos,'"',
-                                     '}',sep = "")
 
-      #post <- httr::POST(url = url,
-      #                   add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-      #                   body = json_envio_plataforma,
-      #                   verify= FALSE,
-      #                   encode = "json",verbose()
-      #)
+      if(flag_escritura_en_atributo_tiempo_2 == FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }else{
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+      }
+
+      post <- httr::POST(url = url,
+                         add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                         body = json_envio_plataforma,
+                         verify= FALSE,
+                         encode = "json",verbose()
+      )
     }
   }
 }
