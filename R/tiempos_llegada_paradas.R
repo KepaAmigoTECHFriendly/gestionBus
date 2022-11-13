@@ -641,27 +641,30 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     if(linea == 1){
       json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":"', tiempo_atributos,'"',
                                      '}',sep = "")
-      if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
-                                       '}',sep = "")
-      }
-
       post <- httr::POST(url = url,
                          add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
                          body = json_envio_plataforma,
                          verify= FALSE,
                          encode = "json",verbose()
       )
+
+      if(tiempo_atributo_2 != FALSE){
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
     }
 
     if(linea == 2){
 
       json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":"', tiempo_atributos,'"',
                                      '}',sep = "")
-      if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributos,'"',
-                                       '}',sep = "")
-      }
 
       post <- httr::POST(url = url,
                          add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
@@ -669,23 +672,42 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                          verify= FALSE,
                          encode = "json",verbose()
       )
+
+      if(tiempo_atributo_2 != FALSE){
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
     }
 
     if(linea == 3){
 
       json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":"', tiempo_atributos,'"',
                                      '}',sep = "")
-      if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributos,'"',
-                                       '}',sep = "")
-      }
-
       post <- httr::POST(url = url,
                          add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
                          body = json_envio_plataforma,
                          verify= FALSE,
                          encode = "json",verbose()
       )
+
+      if(tiempo_atributo_2 != FALSE){
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributos,'"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
     }
   }
 
