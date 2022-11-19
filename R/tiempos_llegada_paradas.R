@@ -52,10 +52,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_paradas_linea_3_bajada <- df_paradas[df_paradas$linea_3 == 1 & (df_paradas$sentido == 0 | df_paradas$sentido >=2),]
 
 
-  print("------------ Entro a petición token de acceso ----------------")
-
-
-
   # ------------------------------------------------------------------------------
   # PETICIÓN TOKENs THB
   # ------------------------------------------------------------------------------
@@ -71,11 +67,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   resultado_peticion_token <- httr::content(post)
   auth_thb <- paste("Bearer",resultado_peticion_token$token)
 
-
-
-  print("------------ Éxito petición token de acceso ----------------")
-
-
   # ------------------------------------------------------------------------------
   # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBÚS
   # ------------------------------------------------------------------------------
@@ -89,8 +80,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   keys <- URLencode(c("lat,lon,spe"))
   url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
   peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-  print("------- REALIZADA PETICIÓN RECOGIDA DATOS BÚS-----------------")
 
   # Tratamiento datos. De raw a dataframe
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -111,12 +100,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # Si no hay datos, se termina el programa
   if(nrow(df_datos_bus) == 0){
-    print("------------ NO HAY DATOS DEL AUTOBÚS EN LA ÚLTIMA HORA --------------")
     return(0)
   }
-
-  print("------------ RECIBIDOS DATOS DEL AUTOBÚS --------------")
-
 
   #------------------------------------------------------------------------------
   # 2) - OBTENCIÓN DEL SENTIDO DEL AUTOBÚS
@@ -855,4 +840,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
     }
   }
+
+  return(1)
 }
