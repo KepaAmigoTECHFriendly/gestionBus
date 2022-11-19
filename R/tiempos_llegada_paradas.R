@@ -398,7 +398,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_bus$NOMBRE_PARADA_GEOCERCA <- NOMBRE_PARADA_GEOCERCA
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
-  if(nrow(df_datos_bus_sin_na == 0)){return(0)}  # Acaba el programa si el autobus no está en ninguna geocerca
+  if(nrow(df_datos_bus_sin_na) == 0){return(0)}  # Acaba el programa si el autobus no está en ninguna geocerca
 
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts descendente
