@@ -413,6 +413,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_bus$NOMBRE_PARADA_GEOCERCA <- NOMBRE_PARADA_GEOCERCA
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
+  if(nrow(df_datos_bus_sin_na == 0)){return(0)}  # Acaba el programa si el autobus no está en ninguna geocerca
+
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts descendente
 
@@ -491,7 +493,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 5) - ACTUALIZACIÓN ATRIBUTOS SENTIDO ACTUAL
   #-----------------------------------------------------------------------------
 
-  # GET ACTIVOS
+  # GET ACTIVOS TIPO "PARADA"
   url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
@@ -499,13 +501,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df <- as.data.frame(df)
   df_activos <- df[df$data.type == "parada",]
 
-
   # Filtrado por nombre marquesinas restantes en línea bus
   nombre_paradas_objetivo <- colnames(tiempos_a_marquesinas_restantes)[3:ncol(tiempos_a_marquesinas_restantes)]
   df_activos <- df_activos[which(df_activos$data.name %in% nombre_paradas_objetivo),]
 
   # TENGO EL ID DEL ACTIVO SOBRE EL QUE TENGO QUE ACTUALIZAR LOS ATRIBUTOS DE TIEMPO. SÉ EN QUE LÍNEA ESTOY Y SÉ EL SENTIDO, POR LO QUE TENGO QUE ACTUALIZAR LOS ATRIBUTOS DE MI LINEA, Y MI SENTIDO
-
   df_activos <- df_activos[order(df_activos$data.name, decreasing = FALSE),]  # Orden activos por nombre
   orden_columnas_tiempos <- colnames(tiempos_a_marquesinas_restantes)[3:ncol(tiempos_a_marquesinas_restantes)]
   orden_columnas_tiempos <- order(orden_columnas_tiempos, decreasing = FALSE)
@@ -513,23 +513,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
   # Asignación de indentificador bus en parada actual
   tiempos_a_marquesinas_restantes[,which(colnames(tiempos_a_marquesinas_restantes) %in% tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
-  tiempos_a_marquesinas_restantes[tiempos_a_marquesinas_restantes == "-"] <- "> 30 minutos"
-
+  tiempos_a_marquesinas_restantes[tiempos_a_marquesinas_restantes == "-"] <- "> 30 minutos"  # Ya ha pasado por esta parada
 
 
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
-
   url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
   df_valor_atributos_actual <- df[df$data.type == "parada",]
-
   df_valor_atributos_actual <- df_valor_atributos_actual[which(df_valor_atributos_actual$data.name %in% nombre_paradas_objetivo),]
 
-
-  # Atributo tiempo de llegada plataforma
+  # Atributo tiempo de llegada plataforma. Primer atributo, por lo que vuelta actual
   if(linea == 1){
     keys <- URLencode(c("tiempo_llegada_linea_1"))
   }else if(linea == 2){
@@ -552,11 +547,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_tiempos_actuales$name <- nombre_parada
   df_tiempos_actuales <- df_tiempos_actuales[order(df_tiempos_actuales$name, decreasing = FALSE),]
 
-
-
-
-  #  Atributo tiempo de llegada 2 plataforma
-
+  #  Atributo tiempo de llegada 2 plataforma. Segundo atributo, para gestión siguente autobús
   if(linea == 1){
     keys <- URLencode(c("tiempo_2_llegada_linea_1"))
   }else if(linea == 2){
@@ -580,16 +571,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_tiempos_actuales_2 <- df_tiempos_actuales_2[order(df_tiempos_actuales_2$name, decreasing = FALSE),]
 
 
-
-  # 4) Creación atributos tiempo_llegada_linea_x
+  # 4) Actualización atributos tiempo_llegada_linea_x. Actualización tiempos de llegada autobús actual.
   for(i in 1:nrow(df_activos)){
 
-    tiempo_atributo_2 <- FALSE
-    Sys.sleep(2)
-    print("Tiempo a marquesina restante")
-    print(tiempos_a_marquesinas_restantes[,(i+2)])
-    print("Tiempo plataforma")
-    print(df_tiempos_actuales$value[i])
+    tiempo_atributo_2 <- FALSE  # Flag escritura segundo atributo de plataforma
 
     # CUANDO LLEGA A LA FILA DE LA PARADA EN LA QUE SE ENCUENTRA, SE REGISTRA UN VALOR = en_parada
     if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada"){
@@ -599,6 +584,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       if(df_tiempos_actuales$value[i] == "En parada"){ # Si en la plataforma está el registro de "En parada"
         if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, compruebo al valor del atributo 2
           if(grepl("\\d", df_tiempos_actuales_2$value[i]) | df_tiempos_actuales_2$value[i] != "> 30 minutos"){  # Si el valor del segundo atributo es númerico y no es > 30 mins. Escribo este valor.
+            print("ESCRIBO VALOR DEL SEGUNDO ATRIBUTO")
             tiempo_atributos <- df_tiempos_actuales_2$value[i]
             tiempo_atributo_2 <- "> 30 minutos"  # Asigno > 30 mins a tiempo atributo 2
           }
@@ -621,19 +607,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           }
         }
       }
-      if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
-        tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
-      }else if(tiempos_a_marquesinas_restantes[,(i+2)] != "> 30 minutos"){
-        tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
-      }else{
-        tiempo_atributos <- tiempos_a_marquesinas_restantes[,(i+2)]
-      }
-    } # Cierre else de no tiene valor == "En parada"
 
-    print("------------------------------")
-    print("Tiempo atributos")
-    print(tiempo_atributos)
-    print("------------------------------")
+      if(tiempo_atributo_2 == FALSE){  # Escribo alguno de los valores del bus actual, no del atributo 2 de plataforma.
+        if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+        }else if(tiempos_a_marquesinas_restantes[,(i+2)] != "> 30 minutos"){
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+        }else{
+          tiempo_atributos <- tiempos_a_marquesinas_restantes[,(i+2)]
+        }
+      }
+
+    } # Cierre else de no tiene valor == "En parada"
 
 
     # Escritura en atributos
@@ -652,7 +637,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
                                        '}',sep = "")
 
-        post <- httr::POST(url = url,
+         post <- httr::POST(url = url,
                            add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
                            body = json_envio_plataforma,
                            verify= FALSE,
@@ -701,7 +686,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributos,'"',
                                        '}',sep = "")
 
-        post <- httr::POST(url = url,
+         post <- httr::POST(url = url,
                            add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
                            body = json_envio_plataforma,
                            verify= FALSE,
@@ -748,19 +733,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   tiempos_a_marquesinas_restantes_contrario[,which(colnames(tiempos_a_marquesinas_restantes_contrario) %in% tiempos_a_marquesinas_restantes_contrario$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
   tiempos_a_marquesinas_restantes_contrario[tiempos_a_marquesinas_restantes_contrario == "-"] <- "> 30 minutos"
 
-
-
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
-
   url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
   df_valor_atributos_actual <- df[df$data.type == "parada",]
-
   df_valor_atributos_actual <- df_valor_atributos_actual[which(df_valor_atributos_actual$data.name %in% nombre_paradas_objetivo),]
-
 
   # Atributo tiempo de llegada plataforma
   if(linea == 1){
@@ -786,10 +765,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_tiempos_actuales_contrario <- df_tiempos_actuales_contrario[order(df_tiempos_actuales_contrario$name, decreasing = FALSE),]
 
 
-
-
   #  Atributo tiempo de llegada 2 plataforma
-
   if(linea == 1){
     keys <- URLencode(c("tiempo_2_llegada_linea_1"))
   }else if(linea == 2){
@@ -813,18 +789,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_tiempos_actuales_2_contrario <- df_tiempos_actuales_2_contrario[order(df_tiempos_actuales_2_contrario$name, decreasing = FALSE),]
 
 
-
-
-  # 4) Creación atributos tiempo_llegada_linea_x
+  # 4) Actualización atributos tiempo_2_llegada_linea_x. Actualiza el atributo del tiempo de llegada del bus de sentido contrario (segundo bus del sentido contrario)
   for(i in 1:nrow(df_activos)){
-
-    tiempo_atributo_2 <- FALSE
-    Sys.sleep(2)
-    print("Tiempo a marquesina restante CONTRARIO")
-    print(tiempos_a_marquesinas_restantes_contrario[,(i+2)])
-    print("Tiempo plataforma ATRIBUTO 2 CONTRARIO")
-    print(df_tiempos_actuales_2_contrario$value[i])
-
 
     if(!grepl("\\d", df_tiempos_actuales_2_contrario$value)[i] | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos" | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos minutos"){    # Si no tiene tiempo asignado escribo
       if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
@@ -834,7 +800,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }else{
         tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
       }
-    }else{  # Tiene tiempo asignado, tengo que ver si escribo o no
+    }else{  # El atributo 2 en plataforma tiene tiempo asignado, tengo que decidir si escribo o no
       if(as.numeric(gsub(" .*","",df_tiempos_actuales_2_contrario$value)[i]) < tiempos_a_marquesinas_restantes_contrario[,(i+2)]){ # Si el tiempo en plataforma es menor que el actual contrario, no escribo
         next
       }else{
