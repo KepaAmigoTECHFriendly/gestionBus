@@ -205,11 +205,11 @@ alarmas_bus <- function(id_dispositivo,tiempo_maximo_parado){
 
       # ID parada donde se encuenta el bus actualmente
       id_parada_deteccion_bus <- df_geocercas$id_parada[df_geocercas$id_geocerca == id_geocerca_actual]
-      nombre_parada_detección_bus <- df_geocercas$nombre_parada[df_geocercas$id_geocerca == id_geocerca_actual]
+      nombre_parada_deteccion_bus <- df_geocercas$nombre_parada[df_geocercas$id_geocerca == id_geocerca_actual]
 
       # Volcado en arrays
       ID_GEOCERCA <- c(ID_GEOCERCA, id_geocerca_actual) # Volcado id geocerca en array geocercas
-      NOMBRE_PARADA_GEOCERCA <- c(NOMBRE_PARADA_GEOCERCA, nombre_parada_detección_bus) # Volcado nombre parada en array geocercas
+      NOMBRE_PARADA_GEOCERCA <- c(NOMBRE_PARADA_GEOCERCA, nombre_parada_deteccion_bus) # Volcado nombre parada en array geocercas
       ID_PARADA <- c(ID_PARADA, id_parada_deteccion_bus)
     }else{
       # Volcado en arrays
