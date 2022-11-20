@@ -606,8 +606,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- "-"
           }else{
             if(grepl("\\d", df_tiempos_actuales_2$value[i]) | df_tiempos_actuales_2$value[i] != "> 30 minutos"){  # Si el valor del segundo atributo es númerico y no es > 30 mins. Escribo este valor.
-              tiempo_atributos <- df_tiempos_actuales_2$value[i]
-              tiempo_atributo_2 <- "> 30 minutos"  # Asigno > 30 mins a tiempo atributo 2
+              if(as.numeric(gsub(" .*","",df_tiempos_actuales_2$value)[i]) > 15){ # > 15 minutos, si no, es que solo hay 1 autobús
+                tiempo_atributos <- df_tiempos_actuales_2$value[i]
+                tiempo_atributo_2 <- "> 30 minutos"  # Asigno > 30 mins a tiempo atributo 2
+              }else{
+                tiempo_atributos <- "> 30 minutos"
+                tiempo_atributo_2 <- "> 30 minutos"  # Asigno > 30 mins a tiempo atributo 2
+              }
             }
           }
         }else{  # Si hay número a registrar
