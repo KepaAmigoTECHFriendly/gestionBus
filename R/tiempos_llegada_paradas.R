@@ -314,7 +314,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   nombre_paradas_objetivo <- df_trabajo_paradas$name
   df_activos_parada_escritura_destino <- df_activos_parada_escritura_destino[which(df_activos_parada_escritura_destino$data.name %in% nombre_paradas_objetivo),]
 
-  json_envio_plataforma <- paste('{"parada_destino":"', parada_destino_activos_parada,'"',
+  json_envio_plataforma <- paste('{"parada_destino_linea',linea,'":"', parada_destino_activos_parada,'"',
                                  '}',sep = "")
   for(i in 1:nrow(df_activos_parada_escritura_destino)){
 
