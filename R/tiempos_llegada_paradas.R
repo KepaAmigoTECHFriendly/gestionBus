@@ -258,7 +258,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-
   # RECOGIDA DE PARADAS UNA VEZ CONOCIDO EL SENTIDO Y LA LÍNEA DEL BUS
   df_trabajo_paradas <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == sentido | df_trabajo_paradas_linea_objetivo$sentido >=2,]
 
@@ -266,23 +265,30 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(linea == 1){
     if(sentido == 0){
       parada_destino <- "Hospital Psiquiátrico"
+      parada_destino_activos_parada <- "H. Psiquiátrico"
     }else{
-      parada_destino <- "Polígono La Data"
+      parada_destino <- "La Data"
+      parada_destino_activos_parada <- "La Data"
     }
   }else if(linea == 2){
     if(sentido == 0){
       parada_destino <- "Renfe"
+      parada_destino_activos_parada <- "Renfe"
     }else{
       parada_destino <- "Hospital Virgen del Puerto"
+      parada_destino_activos_parada <- "H. Virgen del Puerto"
     }
   }else if(linea == 3){
     if(sentido == 0){
-      parada_destino <- "PIR Los Monges"
+      parada_destino <- "PIR Monjes"
+      parada_destino_activos_parada <- "PIR Monjes"
     }else{
       parada_destino <- "Hospital Virgen del Puerto"
+      parada_destino_activos_parada <- "H. Virgen del Puerto"
     }
   }
 
+  # Escritura parada destino en entidad tipo dispositivo GPS
   url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
   json_envio_plataforma <- paste('{"parada_destino":"', parada_destino,'",', '"sentido":', sentido,
                                  '}',sep = "")
@@ -292,6 +298,34 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                      verify= FALSE,
                      encode = "json",verbose()
   )
+
+
+  # Escritura parada destino en entidad tipo activo Parada
+  # GET ACTIVOS TIPO "PARADA"
+  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  df_activos_parada_escritura_destino <- df[df$data.type == "parada",]
+
+  # Filtrado por nombre marquesinas restantes en línea bus
+  nombre_paradas_objetivo <- df_trabajo_paradas$name
+  df_activos_parada_escritura_destino <- df_activos_parada_escritura_destino[which(df_activos_parada_escritura_destino$data.name %in% nombre_paradas_objetivo),]
+
+  json_envio_plataforma <- paste('{"parada_destino":"', parada_destino_activos_parada,'"',
+                                 '}',sep = "")
+  for(i in 1:nrow(df_activos_parada_escritura_destino)){
+
+    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos_parada_escritura_destino$data.id$id[i], "/SERVER_SCOPE",sep = "")
+
+    post <- httr::POST(url = url,
+                       add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                       body = json_envio_plataforma,
+                       verify= FALSE,
+                       encode = "json",verbose()
+    )
+  }
 
 
 

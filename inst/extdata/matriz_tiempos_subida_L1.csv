@@ -1,20 +1,20 @@
-"ID_PARADA","NOMBRE_PARADA_GEOCERCA","Parque de Bomberos SEPEI","Hospital Psiquiátrico","Avenida Martin Palomino 4","Guadalupe_subida","Gasolinera-Estación de Tren (Av. España)_subida","Catedral (Calvo Sotelo)","Correos (Av. Alfonso VII)_subida","Leonor de Plantagenet (cristo de las batallas subida)_subida","Ambulatorio Central_subida","Universidad_subida","Parque Coronación_subida","Institutos_subida","Josefinas_subida","Colegio La Paz (Calle Pablo Iglesias)_subida","Centro Cívico_subida","Cines (Glorieta La Libertad)_subida","Policía Local-SSB_subida","Las Acacias","La Data"
-68,"Parque de Bomberos SEPEI",0,2,4,7,9,13,15,16,20,21,22,23,26,27,28,28,31,32,33
-47,"Hospital Psiquiátrico",-2,0,2,4,7,11,12,14,17,18,20,20,24,25,25,26,28,30,31
-8,"Avenida Martin Palomino 4",-4,-2,0,3,5,9,10,12,15,17,18,19,22,23,24,24,26,28,29
-45,"Guadalupe_subida",-7,-4,-3,0,3,6,8,10,13,14,15,16,19,20,21,21,24,25,27
-43,"Gasolinera-Estación de Tren (Av. España)_subida",-9,-7,-5,-3,0,4,5,7,10,11,13,13,17,18,19,19,21,23,24
-18,"Catedral (Calvo Sotelo)",-13,-11,-9,-6,-4,0,2,3,6,8,9,10,13,14,15,15,18,19,20
-29,"Correos (Av. Alfonso VII)_subida",-15,-12,-10,-8,-5,-2,0,2,5,6,7,8,11,12,13,13,16,17,19
-61,"Leonor de Plantagenet (cristo de las batallas subida)_subida",-16,-14,-12,-10,-7,-3,-2,0,3,4,6,6,9,10,11,12,14,15,17
-1,"Ambulatorio Central_subida",-20,-17,-15,-13,-10,-6,-5,-3,0,1,3,3,6,7,8,9,11,12,14
-88,"Universidad_subida",-21,-18,-17,-14,-11,-8,-6,-4,-1,0,1,2,5,6,7,7,10,11,13
-67,"Parque Coronación_subida",-22,-20,-18,-15,-13,-9,-7,-6,-3,-1,0,1,4,5,6,6,9,10,11
-51,"Institutos_subida",-23,-20,-19,-16,-13,-10,-8,-6,-3,-2,-1,0,3,4,5,5,8,9,11
-54,"Josefinas_subida",-26,-24,-22,-19,-17,-13,-11,-9,-6,-5,-4,-3,0,1,2,2,5,6,7
-27,"Colegio La Paz (Calle Pablo Iglesias)_subida",-27,-25,-23,-20,-18,-14,-12,-10,-7,-6,-5,-4,-1,0,1,1,4,5,6
-19,"Centro Cívico_subida",-28,-25,-24,-21,-19,-15,-13,-11,-8,-7,-6,-5,-2,-1,0,0,3,4,6
-24,"Cines (Glorieta La Libertad)_subida",-28,-26,-24,-21,-19,-15,-13,-12,-9,-7,-6,-5,-2,-1,0,0,3,4,5
-75,"Policía Local-SSB_subida",-31,-28,-26,-24,-21,-18,-16,-14,-11,-10,-9,-8,-5,-4,-3,-3,0,1,3
-60,"Las Acacias",-32,-30,-28,-25,-23,-19,-17,-15,-12,-11,-10,-9,-6,-5,-4,-4,-1,0,1
-55,"La Data",-33,-31,-29,-27,-24,-20,-19,-17,-14,-13,-11,-11,-7,-6,-6,-5,-3,-1,0
+ID_PARADA,NOMBRE_PARADA_GEOCERCA,Parque de Bomberos SEPEI,Hospital Psiquiátrico,Avenida Martin Palomino 4,Guadalupe_subida,Gasolinera-Estación de Tren (Av. España)_subida,Catedral (Calvo Sotelo)_subida,Correos (Av. Alfonso VII)_subida,Leonor de Plantagenet (cristo de las batallas subida)_subida,Ambulatorio Central_subida,Universidad_subida,Parque Coronación_subida,Institutos_subida,Josefinas_subida,Colegio La Paz (Calle Pablo Iglesias)_subida,Centro Cívico_subida,Cines (Glorieta La Libertad)_subida,Policía Local-SSB_subida,Las Acacias,La Data
+68,Parque de Bomberos SEPEI,0,2,4,7,9,13,15,16,20,21,22,23,26,27,28,28,31,32,33
+47,Hospital Psiquiátrico,-2,0,2,4,7,11,12,14,17,18,20,20,24,25,25,26,28,30,31
+8,Avenida Martin Palomino 4,-4,-2,0,3,5,9,10,12,15,17,18,19,22,23,24,24,26,28,29
+45,Guadalupe_subida,-7,-4,-3,0,3,6,8,10,13,14,15,16,19,20,21,21,24,25,27
+43,Gasolinera-Estación de Tren (Av. España)_subida,-9,-7,-5,-3,0,4,5,7,10,11,13,13,17,18,19,19,21,23,24
+18,Catedral (Calvo Sotelo)_subida,-13,-11,-9,-6,-4,0,2,3,6,8,9,10,13,14,15,15,18,19,20
+29,Correos (Av. Alfonso VII)_subida,-15,-12,-10,-8,-5,-2,0,2,5,6,7,8,11,12,13,13,16,17,19
+61,Leonor de Plantagenet (cristo de las batallas subida)_subida,-16,-14,-12,-10,-7,-3,-2,0,3,4,6,6,9,10,11,12,14,15,17
+1,Ambulatorio Central_subida,-20,-17,-15,-13,-10,-6,-5,-3,0,1,3,3,6,7,8,9,11,12,14
+88,Universidad_subida,-21,-18,-17,-14,-11,-8,-6,-4,-1,0,1,2,5,6,7,7,10,11,13
+67,Parque Coronación_subida,-22,-20,-18,-15,-13,-9,-7,-6,-3,-1,0,1,4,5,6,6,9,10,11
+51,Institutos_subida,-23,-20,-19,-16,-13,-10,-8,-6,-3,-2,-1,0,3,4,5,5,8,9,11
+54,Josefinas_subida,-26,-24,-22,-19,-17,-13,-11,-9,-6,-5,-4,-3,0,1,2,2,5,6,7
+27,Colegio La Paz (Calle Pablo Iglesias)_subida,-27,-25,-23,-20,-18,-14,-12,-10,-7,-6,-5,-4,-1,0,1,1,4,5,6
+19,Centro Cívico_subida,-28,-25,-24,-21,-19,-15,-13,-11,-8,-7,-6,-5,-2,-1,0,0,3,4,6
+24,Cines (Glorieta La Libertad)_subida,-28,-26,-24,-21,-19,-15,-13,-12,-9,-7,-6,-5,-2,-1,0,0,3,4,5
+75,Policía Local-SSB_subida,-31,-28,-26,-24,-21,-18,-16,-14,-11,-10,-9,-8,-5,-4,-3,-3,0,1,3
+60,Las Acacias,-32,-30,-28,-25,-23,-19,-17,-15,-12,-11,-10,-9,-6,-5,-4,-4,-1,0,1
+55,La Data,-33,-31,-29,-27,-24,-20,-19,-17,-14,-13,-11,-11,-7,-6,-6,-5,-3,-1,0
