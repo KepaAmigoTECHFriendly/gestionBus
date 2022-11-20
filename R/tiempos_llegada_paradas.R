@@ -12,6 +12,7 @@
 #' jsonlite
 #' dplyr
 #' sf
+#' lubridate
 #'
 #' @export
 
@@ -328,6 +329,43 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   }
 
 
+  # GET HORARIOS ÚLTIMO TRAYECTO POR LÍNEA Y SENTIDO
+  # GET ACTIVOS TIPO "Línea BUS"
+  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  df_horario_ultimo_trayecto_linea_sentido <- df[df$data.type == "Línea BUS",]
+  df_horario_ultimo_trayecto_linea_sentido <- df[df$data.name == paste("Línea ",linea,sep = ""),]
+
+  dia_semana <- wday(Sys.Date()) #Domingo == 1
+  if(dia_semana != 1 | dia_semana != 7){
+    # Atributo horarios
+    if(sentido == 1){
+      keys <- URLencode(c("horario_ultimo_trayecto_laborables_subida"))
+    }else{
+      keys <- URLencode(c("horario_ultimo_trayecto_laborables_bajada"))
+    }
+  }else{
+    # Atributo horarios
+    if(sentido == 1){
+      keys <- URLencode(c("horario_ultimo_trayecto_festivos_sabado_domingo_subida"))
+    }else{
+      keys <- URLencode(c("horario_ultimo_trayecto_festivos_sabado_domingo_bajada"))
+    }
+  }
+
+  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_horario_ultimo_trayecto_linea_sentido$data.id$id,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+  peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+  # Tratamiento datos. De raw a dataframe
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  df_horario_ultimo_trayecto <- df$value
+  hora_actual <- paste(as.character(hour(Sys.time())),":",as.character(minute(Sys.time())),sep = "")
+  if(hora_actual > df_horario_ultimo_trayecto){  # Estamos en el último tryeto
+    flag_ultimo_trayecto <- TRUE
+  }
 
 
 
