@@ -905,8 +905,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
         if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
           flag_escritura_primer_atributo <- TRUE
-          tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2
-          tiempo_atributo_tiempo_1 <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2, " minutos", sep = "")
+          tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }
       }
     }

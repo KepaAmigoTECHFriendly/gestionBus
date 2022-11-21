@@ -6,7 +6,7 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 5,-,-,Avenida del Valle 45 (escaleras mecánicas)_bajada,40.0296621,-6.0856836,0,0,1,0,1
 6,6109844817,6109844817,Avenida Extremadura_subida,40.0389235,-6.0913562,0,1,1,1,0
 7,6109844818,6109844818,Avenida Extremadura_bajada,40.0388363,-6.0915269,0,1,1,0,0
-8,-,-,Avenida Martin Palomino 4,40.0103898,-6.1090094,1,0,0,3,0
+8,-,-,Avenida Martin Palomino 4_subida,40.0103898,-6.1090094,1,0,0,1,0
 9,6109844811,6109844811,Bioclimática_bajada,40.0433695,-6.0852192,0,1,0,0,0
 10,6109844812,6109844812,Bioclimática_subida,40.0433038,-6.0853654,0,1,0,1,0
 11,4545283007,4545283007,Bravo Murillo_subida,40.0359896,-6.0781173,0,0,1,1,0

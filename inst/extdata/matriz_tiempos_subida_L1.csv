@@ -1,7 +1,7 @@
-ID_PARADA,NOMBRE_PARADA_GEOCERCA,Parque de Bomberos SEPEI,Hospital Psiquiátrico,Avenida Martin Palomino 4,Guadalupe_subida,Gasolinera-Estación de Tren (Av. España)_subida,Catedral (Calvo Sotelo)_subida,Correos (Av. Alfonso VII)_subida,Leonor de Plantagenet (cristo de las batallas subida)_subida,Ambulatorio Central_subida,Universidad_subida,Parque Coronación_subida,Institutos_subida,Josefinas_subida,Colegio La Paz (Calle Pablo Iglesias)_subida,Centro Cívico_subida,Cines (Glorieta La Libertad)_subida,Policía Local-SSB_subida,Las Acacias,La Data
+ID_PARADA,NOMBRE_PARADA_GEOCERCA,Parque de Bomberos SEPEI,Hospital Psiquiátrico,Avenida Martin Palomino 4_subida,Guadalupe_subida,Gasolinera-Estación de Tren (Av. España)_subida,Catedral (Calvo Sotelo)_subida,Correos (Av. Alfonso VII)_subida,Leonor de Plantagenet (cristo de las batallas subida)_subida,Ambulatorio Central_subida,Universidad_subida,Parque Coronación_subida,Institutos_subida,Josefinas_subida,Colegio La Paz (Calle Pablo Iglesias)_subida,Centro Cívico_subida,Cines (Glorieta La Libertad)_subida,Policía Local-SSB_subida,Las Acacias,La Data
 68,Parque de Bomberos SEPEI,0,2,4,7,9,13,15,16,20,21,22,23,26,27,28,28,31,32,33
 47,Hospital Psiquiátrico,-2,0,2,4,7,11,12,14,17,18,20,20,24,25,25,26,28,30,31
-8,Avenida Martin Palomino 4,-4,-2,0,3,5,9,10,12,15,17,18,19,22,23,24,24,26,28,29
+8,Avenida Martin Palomino 4_subida,-4,-2,0,3,5,9,10,12,15,17,18,19,22,23,24,24,26,28,29
 45,Guadalupe_subida,-7,-4,-3,0,3,6,8,10,13,14,15,16,19,20,21,21,24,25,27
 43,Gasolinera-Estación de Tren (Av. España)_subida,-9,-7,-5,-3,0,4,5,7,10,11,13,13,17,18,19,19,21,23,24
 18,Catedral (Calvo Sotelo)_subida,-13,-11,-9,-6,-4,0,2,3,6,8,9,10,13,14,15,15,18,19,20
