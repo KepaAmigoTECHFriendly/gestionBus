@@ -673,7 +673,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
               tiempo_atributo_2 <- tiempos_a_marquesinas_restantes_contrario[,(i+2)] + 20
             }else{
-              if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) > as.numeric(gsub(" .*","",df_tiempos_actuales_2$value)[i])){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
+              if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) >= as.numeric(gsub(" .*","",df_tiempos_actuales_2$value)[i])){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
                 tiempo_atributos <- df_tiempos_actuales_2$value[i]
                 tiempo_atributo_2 <- df_tiempos_actuales_2$value[i] + 20
               }else{
@@ -905,7 +905,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
 
         # Decido si escribir en el primer atributo contrarioen base a al diferencia de tiempos de los atributos contrarios
-        if(as.numeric(gsub(" .*","",df_tiempos_actuales_contrario$value)[i]) > as.numeric(gsub(" .*","",tiempos_a_marquesinas_restantes_contrario)[(i+2)])){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
+        if(as.numeric(gsub(" .*","",df_tiempos_actuales_contrario$value)[i]) >= as.numeric(gsub(" .*","",tiempos_a_marquesinas_restantes_contrario)[(i+2)])){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
           flag_escritura_primer_atributo <- TRUE
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5, " minutos", sep = "")
           tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
