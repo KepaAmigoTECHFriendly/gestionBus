@@ -675,7 +675,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             }else{
               if(as.numeric(gsub(" .*","",df_tiempos_actuales$value)[i]) >= as.numeric(gsub(" .*","",df_tiempos_actuales_2$value)[i])){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
                 tiempo_atributos <- df_tiempos_actuales_2$value[i]
-                tiempo_atributo_2 <- df_tiempos_actuales_2$value[i] + 20
+                tiempo_atributo_2 <- as.numeric(gsub(" .*","",df_tiempos_actuales_2$value)[i]) + 20
               }else{
                 next
               }
