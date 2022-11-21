@@ -873,6 +873,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 4) Actualización atributos tiempo_2_llegada_linea_x. Actualiza el atributo del tiempo de llegada del bus de sentido contrario (segundo bus del sentido contrario)
   for(i in 1:nrow(df_activos)){
 
+    flag_escritura_primer_atributo <- FALSE
+
     if(flag_ultimo_trayecto == TRUE){
       tiempo_atributos <- "-"
     }else{
@@ -884,7 +886,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }else{
           tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
         }
-      }else{  # El atributo 2 en plataforma tiene tiempo asignado, tengo que decidir si escribo o no
+      }else{  # El atributo 2 en plataforma tiene tiempo asignado, tengo que decidir si escribo o no en el primer atributo. En el segundo atributo sí escribo
+        # Escritura en segundo atributo
         if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
         }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
@@ -892,17 +895,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }else{
           tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
         }
-        #if(as.numeric(gsub(" .*","",df_tiempos_actuales_2_contrario$value)[i]) < tiempos_a_marquesinas_restantes_contrario[,(i+2)]){ # Si el tiempo en plataforma es menor que el actual contrario, no escribo
-        #  next
-        #}else{
-        #  if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
-        #    tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
-        #  }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos"){
-        #    tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
-        #  }else{
-        #    tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
-        #  }
-        #}
+
+        # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
+        diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+        if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+          flag_escritura_primer_atributo <- TRUE
+          tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2
+          tiempo_atributo_tiempo_1 <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
+        }
       }
     }
 
@@ -919,6 +919,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                          verify= FALSE,
                          encode = "json",verbose()
       )
+
+      if(flag_escritura_primer_atributo != FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":"', tiempo_atributo_tiempo_1,'"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
     }
 
     if(linea == 2){
@@ -932,6 +944,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                          verify= FALSE,
                          encode = "json",verbose()
       )
+
+      if(flag_escritura_primer_atributo != FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":"', tiempo_atributo_tiempo_1,'"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
     }
 
     if(linea == 3){
@@ -945,6 +969,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                          verify= FALSE,
                          encode = "json",verbose()
       )
+      if(flag_escritura_primer_atributo != FALSE){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":"', tiempo_atributo_tiempo_1,'"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
     }
   }
 
