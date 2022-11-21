@@ -362,7 +362,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
   df_horario_ultimo_trayecto <- df$value
-  hora_actual <- paste(as.character(hour(Sys.time())),":",as.character(minute(Sys.time())),sep = "")
+  hora <- hour(Sys.time())
+  hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
+  hora_actual <- paste(as.character(hora),":",as.character(minute(Sys.time())),sep = "")
   if(hora_actual > df_horario_ultimo_trayecto){  # Estamos en el último tryeto
     flag_ultimo_trayecto <- TRUE
   }
