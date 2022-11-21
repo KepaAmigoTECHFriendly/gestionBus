@@ -902,7 +902,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
 
         # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
-        diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+        diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
         if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
           flag_escritura_primer_atributo <- TRUE
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2, " minutos", sep = "")
