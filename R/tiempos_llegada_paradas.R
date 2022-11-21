@@ -879,7 +879,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       if(!grepl("\\d", df_tiempos_actuales_2_contrario$value)[i] | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos" | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos minutos"){  # Si atributo en plataforma no tiene tiempo asignado escribo, el tiempo de llegada
         if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
-        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos"){
+        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }else{
           tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
@@ -887,7 +887,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }else{  # El atributo 2 en plataforma tiene tiempo asignado, tengo que decidir si escribo o no
         if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
-        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos"){
+        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }else{
           tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
