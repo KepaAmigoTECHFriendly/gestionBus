@@ -907,7 +907,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         # Decido si escribir en el primer atributo contrarioen base a al diferencia de tiempos de los atributos contrarios
         if(as.numeric(gsub(" .*","",df_tiempos_actuales_contrario$value)[i]) >= as.numeric(gsub(" .*","",tiempos_a_marquesinas_restantes_contrario)[(i+2)])){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
           flag_escritura_primer_atributo <- TRUE
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5, " minutos", sep = "")
+          tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5), " minutos", sep = "")
           tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }else{
           # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
