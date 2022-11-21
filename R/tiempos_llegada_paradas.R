@@ -901,12 +901,19 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
         }
 
-        # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
-        diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
-        if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+        # Decido si escribir en el primer atributo contrarioen base a al diferencia de tiempos de los atributos contrarios
+        if(as.numeric(gsub(" .*","",df_tiempos_actuales_contrario$value)[i]) > as.numeric(gsub(" .*","",tiempos_a_marquesinas_restantes_contrario)[(i+2)])){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
           flag_escritura_primer_atributo <- TRUE
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2, " minutos", sep = "")
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5, " minutos", sep = "")
           tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+        }else{
+          # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
+          diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+          if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+            flag_escritura_primer_atributo <- TRUE
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2, " minutos", sep = "")
+            tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+          }
         }
       }
     }
