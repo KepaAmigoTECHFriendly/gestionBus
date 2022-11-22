@@ -819,7 +819,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   orden_columnas_tiempos <- 2 + orden_columnas_tiempos
   tiempos_a_marquesinas_restantes_contrario <- tiempos_a_marquesinas_restantes_contrario[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
   # Asignación de indentificador bus en parada actual
-  tiempos_a_marquesinas_restantes_contrario[,which(colnames(tiempos_a_marquesinas_restantes_contrario) %in% tiempos_a_marquesinas_restantes_contrario$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
+  #tiempos_a_marquesinas_restantes_contrario[,which(colnames(tiempos_a_marquesinas_restantes_contrario) %in% tiempos_a_marquesinas_restantes_contrario$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
   tiempos_a_marquesinas_restantes_contrario[tiempos_a_marquesinas_restantes_contrario == "-"] <- "> 30 minutos"
 
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
