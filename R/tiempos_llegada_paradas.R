@@ -637,7 +637,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
     # CUANDO LLEGA A LA FILA DE LA PARADA EN LA QUE SE ENCUENTRA, SE REGISTRA UN VALOR = en_parada
     if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada"){
-      tiempo_atributos <- "En parada"
+      if(flag_ultimo_trayecto == TRUE){
+        tiempo_atributos <- "-"
+      }else{
+        tiempo_atributos <- "En parada"
+      }
     }else{
       # Comprobación de si en la plataforma está asignado el valor "En parada"
       if(df_tiempos_actuales$value[i] == "En parada"){ # Si en la plataforma está el registro de "En parada"
