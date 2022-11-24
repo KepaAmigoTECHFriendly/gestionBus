@@ -674,10 +674,12 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número en plataforma, salto a comprobar si el bus actual tiene número asignado para esa parada
           if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, compruebo diferencia de tiempos de atributo 1 y 2
             if(df_tiempos_actuales_2$value[i] == "En parada"){
+              tiempo_atributo_2 <- TRUE
               tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
               tiempo_atributo_2 <- tiempos_a_marquesinas_restantes_contrario[,(i+2)] + 20
             }else{
               if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i]))){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
+                tiempo_atributo_2 <- TRUE
                 tiempo_atributos <- df_tiempos_actuales_2$value[i]
                 tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) + 20
               }else{
