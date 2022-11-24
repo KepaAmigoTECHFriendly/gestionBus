@@ -650,7 +650,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- "-"
           }else{
             if(grepl("\\d", df_tiempos_actuales_2$value[i]) & df_tiempos_actuales_2$value[i] != "> 30 minutos"){  # Si el valor del segundo atributo es númerico y no es > 30 mins. Escribo este valor.
-              if(as.numeric(gsub(" .*","",df_tiempos_actuales_2$value[i])) > 15){ # > 15 minutos, si no, es que solo hay 1 autobús
+              if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) > 15){ # > 15 minutos, si no, es que solo hay 1 autobús
                 tiempo_atributos <- df_tiempos_actuales_2$value[i]
                 tiempo_atributo_2 <- "> 30 minutos"  # Asigno > 30 mins a tiempo atributo 2
               }else{
@@ -677,15 +677,15 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
               tiempo_atributo_2 <- tiempos_a_marquesinas_restantes_contrario[,(i+2)] + 20
             }else{
-              if(as.numeric(gsub(" .*","",df_tiempos_actuales$value[i])) >= as.numeric(gsub(" .*","",df_tiempos_actuales_2$value[i]))){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
+              if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i]))){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
                 tiempo_atributos <- df_tiempos_actuales_2$value[i]
-                tiempo_atributo_2 <- as.numeric(gsub(" .*","",df_tiempos_actuales_2$value[i])) + 20
+                tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) + 20
               }else{
                 next
               }
             }
           }else{
-            if(as.numeric(gsub(" .*","",df_tiempos_actuales$value[i])) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
+            if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
               diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
               if(diferencia_tiempo_en_minutos >= 5){
                 if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
@@ -910,7 +910,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
         # Decido si escribir en el primer atributo contrario en base a al diferencia de tiempos de los atributos contrarios
         if(df_tiempos_actuales_contrario$value[i] != "En parada"){
-          if(as.numeric(gsub(" .*","",df_tiempos_actuales_contrario$value[i])) >= as.numeric(gsub(" .*","",tiempos_a_marquesinas_restantes_contrario[(i+2)]))){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
+          if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes_contrario[(i+2)]))){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
             flag_escritura_primer_atributo <- TRUE
             tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5), " minutos", sep = "")
             tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
