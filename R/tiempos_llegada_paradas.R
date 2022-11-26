@@ -68,6 +68,116 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   resultado_peticion_token <- httr::content(post)
   auth_thb <- paste("Bearer",resultado_peticion_token$token)
 
+
+
+
+  #-----------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
+  # PARADAS A "-"
+  #-----------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
+
+  hora <- hour(Sys.time())
+  hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
+  hora_actual <- paste(as.character(hora),":",as.character(minute(Sys.time())),sep = "")
+  if(hora_actual > "22:30"){
+    # ------------------------------------------------------------------------------
+    # CREACIÓN ACTIVOS
+    # ------------------------------------------------------------------------------
+
+    # 2) GET ACTIVOS
+    url_thb_fechas <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+    peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    df_activos <- df[df$data.type == "parada",]
+    df_activos <- df_activos[order(df_activos$data.name, decreasing = FALSE),]
+
+    df_paradas <- df_paradas[order(df_paradas$name, decreasing = FALSE),]
+
+
+
+    # 4) Creación atributos tiempo_llegada_linea_x
+    for(i in 1:nrow(df_activos)){
+      print(i)
+
+      url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
+
+      if(df_paradas$linea_1[i] == 1){
+
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":', '"-"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":', '"-"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
+
+      if(df_paradas$linea_2[i] == 1){
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":', '"-"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":', '"-"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
+
+      if(df_paradas$linea_3[i] == 1){
+
+        json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":', '"-"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":', '"-"',
+                                       '}',sep = "")
+
+        post <- httr::POST(url = url,
+                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                           body = json_envio_plataforma,
+                           verify= FALSE,
+                           encode = "json",verbose()
+        )
+      }
+    }
+
+    return(2)
+  }
+
+
+
   # ------------------------------------------------------------------------------
   # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBÚS
   # ------------------------------------------------------------------------------
