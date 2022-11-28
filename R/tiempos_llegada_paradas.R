@@ -682,7 +682,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
   # Asignación de indentificador bus en parada actual
   tiempos_a_marquesinas_restantes[,which(colnames(tiempos_a_marquesinas_restantes) %in% tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
-  tiempos_a_marquesinas_restantes[tiempos_a_marquesinas_restantes == "-"] <- "> 30 minutos"  # Ya ha pasado por esta parada
+  if(flag_ultimo_trayecto != TRUE){
+    tiempos_a_marquesinas_restantes[tiempos_a_marquesinas_restantes == "-"] <- "> 30 minutos"  # Ya ha pasado por esta parada y no es el último trayecto
+  }
+
+
+
+  # ENVIO TELEMETRÍA A ACTIVO TIPO "PARADA" DE PASO POR PARADA. PERMITE RECOGER INDICADORES
+  id <- df_activos$data.id$id[df_activos$data.name == tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA]
+  url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
+  json_envio_plataforma <- paste('{"linea_',linea,'":', 1,
+                                 '}',sep = "")
+
+  post <- httr::POST(url = url_telemetria,
+                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                     body = json_envio_plataforma,
+                     verify= FALSE,
+                     encode = "json",verbose()
+  )
 
 
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
