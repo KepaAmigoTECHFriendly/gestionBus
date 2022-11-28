@@ -15,7 +15,7 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 14,6109870878,6109870878,Cámara Comercio y Múltiples_subida,40.0443119,-6.0684391,1,0,0,1,0
 15,6109870879,6109870879,Cámara Comercio y Múltiples_bajada,40.0443715,-6.068662,1,0,0,0,0
 16,6164124663,6164124663,Cañón de La Salud / Pta. Trujillo_bajada,40.0273214,-6.0935307,0,1,0,0,0
-17,4544838926,4544838926,Carretera Trujillo,40.0137191,-6.0924966,0,0,1,2,0
+17,4544838926,4544838926,Carretera Trujillo,40.0137191,-6.0924966,0,0,1,1,0
 18,4545282992,4545282992,Catedral (Calvo Sotelo)_subida,40.027439,-6.0906171,1,1,1,1,0
 19,,,Catedral (Calvo Sotelo)_bajada,40.0272533,-6.0910000,1,1,1,0,0
 20,6164095026,6164095026,Centro Cívico_subida,40.0430949,-6.0770485,1,0,0,1,0
