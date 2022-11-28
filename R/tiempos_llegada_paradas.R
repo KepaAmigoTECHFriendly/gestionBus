@@ -682,9 +682,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
   # Asignación de indentificador bus en parada actual
   tiempos_a_marquesinas_restantes[,which(colnames(tiempos_a_marquesinas_restantes) %in% tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
-  if(flag_ultimo_trayecto != TRUE){
-    tiempos_a_marquesinas_restantes[tiempos_a_marquesinas_restantes == "-"] <- "> 30 minutos"  # Ya ha pasado por esta parada y no es el último trayecto
-  }
+  #if(flag_ultimo_trayecto != TRUE){
+  #  tiempos_a_marquesinas_restantes[tiempos_a_marquesinas_restantes == "-"] <- "> 30 minutos"  # Ya ha pasado por esta parada y no es el último trayecto
+  #}
 
 
 
@@ -812,10 +812,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
               tiempo_atributo_2 <- tiempos_a_marquesinas_restantes_contrario[,(i+2)] + 20
             }else{
-              if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i]))){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
-                tiempo_atributo_2 <- TRUE
-                tiempo_atributos <- df_tiempos_actuales_2$value[i]
-                tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) + 20
+              if(df_tiempos_actuales_2$value[i] != "-"){
+                if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i]))){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
+                  tiempo_atributo_2 <- TRUE
+                  tiempo_atributos <- df_tiempos_actuales_2$value[i]
+                  tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) + 20
+                }else{
+                  next
+                }
               }else{
                 next
               }
@@ -960,7 +964,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   tiempos_a_marquesinas_restantes_contrario <- tiempos_a_marquesinas_restantes_contrario[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
   # Asignación de indentificador bus en parada actual
   #tiempos_a_marquesinas_restantes_contrario[,which(colnames(tiempos_a_marquesinas_restantes_contrario) %in% tiempos_a_marquesinas_restantes_contrario$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
-  tiempos_a_marquesinas_restantes_contrario[tiempos_a_marquesinas_restantes_contrario == "-"] <- "> 30 minutos"
+  #tiempos_a_marquesinas_restantes_contrario[tiempos_a_marquesinas_restantes_contrario == "-"] <- "> 30 minutos"
 
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
   url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"

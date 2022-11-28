@@ -7,6 +7,7 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 6,6109844817,6109844817,Avenida Extremadura_subida,40.0389235,-6.0913562,0,1,1,1,0
 7,6109844818,6109844818,Avenida Extremadura_bajada,40.0388363,-6.0915269,0,1,1,0,0
 8,-,-,Avenida Martin Palomino 4_subida,40.0103898,-6.1090094,1,0,0,1,0
+89,,,Avenida Martin Palomino 4_bajada,40.0104172,-6.1092116,1,0,0,0,0
 9,6109844811,6109844811,Bioclimática_bajada,40.0433695,-6.0852192,0,1,0,0,0
 10,6109844812,6109844812,Bioclimática_subida,40.0433038,-6.0853654,0,1,0,1,0
 11,4545283007,4545283007,Bravo Murillo_subida,40.0359896,-6.0781173,0,0,1,1,0
@@ -58,7 +59,7 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 57,6109870882,6109870882,La Esperanza - Gabriel y Galán_subida,40.0416642,-6.0727007,1,0,0,1,0
 58,6109844815,6109844815,La Serrana_subida,40.0402713,-6.0927641,0,0,1,1,0
 59,6109844816,6109844816,La Serrana_bajada,40.0405851,-6.0932232,0,1,1,0,0
-60,6103966901,6103966901,Las Acacias,40.0431606,-6.0738905,1,0,0,3,0
+60,6103966901,6103966901,Las Acacias,40.0431606,-6.0738905,1,0,0,1,0
 61,6164048617,6164048617,Leonor de Plantagenet (cristo de las batallas subida)_subida,40.0305987,-6.086084,1,1,1,1,0
 62,4545283010,4545283010,Palacio de Congresos_bajada,40.0387363,-6.0948529,0,0,1,0,0
 63,4545283011,4545283011,Palacio de Congresos_subida,40.0387612,-6.0946903,0,0,1,1,0
