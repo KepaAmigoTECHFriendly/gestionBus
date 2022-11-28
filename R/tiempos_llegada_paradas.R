@@ -1056,7 +1056,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
       # Comprobación si voy a escribir en el primer atributo, si no, si este tiene == "En Parada", si lleva más de 40" le asigno tiempo contrario y a tiempo contrario *1,5
-      if(flag_escritura_primer_atributo <- FALSE){
+      if(flag_escritura_primer_atributo == FALSE){
         if(df_tiempos_actuales_contrario$value[i] == "En parada"){
           diferencia_tiempo_en_segundos<- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
           if(diferencia_tiempo_en_segundos >= 30){
