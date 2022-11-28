@@ -770,7 +770,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
         if(tiempo_actualizacion_atributo_en_segundos > 20){ # si > 20 segundos, escribo el siguiente tiempo
           tiempo_atributos <- df_tiempos_actuales_2$value[i]
-          tiempo_atributo_2 <- df_tiempos_actuales_2$value[i] *2
+          tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) *2
         }else{
           tiempo_atributos <- "En parada"
         }
