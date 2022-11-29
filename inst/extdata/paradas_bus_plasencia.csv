@@ -1,7 +1,6 @@
 id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 1,5321926758,5321926758,Ambulatorio Central_subida,40.0330275,-6.0846439,1,1,0,1,0
 2,5321949687,5321949687,Ambulatorio Central_bajada,40.0330755,-6.0847262,1,1,0,0,1
-3,6164149076,6164149076,Arcos de San Antón_subida,40.0369096,-6.0851852,0,0,0,1,0
 4,6164149075,6164149075,Arcos de San Antón (Universidad)_subida,40.0353292,-6.0851846,0,1,0,1,0
 5,-,-,Avenida del Valle 45 (escaleras mecánicas)_bajada,40.0296621,-6.0856836,0,0,1,0,1
 6,6109844817,6109844817,Avenida Extremadura_subida,40.0389235,-6.0913562,0,1,1,1,0

@@ -6,7 +6,7 @@
 #'
 #' @return json
 #'
-#' @examples  tiempos_llegada_paradas("b37c2cc0-0350-11ed-b4eb-0d97eeef399c",7)
+#' @examples  alarmas_bus("b37c2cc0-0350-11ed-b4eb-0d97eeef399c",7)
 #'
 #' @import httr
 #' jsonlite

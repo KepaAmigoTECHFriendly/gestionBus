@@ -16,6 +16,6 @@ json
 Genera 2 posibles tipos de alarma: 1) BUS PARADO EN MEDIO DE UNA RUTA + X MINUTOS y 2) AUSENCIA DE DATOS BUS MIENTRAS ESTE ESTABA EFECTUANDO RUTA
 }
 \examples{
- tiempos_llegada_paradas("b37c2cc0-0350-11ed-b4eb-0d97eeef399c",7)
+ alarmas_bus("b37c2cc0-0350-11ed-b4eb-0d97eeef399c",7)
 
 }
