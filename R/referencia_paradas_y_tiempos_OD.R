@@ -2,8 +2,11 @@
 #'
 #' @description Genera la referencia de paradas en base a activos tipo "parada" de plataforma y la referencia de tiempos de paso de bus (matriz origen destino)
 #'
+#' @param input
+#'
 #' @return json
 #'
+#' @examples  referencia_paradas_y_tiempos_OD(1)
 #'
 #' @import httr
 #' jsonlite
@@ -13,7 +16,7 @@
 #'
 #' @export
 
-referencia_paradas_y_tiempos_OD <- function(){
+referencia_paradas_y_tiempos_OD <- function(input){
 
   # ------------------------------------------------------------------------------
   # PETICIÓN TOKENs THB
