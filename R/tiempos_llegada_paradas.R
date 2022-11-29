@@ -702,6 +702,48 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   )
 
 
+
+
+
+  # CÁLCULO DE AFORO Y ESCRITURA EN TELEMETRÍA
+  keys <- URLencode(c("Aforo"))
+  url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+  peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+  # Tratamiento datos. De raw a dataframe
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  df <- df[,-c(3,5)]
+
+  colnames(df) <- c("ts","Aforo")
+  df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
+  aforo <- df$Aforo[1]
+  tiempo_a_restar <- df_tiempos[df_tiempos$NOMBRE_PARADA_GEOCERCA == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA, (which(colnames(df_tiempos) %in% ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA) - 1)]
+  ref_tiempo <- df$fecha_time[1]
+  minute(ref_tiempo) <- minute(df$fecha_time[1]) + tiempo_a_restar
+  df <- df[df$fecha_time > ref_tiempo,]
+  if(length(unique(df$Aforo)) > 1){
+    df <- df[!duplicated(df$Aforo),]
+    flujo <- as.numeric(df$Aforo[1]) - as.numeric(df$Aforo[2])
+  }else{
+    flujo <- as.numeric(df$Aforo[1]) - as.numeric(df$Aforo[2])
+  }
+
+  id <- df_activos$data.id$id[df_activos$data.name == tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA]
+  url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
+  json_envio_plataforma <- paste('{"Aforo":',aforo,',','"Flujo":',flujo,
+                                 '}',sep = "")
+
+  post <- httr::POST(url = url_telemetria,
+                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                     body = json_envio_plataforma,
+                     verify= FALSE,
+                     encode = "json",verbose()
+  )
+
+
+
+
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
   url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
