@@ -285,4 +285,6 @@ referencia_paradas_y_tiempos_OD <- function(){
     write.csv(df_matriz_tiempos, paste("/root/", nombre_fichero_referencia_tiempos, sep=""), row.names = FALSE)
 
   } # Cierre bucle for
+
+  return(1)
 }
