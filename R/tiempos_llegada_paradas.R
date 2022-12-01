@@ -300,6 +300,25 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts
 
 
+  # Escribir en API para resetear aforo
+  if(nrow(df_datos_sin_paradas_duplicadas) != 0){
+    url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
+    # GET NÚMERO BUS
+    keys <- URLencode(c("Número"))
+    url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    numero <- df$value
+
+    url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
+    peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+  }
+
+
   # CÁLCULO SENTIDO
   # Cálculo sentido si está en parada de inicio
   if(nrow(df_datos_sin_paradas_duplicadas) != 0){  # El bus se encuentra en una parada de inicio
@@ -718,7 +737,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   colnames(df) <- c("ts","Aforo")
   df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
   aforo <- df$Aforo[1]
-  tiempo_a_restar <- df_tiempos[df_tiempos$NOMBRE_PARADA_GEOCERCA == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA, (which(colnames(df_tiempos) %in% ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA) - 1)]
+  pos <- which(colnames(df_tiempos) %in% ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA)
+  if(pos == 3){pos <- 4}
+  tiempo_a_restar <- df_tiempos[df_tiempos$NOMBRE_PARADA_GEOCERCA == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA, (pos - 1)]
   ref_tiempo <- df$fecha_time[1]
   minute(ref_tiempo) <- minute(df$fecha_time[1]) + tiempo_a_restar
   df <- df[df$fecha_time > ref_tiempo,]
