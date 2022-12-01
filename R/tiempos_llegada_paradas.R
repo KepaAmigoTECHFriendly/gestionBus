@@ -300,23 +300,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts
 
 
-  # Escribir en API para resetear aforo
-  if(nrow(df_datos_sin_paradas_duplicadas) != 0){
-    url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
-    # GET NÚMERO BUS
-    keys <- URLencode(c("Número"))
-    url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
-    peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-    df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    df <- as.data.frame(df)
-    numero <- df$value
-
-    url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
-    peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
-    df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    df <- as.data.frame(df)
-  }
 
 
   # CÁLCULO SENTIDO
