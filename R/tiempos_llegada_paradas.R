@@ -457,6 +457,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                                  '}',sep = "")
   for(i in 1:nrow(df_activos_parada_escritura_destino)){
 
+    # En paradas cabecera o destino, se debe escribir el nombre de la parada de destino, no su parada.
+    if(any(grepl(df_activos_parada_escritura_destino$data.name[i],df_paradas_iniciales$name))){
+      switch(df_activos_parada_escritura_destino$data.name[i],
+             "Hospital Virgen del Puerto" ={parada_destino_activos_parada <- "PIR Monjes"},
+             "PIR Monjes" = {parada_destino_activos_parada <- "H. Virgen del Puerto"},
+             "La Data" ={parada_destino_activos_parada <- "H. Psiquiátrico"},
+             "Hospital Psiquiátrico" ={parada_destino_activos_parada <- "La Data"},
+             "Estación de Tren" ={parada_destino_activos_parada <- "H. Virgen del Puerto"},
+             "Hospital Virgen del Puerto" ={parada_destino_activos_parada <- "Renfe"},
+      )
+    }
+
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos_parada_escritura_destino$data.id$id[i], "/SERVER_SCOPE",sep = "")
 
     post <- httr::POST(url = url,
