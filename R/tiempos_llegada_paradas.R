@@ -334,21 +334,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(nrow(df_datos_sin_paradas_duplicadas) != 0){  # El bus se encuentra en una parada de inicio
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
     if(linea == 1){
-      if(id_parada_inicial == 55){ # La Data
+      if(id_parada_inicial == 65 | id_parada_inicial == 59){ # Hogar de Nazaret o Gabriel y Galán 1
         sentido <- 0  # Bajando
-      }else if(id_parada_inicial == 68 | id_parada_inicial == 47){ # Hospital Psiquiatrico o SEPEI Bomberos
+      }else if(id_parada_inicial == 115 | id_parada_inicial == 15){ # Sociosanitario o Bomberos
         sentido <- 1  # Subiendo
       }
     }else if(linea == 2){
-      if(id_parada_inicial == 48){ # Hospital virgen del puerto
+      if(id_parada_inicial == 66){ # Hospital
         sentido <- 0  # Bajando
-      }else if(id_parada_inicial == 39){ # Renfe / Estación de tren
+      }else if(id_parada_inicial == 55){ # Estación de tren
         sentido <- 1  # Subiendo
       }
     }else if(linea == 3){
-      if(id_parada_inicial == 48){ # Hospital virgen del puerto
+      if(id_parada_inicial == 66){ # Hospital
         sentido <- 0  # Bajando
-      }else if(id_parada_inicial == 69 | id_parada_inicial == 17){ # PIR los monges o Carretera Trujillo
+      }else if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
         sentido <- 1  # Subiendo
       }
     }
@@ -371,7 +371,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
       }else{
         id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
-        if(id_parada_inicial == 48 | id_parada_inicial == 55 | id_parada_inicial == 47 | id_parada_inicial == 68 | id_parada_inicial == 39 | id_parada_inicial == 69){ # Paradas de salida
+        if(id_parada_inicial == 65 | id_parada_inicial == 59 | id_parada_inicial == 66){ # Paradas de salida en sentido bajando
           sentido_parada <- 0  # Bajando
         }else{
           sentido_parada <- 1  # Subiendo
@@ -404,27 +404,27 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # POST ACTUALIZACIÓN ATRIBUTO parada_destino UNA VEZ QUE SE CONOCE LA LÍNEA Y EL SENTIDO
   if(linea == 1){
     if(sentido == 0){
-      parada_destino <- "Hospital Psiquiátrico"
-      parada_destino_activos_parada <- "H. Psiquiátrico"
+      parada_destino <- "Sociosanitario"
+      parada_destino_activos_parada <- "Sociosanitario"
     }else{
-      parada_destino <- "La Data"
-      parada_destino_activos_parada <- "La Data"
+      parada_destino <- "P. La Data"
+      parada_destino_activos_parada <- "P. La Data"
     }
   }else if(linea == 2){
     if(sentido == 0){
-      parada_destino <- "Renfe"
-      parada_destino_activos_parada <- "Renfe"
+      parada_destino <- "Estación de tren"
+      parada_destino_activos_parada <- "Estación de tren"
     }else{
-      parada_destino <- "Hospital Virgen del Puerto"
-      parada_destino_activos_parada <- "H. Virgen del Puerto"
+      parada_destino <- "Hospital"
+      parada_destino_activos_parada <- "Hospital"
     }
   }else if(linea == 3){
     if(sentido == 0){
-      parada_destino <- "PIR Monjes"
-      parada_destino_activos_parada <- "PIR Monjes"
+      parada_destino <- "PIR Los Monjes"
+      parada_destino_activos_parada <- "PIR Los Monjes"
     }else{
-      parada_destino <- "Hospital Virgen del Puerto"
-      parada_destino_activos_parada <- "H. Virgen del Puerto"
+      parada_destino <- "Hospital"
+      parada_destino_activos_parada <- "Hospital"
     }
   }
 
@@ -456,16 +456,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   json_envio_plataforma <- paste('{"parada_destino_linea',linea,'":"', parada_destino_activos_parada,'"',
                                  '}',sep = "")
   for(i in 1:nrow(df_activos_parada_escritura_destino)){
-
-    # En paradas cabecera o destino, se debe escribir el nombre de la parada de destino, no su parada.
     if(any(grepl(df_activos_parada_escritura_destino$data.name[i],df_paradas_iniciales$name))){
       switch(df_activos_parada_escritura_destino$data.name[i],
-             "Hospital Virgen del Puerto" ={parada_destino_activos_parada <- "PIR Monjes"},
-             "PIR Monjes" = {parada_destino_activos_parada <- "H. Virgen del Puerto"},
-             "La Data" ={parada_destino_activos_parada <- "H. Psiquiátrico"},
-             "Hospital Psiquiátrico" ={parada_destino_activos_parada <- "La Data"},
-             "Estación de Tren" ={parada_destino_activos_parada <- "H. Virgen del Puerto"},
-             "Hospital Virgen del Puerto" ={parada_destino_activos_parada <- "Renfe"},
+             "Hospital" ={parada_destino_activos_parada <- "PIR Los Monjes"},
+             "PIR Los Monjes 2" = {parada_destino_activos_parada <- "Hospital"},
+             "Hogar de Nazaret" ={parada_destino_activos_parada <- "Sociosanitario"},
+             "Sociosanitario" ={parada_destino_activos_parada <- "P. La Data"},
+             "Estación de tren" ={parada_destino_activos_parada <- "Hospital"},
+             "Hospital" ={parada_destino_activos_parada <- "Estación de tren"},
       )
     }
 
@@ -641,7 +639,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   posicion_paradas_iniciales <- which(colnames(tiempos_a_marquesinas_restantes) %in% df_paradas_iniciales$name)
   for(i in posicion_paradas_iniciales){
     if(tiempos_a_marquesinas_restantes[1,i] != "-"){
-      tiempos_a_marquesinas_restantes[1,i] <- tiempos_a_marquesinas_restantes[1,i] + 5
+      tiempos_a_marquesinas_restantes[1,i] <- tiempos_a_marquesinas_restantes[1,i] + 1
     }
   }
 
@@ -680,8 +678,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   }
 
 
-  if(parada_destino == "Renfe"){ parada_destino <- "Estación de Tren"}
-
   tiempos_a_marquesinas_restantes_contrario <- df_tiempos_contrario[grep(parada_destino,df_tiempos_contrario$NOMBRE_PARADA_GEOCERCA),]
   # Suma de tiempo máximo sentido actual a tiempo sentido contrario
   max_tiempo_sentido_actual <- max(as.numeric(tiempos_a_marquesinas_restantes[,3:ncol(tiempos_a_marquesinas_restantes)]), na.rm = TRUE)
@@ -693,7 +689,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   posicion_paradas_iniciales <- which(colnames(tiempos_a_marquesinas_restantes_contrario) %in% df_paradas_iniciales$name)
   for(i in 3:ncol(tiempos_a_marquesinas_restantes_contrario)){
     if(tiempos_a_marquesinas_restantes_contrario[1,i] != "-"){
-      tiempos_a_marquesinas_restantes_contrario[1,i] <- tiempos_a_marquesinas_restantes_contrario[1,i] + 5
+      tiempos_a_marquesinas_restantes_contrario[1,i] <- tiempos_a_marquesinas_restantes_contrario[1,i] + 1
     }
   }
 
@@ -853,13 +849,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada"){
       if(flag_ultimo_trayecto == TRUE){
         tiempo_atributos <- "-"
-      }else{ # Decido si volver a escribir en parada en base al tiempo que haya pasado desde el último valor de "En parada" en atributo plataforma
-        tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
-        if(tiempo_actualizacion_atributo_en_segundos > 20){ # si > 20 segundos, escribo el siguiente tiempo
-          tiempo_atributos <- df_tiempos_actuales_2$value[i]
-          tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) *2
+      }else{ # Decido si volver a escribir en parada si el valor de plataforma es != "-" y en base al tiempo que haya pasado desde el último valor de "En parada" en atributo plataforma
+        if(df_tiempos_actuales$value[i] == "-"){
+          tiempo_atributos <-tiempos_a_marquesinas_restantes[,(i+2)]
         }else{
-          tiempo_atributos <- "En parada"
+          tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+          if(tiempo_actualizacion_atributo_en_segundos > 20){ # si > 20 segundos, escribo el siguiente tiempo
+            tiempo_atributos <- df_tiempos_actuales_2$value[i]
+            tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) *2
+          }else{
+            tiempo_atributos <- "En parada"
+          }
         }
       }
     }else{ # El valor del tiempo restante es numérico o "-"
@@ -1052,6 +1052,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   orden_columnas_tiempos <- order(orden_columnas_tiempos, decreasing = FALSE)
   orden_columnas_tiempos <- 2 + orden_columnas_tiempos
   tiempos_a_marquesinas_restantes_contrario <- tiempos_a_marquesinas_restantes_contrario[,c(1:2,orden_columnas_tiempos)] # Orden columnas tiempos por nombre para coincidir con df_activos
+  if(nrow(tiempos_a_marquesinas_restantes_contrario) > 1) {tiempos_a_marquesinas_restantes_contrario <- tiempos_a_marquesinas_restantes_contrario[1,]}
   # Asignación de indentificador bus en parada actual
   #tiempos_a_marquesinas_restantes_contrario[,which(colnames(tiempos_a_marquesinas_restantes_contrario) %in% tiempos_a_marquesinas_restantes_contrario$NOMBRE_PARADA_GEOCERCA)] <- "En parada"
   #tiempos_a_marquesinas_restantes_contrario[tiempos_a_marquesinas_restantes_contrario == "-"] <- "> 30 minutos"
