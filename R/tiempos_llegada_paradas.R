@@ -457,14 +457,26 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                                  '}',sep = "")
   for(i in 1:nrow(df_activos_parada_escritura_destino)){
     if(any(grepl(df_activos_parada_escritura_destino$data.name[i],df_paradas_iniciales$name))){
-      switch(df_activos_parada_escritura_destino$data.name[i],
-             "Hospital" ={parada_destino_activos_parada <- "PIR Los Monjes"},
-             "PIR Los Monjes 2" = {parada_destino_activos_parada <- "Hospital"},
-             "Hogar de Nazaret" ={parada_destino_activos_parada <- "Sociosanitario"},
-             "Sociosanitario" ={parada_destino_activos_parada <- "P. La Data"},
-             "Estación de tren" ={parada_destino_activos_parada <- "Hospital"},
-             "Hospital" ={parada_destino_activos_parada <- "Estación de tren"},
-      )
+      if(linea == 3){
+        switch(df_activos_parada_escritura_destino$data.name[i],
+               "Hospital" ={parada_destino_activos_parada <- "PIR Los Monjes"},
+               "PIR Los Monjes 2" = {parada_destino_activos_parada <- "Hospital"},
+               "Hogar de Nazaret" ={parada_destino_activos_parada <- "Sociosanitario"},
+               "Sociosanitario" ={parada_destino_activos_parada <- "P. La Data"},
+               "Estación de tren" ={parada_destino_activos_parada <- "Hospital"},
+               "Hospital" ={parada_destino_activos_parada <- "PIR Los Monjes"},
+        )
+      }else{
+        switch(df_activos_parada_escritura_destino$data.name[i],
+               "Hospital" ={parada_destino_activos_parada <- "PIR Los Monjes"},
+               "PIR Los Monjes 2" = {parada_destino_activos_parada <- "Hospital"},
+               "Hogar de Nazaret" ={parada_destino_activos_parada <- "Sociosanitario"},
+               "Sociosanitario" ={parada_destino_activos_parada <- "P. La Data"},
+               "Estación de tren" ={parada_destino_activos_parada <- "Hospital"},
+               "Hospital" ={parada_destino_activos_parada <- "Estación de tren"},
+        )
+      }
+
     }
 
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos_parada_escritura_destino$data.id$id[i], "/SERVER_SCOPE",sep = "")
