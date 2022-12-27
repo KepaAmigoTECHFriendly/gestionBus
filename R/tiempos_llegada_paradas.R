@@ -690,6 +690,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   }
 
 
+  if(parada_destino == "P. La Data"){
+    parada_destino <- "Gabriel y Galán 1_bajada"
+  }
+  if(parada_destino == "PIR Los Monjes"){
+    parada_destino <- "PIR Los Monjes 2"
+  }
+
   tiempos_a_marquesinas_restantes_contrario <- df_tiempos_contrario[grep(parada_destino,df_tiempos_contrario$NOMBRE_PARADA_GEOCERCA),]
   # Suma de tiempo máximo sentido actual a tiempo sentido contrario
   max_tiempo_sentido_actual <- max(as.numeric(tiempos_a_marquesinas_restantes[,3:ncol(tiempos_a_marquesinas_restantes)]), na.rm = TRUE)
