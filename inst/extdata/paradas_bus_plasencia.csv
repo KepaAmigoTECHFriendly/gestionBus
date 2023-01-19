@@ -115,4 +115,4 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 114,-,-,Puerta Talavera_bajada,40.0287452,-6.0886793,0,0,1,0,0
 115,-,-,Sociosanitario,40.0059823,-6.1133737,1,0,0,2,0
 116,-,-,Universidad_bajada,40.0350189,-6.0847062,1,1,0,0,1
-117,-,-,Universidad_subida,40.035965,-6.084159,1,1,0,1,0
+117,-,-,Universidad_subida,40.035965,-6.084159,1,0,0,1,0
