@@ -183,6 +183,45 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
+
+
+  # ------------------------------------------------------------------------------
+  # 0.1) - RECOGIDA IDs PARA SABER NÚMERO DE AUTOBUSES QUE CIRCULAN POR LÍNEA Y CALCULAR PRODUCTO DE TIEMPO
+  # ------------------------------------------------------------------------------
+  # Get dispositivos plataforma
+  url_thb <- "https://plataforma.plasencia.es/api/tenant/devices?pageSize=10000&page=0"
+  peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  df_dispositivos_gps <- df[df$data.type == "GPS",] # Filtrado por GPS
+
+  ids_gps <- df_dispositivos_gps$data.id$id
+
+  linea_vector <- c()
+  keys <- URLencode(c("active, Línea"))
+  for(i in 1:length(ids_gps)){
+
+    url_gps <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",ids_gps[i],"/values/attributes?",keys,sep = "")
+    peticion <- GET(url_gps, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    # Tratamiento datos. De raw a dataframe
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    print(i)
+    activo_atributo <- df$value[grep("active",df$key)]
+    if(activo_atributo == "FALSE"){next}
+    linea_atributo <- df$value[grep("Línea",df$key)]
+    linea_vector <- c(linea_vector, linea_atributo)
+  }
+
+  linea_vector <- as.numeric(linea_vector)
+  if(length(grep(linea,linea_vector)) > 1){
+    t <- 1.5
+  }else{
+    t <- 3
+  }
+
+
+
+
   # ------------------------------------------------------------------------------
   # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBÚS
   # ------------------------------------------------------------------------------
@@ -1161,21 +1200,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         # Decido si escribir en el primer atributo contrario en base aL valor del atributo
         if(df_tiempos_actuales_contrario$value[i] == "-" | df_tiempos_actuales_contrario$value[i] == "> 30 minutos"){
           flag_escritura_primer_atributo <- TRUE
-          tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5), " minutos", sep = "")
+          tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
           tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }else{
           # Decido si escribir en el primer atributo contrario en base a al diferencia de tiempos de los atributos contrarios
           if(df_tiempos_actuales_contrario$value[i] != "En parada"){
             if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes_contrario[(i+2)]))){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
               flag_escritura_primer_atributo <- TRUE
-              tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5), " minutos", sep = "")
+              tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
               tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
             }else{
               # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
               diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
               if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
                 flag_escritura_primer_atributo <- TRUE
-                tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2, " minutos", sep = "")
+                tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t, " minutos", sep = "")
                 tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
               }
             }
@@ -1184,7 +1223,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
             if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
               flag_escritura_primer_atributo <- TRUE
-              tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*2, " minutos", sep = "")
+              tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t, " minutos", sep = "")
               tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
             }
           }
@@ -1198,7 +1237,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           diferencia_tiempo_en_segundos<- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
           if(diferencia_tiempo_en_segundos >= 30){
             flag_escritura_primer_atributo <- TRUE
-            tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*1.5), " minutos", sep = "")
+            tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
             tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
           }
         }
