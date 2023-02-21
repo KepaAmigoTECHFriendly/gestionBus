@@ -47,8 +47,8 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 46,-,-,Correos_subida,40.0295228,-6.0872571,1,1,1,1,0
 47,-,-,Cristo de las Batallas_bajada,40.0317768,-6.0854811,1,1,0,0,1
 48,-,-,Cristo de las Batallas_subida,40.031307,-6.085575,1,1,0,1,0
-49,-,-,Cruz Roja_bajada,40.0411505,-6.0906157,0,1,1,0,0
-50,-,-,Cruz Roja_subida,40.0413574,-6.09002641,0,1,1,1,0
+49,-,-,Cruz Roja_bajada,40.0411505,-6.0906157,0,1,0,0,0
+50,-,-,Cruz Roja_subida,40.0413574,-6.09002641,0,1,0,1,0
 51,-,-,Dolores Ibárruri_bajada,40.047711,-6.065183,1,0,0,0,1
 52,-,-,Edificio Múltiples_bajada,40.042509,-6.071694,1,0,0,0,0
 53,-,-,Estación autobuses_bajada,40.0328583,-6.0808015,0,0,1,0,0
@@ -66,7 +66,7 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 65,-,-,Hogar de Nazaret,40.043086,-6.073821,1,0,0,2,0
 66,-,-,Hospital,40.0490084,-6.0854108,0,1,1,2,1
 67,-,-,IES Gabriel y Galán_bajada,40.03936,-6.0824536,1,0,1,0,0
-68,-,-,IES Gabriel y Galán_subida,40.0396344,-6.0824092,1,0,0,1,0
+68,-,-,IES Gabriel y Galán_subida,40.0396344,-6.0824092,1,0,1,1,0
 69,-,-,IES Parque Monfragüe_bajada,40.0391464,-6.0889447,0,0,1,0,0
 70,-,-,IES Parque Monfragüe_subida,40.0392958,-6.0889224,0,0,1,1,0
 71,-,-,IES Pérez Comendador_bajada,40.041781,-6.085046,1,0,0,0,0
@@ -77,7 +77,7 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 76,-,-,ITV_bajada,40.0043942,-6.1175942,1,0,0,0,0
 77,-,-,La Chimenea_bajada,40.0276987,-6.0973645,0,1,0,0,0
 78,-,-,Los Alamitos _bajada,40.041162,-6.082652,1,0,1,0,0
-79,-,-,Los Alamitos_subida,40.0412849,-6.0827133,1,0,0,1,0
+79,-,-,Los Alamitos_subida,40.0412849,-6.0827133,1,0,1,1,0
 80,-,-,Los arcos_bajada,40.036812,-6.086049,0,1,0,0,0
 81,-,-,Los Pinos_bajada,40.0410481,-6.0852647,0,0,1,0,0
 82,-,-,Los Pinos_subida,40.041006,-6.0855886,0,0,1,1,0
@@ -107,7 +107,7 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 106,-,-,Policía Local_bajada,40.0398417,-6.076916,1,0,0,0,0
 107,-,-,Policía Local_subida,40.0397995,-6.0770172,1,0,0,1,0
 108,-,-,Puente Trujillo_bajada,40.0269796,-6.0928833,1,0,1,0,0
-109,-,-,Puente Trujillo_subida,40.0269901,-6.0920049,1,0,1,1,0
+109,-,-,Puente Trujillo_subida,40.0269901,-6.0920049,1,1,1,1,0
 110,-,-,Puerta Berrozana_bajada,40.030483,-6.092303,0,1,0,0,0
 111,-,-,Puerta de Coria 1_bajada,40.028909,-6.0953904,0,1,0,0,0
 112,-,-,Puerta de Coria 2_bajada,40.0290328,-6.0954245,0,1,0,0,0
@@ -116,3 +116,5 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 115,-,-,Sociosanitario,40.0059823,-6.1133737,1,0,0,2,0
 116,-,-,Universidad_bajada,40.0350189,-6.0847062,1,1,0,0,1
 117,-,-,Universidad_subida,40.035965,-6.084159,1,0,0,1,0
+118,-,-,Cruz Roja Salamanca_bajada,40.0416959,-6.091311,0,0,1,0,0
+119,-,-,Cruz Roja Salamanca_subida,40.0420151,-6.091380,0,0,1,1,0
