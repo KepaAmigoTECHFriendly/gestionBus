@@ -109,8 +109,8 @@ id,row,osm_id,name,latitud,longitud,linea_1,linea_2,linea_3,sentido,pantalla
 108,-,-,Puente Trujillo_bajada,40.0269796,-6.0928833,1,0,1,0,0
 109,-,-,Puente Trujillo_subida,40.0269901,-6.0920049,1,1,1,1,0
 110,-,-,Puerta Berrozana_bajada,40.030483,-6.092303,0,1,0,0,0
-111,-,-,Puerta de Coria 1_bajada,40.028909,-6.0953904,0,1,0,0,0
-112,-,-,Puerta de Coria 2_bajada,40.0290328,-6.0954245,0,1,0,0,0
+111,-,-,Puerta de Coria 2_bajada,40.028909,-6.0953904,0,1,0,0,0
+112,-,-,Puerta de Coria 1_bajada,40.0290328,-6.0954245,0,1,0,0,0
 113,-,-,Puerta del Sol_subida,40.0305987,-6.086084,0,0,1,1,0
 114,-,-,Puerta Talavera_bajada,40.0287452,-6.0886793,0,0,1,0,0
 115,-,-,Sociosanitario,40.0059823,-6.1133737,1,0,0,2,0
