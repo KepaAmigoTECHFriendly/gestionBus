@@ -1177,6 +1177,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
     # Si es una parada cabecera, la tengo en cuenta para decidir si escribo en el segundo atributo
     parada_cabecera <- match(colnames(tiempos_a_marquesinas_restantes_contrario)[(i+2)], df_paradas_iniciales$name)
+    nombre_parada_cabecera <- colnames(tiempos_a_marquesinas_restantes_contrario)[(i+2)]
     if(!is.na(parada_cabecera)){
       flag_cabecera <- TRUE
     }else{
@@ -1212,7 +1213,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             next
           }
         }else{  # Analizo cabecera
-          if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada" ){
+          if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera])){
             print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
             next
           }else{
