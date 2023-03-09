@@ -1212,9 +1212,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           }else{
             next
           }
-        }else{  # Analizo cabecera
-          if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera])){
-            print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+        }else{ # Analizo cabecera
+          pos_parada_cabecera <- match(nombre_parada_cabecera, colnames(tiempos_a_marquesinas_restantes))
+          print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+          if(tiempos_a_marquesinas_restantes[,pos_parada_cabecera] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera]) ){
+            print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    NEXT")
             next
           }else{
             tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
