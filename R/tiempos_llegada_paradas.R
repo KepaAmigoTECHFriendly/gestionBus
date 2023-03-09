@@ -1191,7 +1191,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         # Escritura en segundo atributo
         if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
-        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
+        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada" & abs(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2_contrario$value[i])) - tiempos_a_marquesinas_restantes_contrario[,(i+2)]) < 5){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }else{
           tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
