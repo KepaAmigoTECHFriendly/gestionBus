@@ -1194,7 +1194,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada" & abs(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2_contrario$value[i])) - tiempos_a_marquesinas_restantes_contrario[,(i+2)]) < 5){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }else{
-          tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }
 
         # Decido si escribir en el primer atributo contrario en base aL valor del atributo
