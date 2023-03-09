@@ -912,7 +912,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           tiempo_atributos <-tiempos_a_marquesinas_restantes[,(i+2)]
         }else{
           tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
-          if(tiempo_actualizacion_atributo_en_segundos > 20){ # si > 20 segundos, escribo el siguiente tiempo
+          if(tiempo_actualizacion_atributo_en_segundos > 60){ # si > 60 segundos, escribo el siguiente tiempo
             tiempo_atributos <- df_tiempos_actuales_2$value[i]
             tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) *2
           }else{
@@ -1247,11 +1247,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }
 
 
-      # Comprobación si voy a escribir en el primer atributo, si no, si este tiene == "En Parada", si lleva más de 40" le asigno tiempo contrario y a tiempo contrario *1,5
+      # Comprobación si voy a escribir en el primer atributo, si no, si este tiene == "En Parada", si lleva más de 60" le asigno tiempo contrario y a tiempo contrario *1,5
       if(flag_escritura_primer_atributo == FALSE){
         if(df_tiempos_actuales_contrario$value[i] == "En parada"){
           diferencia_tiempo_en_segundos<- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
-          if(diferencia_tiempo_en_segundos >= 30){
+          if(diferencia_tiempo_en_segundos >= 60){
             flag_escritura_primer_atributo <- TRUE
             if(t == 150){
               tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
