@@ -1212,7 +1212,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             next
           }
         }else{  # Analizo cabecera
-          if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada" | tiempos_a_marquesinas_restantes[,(i+2)] == "-" ){
+          if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada" ){
             print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
             next
           }else{
