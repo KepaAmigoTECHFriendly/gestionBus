@@ -1201,27 +1201,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
         }
       }else{  # El atributo 2 en plataforma tiene tiempo asignado, tengo que decidir si escribo o no en el primer atributo. En el segundo atributo sí escribo
-        if(flag_cabecera == FALSE){
-          # Escritura en segundo atributo
-          if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
-            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
-          }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
-            if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] < as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2_contrario$value[i]))){ # Si el tiempo que tarda el bus < que el registrado en plataforma
-              tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
-            }
-          }else{
-            next
-          }
-        }else{ # Analizo cabecera
-          pos_parada_cabecera <- match(nombre_parada_cabecera, colnames(tiempos_a_marquesinas_restantes))
-          print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-          if(tiempos_a_marquesinas_restantes[,pos_parada_cabecera] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera]) ){
-            print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    NEXT")
-            next
-          }else{
+
+        # Escritura en segundo atributo
+        if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
+        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
+          if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] < as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2_contrario$value[i]))){ # Si el tiempo que tarda el bus < que el registrado en plataforma
             tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
           }
+        }else{
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }
+
 
         # Decido si escribir en el primer atributo contrario en base aL valor del atributo
         if(df_tiempos_actuales_contrario$value[i] == "-" | df_tiempos_actuales_contrario$value[i] == "> 30 minutos"){
