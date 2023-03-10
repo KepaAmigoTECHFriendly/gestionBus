@@ -1192,46 +1192,82 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     if(flag_ultimo_trayecto == TRUE){
       tiempo_atributos <- "-"
     }else{
-      if(!grepl("\\d", df_tiempos_actuales_2_contrario$value)[i] | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos" | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos minutos"){  # Si atributo en plataforma no tiene tiempo asignado escribo, el tiempo de llegada
-        if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
-        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
-        }else{
-          tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
-        }
-      }else{  # El atributo 2 en plataforma tiene tiempo asignado, tengo que decidir si escribo o no en el primer atributo. En el segundo atributo sí escribo
 
-        # Escritura en segundo atributo
-        if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
-        }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+
+
+
+      # GESTIÓN INDEPENDIENTE SI ES CABECERA
+      if(flag_cabecera){
+
+        pos_parada_cabecera <- match(nombre_parada_cabecera, colnames(tiempos_a_marquesinas_restantes))
+        print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+        if(tiempos_a_marquesinas_restantes[,pos_parada_cabecera] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera]) ){
+          print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    NEXT")
+          next
         }else{
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }
 
 
-        # Decido si escribir en el primer atributo contrario en base aL valor del atributo
-        if(df_tiempos_actuales_contrario$value[i] == "-" | df_tiempos_actuales_contrario$value[i] == "> 30 minutos"){
-          flag_escritura_primer_atributo <- TRUE
-          if(t == 150){
-            tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+
+      }else{  # NO ES CABECERA
+
+
+
+        if(!grepl("\\d", df_tiempos_actuales_2_contrario$value)[i] | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos" | df_tiempos_actuales_2_contrario$value[i] == "> 30 minutos minutos"){  # Si atributo en plataforma no tiene tiempo asignado escribo, el tiempo de llegada
+          if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
+          }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
           }else{
-            tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
           }
-          tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
-        }else{
-          # Decido si escribir en el primer atributo contrario en base a al diferencia de tiempos de los atributos contrarios
-          if(df_tiempos_actuales_contrario$value[i] != "En parada"){
-            if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes_contrario[(i+2)]))){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
-              flag_escritura_primer_atributo <- TRUE
-              if(t == 150){
-                tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+        }else{  # El atributo 2 en plataforma tiene tiempo asignado, tengo que decidir si escribo o no en el primer atributo. En el segundo atributo sí escribo
+
+
+          # Escritura en segundo atributo
+          if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
+          }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+          }else{
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+          }
+
+
+          # Decido si escribir en el primer atributo contrario en base aL valor del atributo
+          if(df_tiempos_actuales_contrario$value[i] == "-" | df_tiempos_actuales_contrario$value[i] == "> 30 minutos"){
+            flag_escritura_primer_atributo <- TRUE
+            if(t == 150){
+              tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+            }else{
+              tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
+            }
+            tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+          }else{
+            # Decido si escribir en el primer atributo contrario en base a al diferencia de tiempos de los atributos contrarios
+            if(df_tiempos_actuales_contrario$value[i] != "En parada"){
+              if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes_contrario[(i+2)]))){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
+                flag_escritura_primer_atributo <- TRUE
+                if(t == 150){
+                  tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+                }else{
+                  tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
+                }
+                tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
               }else{
-                tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
+                # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
+                diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+                if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+                  flag_escritura_primer_atributo <- TRUE
+                  if(t == 150){
+                    tiempo_atributos <- paste(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+                  }else{
+                    tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t, " minutos", sep = "")
+                  }
+                  tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+                }
               }
-              tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
             }else{
               # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
               diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
@@ -1245,40 +1281,29 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
               }
             }
-          }else{
-            # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
-            diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
-            if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+          }
+        }
+
+        # Comprobación si voy a escribir en el primer atributo, si no, si este tiene == "En Parada", si lleva más de 60" le asigno tiempo contrario y a tiempo contrario *1,5
+        if(flag_escritura_primer_atributo == FALSE){
+          if(df_tiempos_actuales_contrario$value[i] == "En parada"){
+            diferencia_tiempo_en_segundos<- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+            if(diferencia_tiempo_en_segundos >= 60){
               flag_escritura_primer_atributo <- TRUE
               if(t == 150){
-                tiempo_atributos <- paste(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+                tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
               }else{
-                tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t, " minutos", sep = "")
+                tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
               }
+
               tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
             }
           }
         }
-      }
 
+      } # Cierre no es cabecera
 
-      # Comprobación si voy a escribir en el primer atributo, si no, si este tiene == "En Parada", si lleva más de 60" le asigno tiempo contrario y a tiempo contrario *1,5
-      if(flag_escritura_primer_atributo == FALSE){
-        if(df_tiempos_actuales_contrario$value[i] == "En parada"){
-          diferencia_tiempo_en_segundos<- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
-          if(diferencia_tiempo_en_segundos >= 60){
-            flag_escritura_primer_atributo <- TRUE
-            if(t == 150){
-              tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
-            }else{
-              tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
-            }
-            tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
-          }
-        }
-      }
     } # Cierre else de flag_ultimo_trayecto == TRUE
-
 
     # Escritura en atributos
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
