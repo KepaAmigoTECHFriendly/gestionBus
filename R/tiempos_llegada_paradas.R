@@ -18,27 +18,6 @@
 
 tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
-  linea_original <- linea
-  flag_ultimo_trayecto <- grepl("Último", linea_original)
-
-  hora <- hour(Sys.time())
-  hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
-  hora_actual <- paste(as.character(hora),":",as.character(minute(Sys.time())),sep = "")
-
-  # Datos recogidos por plataforma
-  id_dispositivo <- as.character(id_dispositivo)
-  if(grepl("Último", linea)){
-    linea <- as.numeric(gsub(" - Último trayecto","",linea))
-  }else if(linea == "Fuera de servicio" & hora_actual < "22:30"){
-    return(0)
-  }else{
-    if(linea == "Fuera de servicio" & hora_actual > "22:30"){
-      linea <- 1
-    }else{
-      linea <- as.numeric(linea)
-    }
-  }
-
 
   # ------------------------------------------------------------------------------
   # 0) - REFERENCIA PARADAS
@@ -75,6 +54,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   resultado_peticion_token <- httr::content(post)
   auth_thb <- paste("Bearer",resultado_peticion_token$token)
+
+
+
+
+
+
+
 
 
 
@@ -180,6 +166,46 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
     return(2)
   }
+
+
+
+
+
+
+
+
+
+
+
+
+  linea_original <- linea
+  flag_ultimo_trayecto <- grepl("Último", linea_original)
+
+  hora <- hour(Sys.time())
+  hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
+  hora_actual <- paste(as.character(hora),":",as.character(minute(Sys.time())),sep = "")
+
+  # Datos recogidos por plataforma
+  id_dispositivo <- as.character(id_dispositivo)
+  if(grepl("Último", linea)){
+    linea <- as.numeric(gsub(" - Último trayecto","",linea))
+  }else if(linea == "Fuera de servicio" & hora_actual < "22:30"){
+    return(0)
+  }else{
+    if(linea == "Fuera de servicio" & hora_actual > "22:30"){
+      linea <- 1
+    }else{
+      linea <- as.numeric(linea)
+    }
+  }
+
+
+
+
+
+
+
+
 
 
 
