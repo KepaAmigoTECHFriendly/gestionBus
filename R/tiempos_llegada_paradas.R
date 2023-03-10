@@ -995,7 +995,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }else if(tiempos_a_marquesinas_restantes[,(i+2)] != "> 30 minutos" & grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
         }else{
-          tiempo_atributos <- tiempos_a_marquesinas_restantes[,(i+2)]
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
         }
       }
 
