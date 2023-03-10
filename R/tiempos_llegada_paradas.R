@@ -1206,9 +1206,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] == 1){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minuto", sep = "")
         }else if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "> 30 minutos" & tiempos_a_marquesinas_restantes_contrario[,(i+2)] != "En parada"){
-          if(tiempos_a_marquesinas_restantes_contrario[,(i+2)] < as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2_contrario$value[i]))){ # Si el tiempo que tarda el bus < que el registrado en plataforma
-            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
-          }
+          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }else{
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
         }
