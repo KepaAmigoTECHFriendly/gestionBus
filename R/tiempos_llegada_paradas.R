@@ -1227,8 +1227,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }else{
 
 
-
-
       # GESTIÓN INDEPENDIENTE SI ES CABECERA
       if(flag_cabecera){
 
@@ -1254,7 +1252,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
           }else{
             if(t == 150){
-              tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+              tiempo_atributos <- paste(round(t - (30 + (34 - tiempos_a_marquesinas_restantes_contrario[,(i+2)]))), " minutos", sep = "")
             }else{
               tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
             }
@@ -1358,6 +1356,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       } # Cierre no es cabecera
 
     } # Cierre else de flag_ultimo_trayecto == TRUE
+
 
     # Escritura en atributos
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
