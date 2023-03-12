@@ -1028,7 +1028,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }
 
       # Formateo tiempo atributo 2
-      tiempo_atributo_2 <- paste(tiempo_atributo_2, " minutos", sep = "")
+      if(tiempo_atributo_2 != FALSE){
+        tiempo_atributo_2 <- paste(tiempo_atributo_2, " minutos", sep = "")
+      }
 
     } # Cierre else de no tiene valor == "En parada"
 
