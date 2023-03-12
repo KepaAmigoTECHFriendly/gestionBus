@@ -921,15 +921,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           tiempo_atributos <-tiempos_a_marquesinas_restantes[,(i+2)]
         }else{
           tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
-          if(tiempo_actualizacion_atributo_en_segundos > 60){ # si > 60 segundos, escribo el siguiente tiempo
+          if(tiempo_actualizacion_atributo_en_segundos > 30){ # si > 30 segundos, escribo el siguiente tiempo
             tiempo_atributos <- df_tiempos_actuales_2$value[i]
-            tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) *2
+
+            if(t == 150){
+              tiempo_atributo_2  <- round(t - as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])))
+            }else{
+              tiempo_atributo_2  <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) * t
+            }
+
           }else{
             tiempo_atributos <- "En parada"
           }
         }
       }
-    }else{ # El valor del tiempo restante es numérico o "-"
+    }else{  # El valor del tiempo restante es numérico o "-"
       if(df_tiempos_actuales$value[i] == "En parada"){ # Si en la plataforma está el registro de "En parada"
         if(flag_ultimo_trayecto == TRUE){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
           tiempo_atributos <- "-"
@@ -937,18 +943,20 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, compruebo al valor del atributo 2
             tiempo_atributo_2 <- TRUE
             if(grepl("\\d", df_tiempos_actuales_2$value[i]) & df_tiempos_actuales_2$value[i] != "> 30 minutos"){  # Si el valor del segundo atributo es númerico y no es > 30 mins. Escribo este valor.
-              if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) > 15){ # > 15 minutos, si no, es que solo hay 1 autobús
-                tiempo_atributos <- df_tiempos_actuales_2$value[i]
-                tiempo_atributo_2 <- "-"  # Asigno > 30 mins a tiempo atributo 2
+
+              tiempo_atributos <- df_tiempos_actuales_2$value[i]
+
+              if(t == 150){
+                tiempo_atributo_2  <- round(t - as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])))
               }else{
-                tiempo_atributos <- df_tiempos_actuales_2$value[i]
-                tiempo_atributo_2 <- "-"  # Asigno - mins a tiempo atributo 2
+                tiempo_atributo_2  <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) * t
               }
+
             }else{ # No tiene número o tiene asignación de > 30 minutos
               tiempo_atributos <- "-"
               tiempo_atributo_2 <- "-"  # Asigno > 60 mins a tiempo atributo 2
             }
-          }else{  # Si hay número a registrar
+          }else{  # Si la parada actual si tiene número de minutos restantes asigno ese valor
             if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
               tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
             }else{
@@ -966,13 +974,23 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               if(df_tiempos_actuales_2$value[i] == "En parada"){
                 tiempo_atributo_2 <- TRUE
                 tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
-                tiempo_atributo_2 <- tiempos_a_marquesinas_restantes_contrario[,(i+2)] + 20
+
+                if(t == 150){
+                  tiempo_atributo_2  <- round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)])
+                }else{
+                  tiempo_atributo_2  <- tiempos_a_marquesinas_restantes_contrario[,(i+2)] * t
+                }
+
               }else{
                 if(df_tiempos_actuales_2$value[i] != "-"){
                   if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i]))){ # Si el valor de tiempo del atributo 1 > atributo 2, cambio valores
                     tiempo_atributo_2 <- TRUE
                     tiempo_atributos <- df_tiempos_actuales_2$value[i]
-                    tiempo_atributo_2 <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) + 20
+                    if(t == 150){
+                      tiempo_atributo_2  <- round(t - as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])))
+                    }else{
+                      tiempo_atributo_2  <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) * t
+                    }
                   }else{
                     next
                   }
@@ -982,7 +1000,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }
             }
           }else{  # El bus actual tiene número
-            if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < tiempos_a_marquesinas_restantes[,(i+2)]){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
+            if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes[,(i+2)]))){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
               diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
               if(diferencia_tiempo_en_minutos >= 5){
                 if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
@@ -998,15 +1016,19 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
       }
 
+      # Formateo tiempo atributo 1
       if(tiempo_atributo_2 == FALSE){  # Escribo alguno de los valores del bus actual, no del atributo 2 de plataforma.
         if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
         }else if(tiempos_a_marquesinas_restantes[,(i+2)] != "> 30 minutos" & grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){
           tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
         }else{
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+          tiempo_atributos <- tiempos_a_marquesinas_restantes[,(i+2)]
         }
       }
+
+      # Formateo tiempo atributo 2
+      tiempo_atributo_2 <- paste(tiempo_atributo_2, " minutos", sep = "")
 
     } # Cierre else de no tiene valor == "En parada"
 
@@ -1024,7 +1046,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
 
       if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributo_2,'"',
                                        '}',sep = "")
 
          post <- httr::POST(url = url,
@@ -1049,7 +1071,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
 
       if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributos,'"',
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributo_2,'"',
                                        '}',sep = "")
 
         post <- httr::POST(url = url,
@@ -1073,7 +1095,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
 
       if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributos,'"',
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributo_2,'"',
                                        '}',sep = "")
 
          post <- httr::POST(url = url,
