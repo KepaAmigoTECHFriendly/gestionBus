@@ -1013,6 +1013,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }
             }
           }
+        }else{ # Cierre comprobación si existe tiempo en plataforma
+          if(flag_ultimo_trayecto == FALSE){
+            posicion_parada <- match(df_tiempos_actuales$name[i], colnames(tiempos_a_marquesinas_restantes_contrario))
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,posicion_parada], " minutos", sep = "")
+          }
         }
       }
 
