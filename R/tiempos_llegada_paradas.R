@@ -1239,7 +1239,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           next
         }else{
           # Comparo el tiempo calculado a la marquesina en sentido contrario con el tiempo guardado en paltaforma
-          if(abs(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) - tiempos_a_marquesinas_restantes_contrario[,(i+2)]) > 15){
+          if(t == 150){
+            tmax <- 45
+          }else{
+            tmax <- 20
+          }
+
+          diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+          if(diferencia_tiempo_en_minutos >= 2){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 2, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+            flag_escritura_primer_atributo <- TRUE
+          }
+
+          if(abs(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) - tiempos_a_marquesinas_restantes_contrario[,(i+2)]) > tmax){
             tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
           }else{
             if(t == 150){
@@ -1247,6 +1258,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             }else{
               tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
             }
+            tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
           }
         }
 
