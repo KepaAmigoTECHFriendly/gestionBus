@@ -1048,7 +1048,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
 
       if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributo_2,'"',
                                        '}',sep = "")
 
          post <- httr::POST(url = url,
@@ -1073,7 +1073,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
 
       if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributos,'"',
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":"', tiempo_atributo_2,'"',
                                        '}',sep = "")
 
         post <- httr::POST(url = url,
@@ -1097,7 +1097,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       )
 
       if(tiempo_atributo_2 != FALSE){
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributos,'"',
+        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":"', tiempo_atributo_2,'"',
                                        '}',sep = "")
 
          post <- httr::POST(url = url,
