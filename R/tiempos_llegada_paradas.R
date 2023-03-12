@@ -966,7 +966,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
       }else{  # Si valor en platafroma != "En parada"
         # Comprobación de si existe ya un tiempo asignado en plataforma
-        if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número en plataforma, salto a comprobar si el bus actual tiene número asignado para esa parada
+        if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "-" & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número en plataforma, salto a comprobar si el bus actual tiene número asignado para esa parada
           if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, compruebo si es último trayecto y si no es, el valor del segundo tiempo en plataforma
             if(flag_ultimo_trayecto == TRUE){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
               tiempo_atributos <- "-"
