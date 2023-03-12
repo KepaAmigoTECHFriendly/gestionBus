@@ -1234,11 +1234,20 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
         pos_parada_cabecera <- match(nombre_parada_cabecera, colnames(tiempos_a_marquesinas_restantes))
         print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-        if(tiempos_a_marquesinas_restantes[,pos_parada_cabecera] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera]) ){
+        if(tiempos_a_marquesinas_restantes[,pos_parada_cabecera] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera]) ){ # Si está en parada o tiene número asignado, salto
           print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    NEXT")
           next
         }else{
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+          # Comparo el tiempo calculado a la marquesina en sentido contrario con el tiempo guardado en paltaforma
+          if(abs(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) - tiempos_a_marquesinas_restantes_contrario[,(i+2)]) < 15){
+            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+          }else{
+            if(t == 150){
+              tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+            }else{
+              tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
+            }
+          }
         }
 
 
