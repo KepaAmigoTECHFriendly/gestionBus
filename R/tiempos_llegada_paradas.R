@@ -1019,9 +1019,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       # Formateo tiempo atributo 1
       if(tiempo_atributo_2 == FALSE){  # Escribo alguno de los valores del bus actual, no del atributo 2 de plataforma.
         if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+          tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minuto", sep = "")
         }else if(tiempos_a_marquesinas_restantes[,(i+2)] != "> 30 minutos" & grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){
-          tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+          tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
         }else{
           tiempo_atributos <- tiempos_a_marquesinas_restantes[,(i+2)]
         }
@@ -1029,7 +1029,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
       # Formateo tiempo atributo 2
       if(tiempo_atributo_2 != FALSE){
-        tiempo_atributo_2 <- paste(tiempo_atributo_2, " minutos", sep = "")
+        tiempo_atributo_2 <- paste(round(tiempo_atributo_2), " minutos", sep = "")
       }
 
     } # Cierre else de no tiene valor == "En parada"
