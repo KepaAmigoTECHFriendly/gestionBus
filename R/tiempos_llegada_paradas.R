@@ -1033,7 +1033,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }
 
       # Formateo tiempo atributo 2
-      if(tiempo_atributo_2 != FALSE){
+      if(tiempo_atributo_2 != FALSE & tiempo_atributo_2 != "-"){
         tiempo_atributo_2 <- paste(round(tiempo_atributo_2), " minutos", sep = "")
       }
 
