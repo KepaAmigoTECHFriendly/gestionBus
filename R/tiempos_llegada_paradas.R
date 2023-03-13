@@ -917,7 +917,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       if(flag_ultimo_trayecto == TRUE){
         tiempo_atributos <- "-"
       }else{ # Decido si volver a escribir en parada si el valor de plataforma es != "-" y en base al tiempo que haya pasado desde el último valor de "En parada" en atributo plataforma
-        if(df_tiempos_actuales$value[i] == "-"){
+        if(df_tiempos_actuales$value[i] == "-" | df_tiempos_actuales$value[i] == "En parada"){
           tiempo_atributos <-tiempos_a_marquesinas_restantes[,(i+2)]
         }else{
           tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
@@ -956,11 +956,16 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tiempo_atributos <- "-"
               tiempo_atributo_2 <- "-"  # Asigno > 60 mins a tiempo atributo 2
             }
-          }else{  # Si la parada actual si tiene número de minutos restantes asigno ese valor
-            if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
-              tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+          }else{  # Si el bus actual si tiene número de minutos en la parada restantes asigno ese valor
+            tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+            if(tiempo_actualizacion_atributo_en_segundos > 20){ # Si lleva más de 20 segundos con asignación "En parada"
+              if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
+                tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+              }else{
+                tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+              }
             }else{
-              tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+              next
             }
           }
         }
