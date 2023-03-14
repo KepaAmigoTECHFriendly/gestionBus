@@ -1294,6 +1294,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       if(flag_cabecera){
 
         pos_parada_cabecera <- match(nombre_parada_cabecera, colnames(tiempos_a_marquesinas_restantes))
+        if(is.na(pos_parada_cabecera)){
+          next
+        }
         print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
         if((tiempos_a_marquesinas_restantes[,pos_parada_cabecera] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera])) & t != 150 ){ # Si está en parada o tiene número asignado, salto
           print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    NEXT")
