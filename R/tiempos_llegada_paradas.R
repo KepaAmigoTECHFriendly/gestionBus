@@ -24,7 +24,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   hora <- hour(Sys.time()) + 1
   hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
-  hora_actual <- paste(as.character(hora),":",as.character(minute(Sys.time())),sep = "")
+  minuto <- minute(Sys.time())
+  minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
+  hora_actual <- paste(as.character(hora),":",minuto,sep = "")
 
 
 
@@ -281,6 +283,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # 1 - Detectar si el bus ha partido de una de las paradas de inicio de la ruta
   df_paradas_iniciales <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == 2,]  # Get paradas iniciales de la línea objetivo
+
+  # SI ESTAMOS A INICIO DE TRAYECTO DE LA LINEA 1, INCORPORAMOS A COLONIA GUADALUPE COMO PARADA INICIAL EN LA SUBIDA
+  if(hora_actual > "07:20" & hora_actual < "07:40"){
+    df_colonia_guadalupe_subida <- df_paradas[df_paradas$id == 43,]
+    df_paradas_iniciales <- rbind(df_paradas_iniciales, df_colonia_guadalupe_subida)
+  }
+
+
   lat <- df_paradas_iniciales$latitud
   long <- df_paradas_iniciales$longitud
   # Agrupación de puntos en variable stores
