@@ -22,7 +22,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   linea_original <- linea
   flag_ultimo_trayecto <- grepl("Último", linea_original)
 
-  hora <- hour(Sys.time())
+  hora <- hour(Sys.time()) + 1
   hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
   hora_actual <- paste(as.character(hora),":",as.character(minute(Sys.time())),sep = "")
 
