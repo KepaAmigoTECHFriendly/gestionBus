@@ -1055,7 +1055,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }else if(tiempos_a_marquesinas_restantes[,(i+2)] != "> 30 minutos" & grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)])){
           tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
         }else{
-          tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
+          if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
+            next
+          }else{
+            tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
+          }
         }
       }
 
@@ -1331,8 +1335,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             flag_escritura_primer_atributo <- TRUE
           }
 
-          if(abs(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) - tiempos_a_marquesinas_restantes_contrario[,(i+2)]) > tmax){
-            tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+          if(df_tiempos_actuales_contrario$value[i] != "-"){
+            if(abs(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) - tiempos_a_marquesinas_restantes_contrario[,(i+2)]) > tmax){
+              tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+            }else{
+              if(t == 150){
+                tiempo_atributos <- paste(round(t - (30 + (34 - tiempos_a_marquesinas_restantes_contrario[,(i+2)]))), " minutos", sep = "")
+              }else{
+                tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
+              }
+              tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+            }
           }else{
             if(t == 150){
               tiempo_atributos <- paste(round(t - (30 + (34 - tiempos_a_marquesinas_restantes_contrario[,(i+2)]))), " minutos", sep = "")
