@@ -929,7 +929,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         tiempo_atributos <- "-"
       }else{ # Decido si volver a escribir en parada si el valor de plataforma es != "-" y en base al tiempo que haya pasado desde el último valor de "En parada" en atributo plataforma
         if(df_tiempos_actuales$value[i] == "-" | df_tiempos_actuales$value[i] == "En parada"){
-          tiempo_atributos <-tiempos_a_marquesinas_restantes[,(i+2)]
+          if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
+            next
+          }else{
+            tiempo_atributos <-tiempos_a_marquesinas_restantes[,(i+2)]
+          }
         }else{
           tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
           if(tiempo_actualizacion_atributo_en_segundos > 60 & df_datos_sin_paradas_duplicadas$spe[1] > 9){ # si han pasado > 60 segundos estando en parada y velocidad es > 9km/h, escribo el siguiente tiempo
