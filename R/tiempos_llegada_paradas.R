@@ -997,7 +997,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 tiempo_atributos <- tiempos_a_marquesinas_restantes_contrario[,(i+2)]
 
                 if(t == 150){
-                  tiempo_atributo_2  <- round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)])
+                  #tiempo_atributo_2  <- round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)])
+                  tiempo_atributo_2  <- round(3 * tiempos_a_marquesinas_restantes_contrario[,(i+2)])
                 }else{
                   tiempo_atributo_2  <- tiempos_a_marquesinas_restantes_contrario[,(i+2)] * t
                 }
@@ -1387,7 +1388,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           if(df_tiempos_actuales_contrario$value[i] == "-" | df_tiempos_actuales_contrario$value[i] == "> 30 minutos"){
             flag_escritura_primer_atributo <- TRUE
             if(t == 150){
-              tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+              tiempo_atributos <- paste(round(3* tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
             }else{
               tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
             }
@@ -1398,7 +1399,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_contrario$value[i])) >= as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes_contrario[(i+2)]))){ # Si el tiempo del atributo contrario en plataforma > que tiempo contrario
                 flag_escritura_primer_atributo <- TRUE
                 if(t == 150){
-                  tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+                  tiempo_atributos <- paste(round(3* tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
                 }else{
                   tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
                 }
@@ -1409,7 +1410,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
                   flag_escritura_primer_atributo <- TRUE
                   if(t == 150){
-                    tiempo_atributos <- paste(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+                    tiempo_atributos <- paste(3* tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
                   }else{
                     tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t, " minutos", sep = "")
                   }
@@ -1422,7 +1423,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
                 flag_escritura_primer_atributo <- TRUE
                 if(t == 150){
-                  tiempo_atributos <- paste(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
+                  tiempo_atributos <- paste(3* tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
                 }else{
                   tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t, " minutos", sep = "")
                 }
@@ -1439,7 +1440,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             if(diferencia_tiempo_en_segundos >= 60){
               flag_escritura_primer_atributo <- TRUE
               if(t == 150){
-                tiempo_atributos <- paste(round(t - tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
+                tiempo_atributos <- paste(round(3* tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
               }else{
                 tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
               }
