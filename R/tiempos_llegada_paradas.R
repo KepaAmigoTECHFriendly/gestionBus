@@ -78,13 +78,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # PARADAS A "-" por horario
   #-----------------------------------------------------------------------------
   #-----------------------------------------------------------------------------
+  linea_guion <- 0 # Por defecto 0, a no ser que salte la alarma
+  # Función paradas a "-"
+  paradas_a_guion <- function(linea_guion){
 
-  if(hora_actual > "22:30"){
-    # ------------------------------------------------------------------------------
-    # CREACIÓN ACTIVOS
-    # ------------------------------------------------------------------------------
+    linea_guion <- linea_guion
 
-    # 2) GET ACTIVOS
+    # 1) GET ACTIVOS
     url_thb_fechas <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
     peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
@@ -96,85 +96,101 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df_paradas <- df_paradas[order(df_paradas$name, decreasing = FALSE),]
 
 
-
     # 4) Creación atributos tiempo_llegada_linea_x
     for(i in 1:nrow(df_activos)){
       print(i)
 
       url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
 
-      if(df_paradas$linea_1[i] == 1){
+      if(linea_guion == 0 | linea_guion == 1){
 
-        json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":', '"-"',
-                                       '}',sep = "")
+        if(df_paradas$linea_1[i] == 1){
 
-        post <- httr::POST(url = url,
-                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                           body = json_envio_plataforma,
-                           verify= FALSE,
-                           encode = "json",verbose()
-        )
+          json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":', '"-"',
+                                         '}',sep = "")
 
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":', '"-"',
-                                       '}',sep = "")
+          post <- httr::POST(url = url,
+                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                             body = json_envio_plataforma,
+                             verify= FALSE,
+                             encode = "json",verbose()
+          )
 
-        post <- httr::POST(url = url,
-                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                           body = json_envio_plataforma,
-                           verify= FALSE,
-                           encode = "json",verbose()
-        )
+          json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":', '"-"',
+                                         '}',sep = "")
+
+          post <- httr::POST(url = url,
+                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                             body = json_envio_plataforma,
+                             verify= FALSE,
+                             encode = "json",verbose()
+          )
+        }
       }
 
-      if(df_paradas$linea_2[i] == 1){
-        json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":', '"-"',
-                                       '}',sep = "")
+      if(linea_guion == 0 | linea_guion == 2){
+        if(df_paradas$linea_2[i] == 1){
+          json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":', '"-"',
+                                         '}',sep = "")
 
-        post <- httr::POST(url = url,
-                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                           body = json_envio_plataforma,
-                           verify= FALSE,
-                           encode = "json",verbose()
-        )
+          post <- httr::POST(url = url,
+                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                             body = json_envio_plataforma,
+                             verify= FALSE,
+                             encode = "json",verbose()
+          )
 
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":', '"-"',
-                                       '}',sep = "")
+          json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":', '"-"',
+                                         '}',sep = "")
 
-        post <- httr::POST(url = url,
-                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                           body = json_envio_plataforma,
-                           verify= FALSE,
-                           encode = "json",verbose()
-        )
+          post <- httr::POST(url = url,
+                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                             body = json_envio_plataforma,
+                             verify= FALSE,
+                             encode = "json",verbose()
+          )
+        }
       }
 
-      if(df_paradas$linea_3[i] == 1){
+      if(linea_guion == 0 | linea_guion == 3){
+        if(df_paradas$linea_3[i] == 1){
 
-        json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":', '"-"',
-                                       '}',sep = "")
+          json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":', '"-"',
+                                         '}',sep = "")
 
-        post <- httr::POST(url = url,
-                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                           body = json_envio_plataforma,
-                           verify= FALSE,
-                           encode = "json",verbose()
-        )
+          post <- httr::POST(url = url,
+                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                             body = json_envio_plataforma,
+                             verify= FALSE,
+                             encode = "json",verbose()
+          )
 
-        json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":', '"-"',
-                                       '}',sep = "")
+          json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":', '"-"',
+                                         '}',sep = "")
 
-        post <- httr::POST(url = url,
-                           add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                           body = json_envio_plataforma,
-                           verify= FALSE,
-                           encode = "json",verbose()
-        )
+          post <- httr::POST(url = url,
+                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                             body = json_envio_plataforma,
+                             verify= FALSE,
+                             encode = "json",verbose()
+          )
+        }
       }
     }
 
-    return(2)
+      return(3)
   }
 
+
+  #-------
+  # Si la hora es > 22:30 todas las paradas a guión
+  if(hora_actual > "22:30"){
+
+    paradas_a_guion(0)
+
+    return(2)
+  }
+  #-------
 
 
 
@@ -227,8 +243,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(length(grep(linea,linea_vector)) > 1){
     t <- 1.3
   }else{
-    t <- 3
+    t <- 150
   }
+
+
+  # GEOCERCA TALLER
+  lat_taller <- 40.01177086390611
+  long_taller <- -6.098401314340364
+  # Agrupación de puntos en variable stores
+  paradas_sfc <- st_sfc(st_multipoint(cbind(long_taller, lat_taller)), crs = 4326)   # Puntos paradas
+  # Cambio a UTM
+  paradas_utm <- st_transform(paradas_sfc, "+proj=utm +zone=29")
+  # Generación de geocercas en paradas
+  paradas_separadas_id <- st_cast(paradas_utm, "POINT")
+  geocerca_TALLER <- st_buffer(paradas_separadas_id, 70)
+
 
 
 
@@ -303,6 +332,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   df_datos_bus <- df_datos_bus[order(df_datos_bus$ts, decreasing = TRUE),]  # Orden datos bus decreciente por marca temporal
   df_datos_bus <- df_datos_bus[1:10,]
+
+
+  # COMPROBACIÓN SI ESTÁ EN TALLER
+  # Posición bus
+  posicion_bus <- st_sfc(st_point(c(df_datos_bus$lon[1], df_datos_bus$lat[1])), crs = 4326)
+  # Cambio a UTM
+  #paradas_utm <- st_transform(paradas_sfc, "+proj=utm +zone=29")
+  posicion_bus_utm     <- st_transform(posicion_bus, "+proj=utm +zone=29")
+  columnas_utm_posicion_bus <- st_cast(posicion_bus_utm, "POINT")
+  # Comprobación si el bus está sobre una geocerca (dataframe booleane de n filas donde n son las paradas de la línea en un sentido, y 1 columna)
+  id_posicion_geocerca <- st_contains(geocerca_TALLER, columnas_utm_posicion_bus, sparse = FALSE)
+  if(id_posicion_geocerca){ # Si está en el taller
+    if(t == 150){ # si solo hay un bus
+      paradas_a_guion(linea)
+    }
+  }
+
+
 
 
   # Bucle para cada uno de los registros de posición capturados del autobus
