@@ -410,29 +410,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts
 
 
-  # SI EL BUS ESTÁ EN UNA DE LAS GEOCERCAS DE INICIO, RESETEAR DATO DE AFORO
-  tryCatch({
-    # Escribir en API para resetear aforo
-    if(nrow(df_datos_sin_paradas_duplicadas) != 0){
-      url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
-      # GET NÚMERO BUS
-      keys <- URLencode(c("Número"))
-      url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
-      peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-      df <- jsonlite::fromJSON(rawToChar(peticion$content))
-      df <- as.data.frame(df)
-      numero <- df$value
-
-      url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
-      peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
-    }
-  },error = function(e){
-    print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
-  })
-
-
-
 
   # CÁLCULO SENTIDO
   # Cálculo sentido si está en parada de inicio
@@ -740,7 +717,33 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_bus$NOMBRE_PARADA_GEOCERCA <- NOMBRE_PARADA_GEOCERCA
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
-  if(nrow(df_datos_bus_sin_na) == 0){return(0)}  # Acaba el programa si el autobus no está en ninguna geocerca
+
+  # NO HAY DATOS DE BUS, POR LO QUE REALIZO PETICIÓN
+  if(nrow(df_datos_bus_sin_na) == 0){
+
+    # SI EL BUS ESTÁ EN UNA DE LAS GEOCERCAS DE INICIO, RESETEAR DATO DE AFORO
+    tryCatch({
+      # Escribir en API para resetear aforo
+      if(nrow(df_datos_sin_paradas_duplicadas) != 0){
+        url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
+        # GET NÚMERO BUS
+        keys <- URLencode(c("Número"))
+        url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+        peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+        df <- jsonlite::fromJSON(rawToChar(peticion$content))
+        df <- as.data.frame(df)
+        numero <- df$value
+
+        url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
+        peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
+      }
+    },error = function(e){
+      print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
+    })
+
+    return(0)
+  }  # Acaba el programa si el autobus no está en ninguna geocerca
 
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts descendente
