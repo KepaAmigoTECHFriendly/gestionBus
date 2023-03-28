@@ -720,11 +720,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # NO HAY DATOS DE BUS, POR LO QUE REALIZO PETICIÓN
   if(nrow(df_datos_bus_sin_na) == 0){
+    # NO ESTÁ EN GEOCERCA, POR LO QUE ENVÍO LA PETICIÓN DE REINICIO
+    print("SE TERMINA EL PROGRAMA NO HAY DATOS ---> REUTRN (0)")
 
-    # SI EL BUS ESTÁ EN UNA DE LAS GEOCERCAS DE INICIO, RESETEAR DATO DE AFORO
+    # Llamada de petición a reinicio de aforo
     tryCatch({
       # Escribir en API para resetear aforo
-      if(nrow(df_datos_sin_paradas_duplicadas) != 0){
+      if(nrow(df_datos_bus_sin_na) == 0){
         url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
         # GET NÚMERO BUS
         keys <- URLencode(c("Número"))
@@ -743,6 +745,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     })
 
     return(0)
+
   }  # Acaba el programa si el autobus no está en ninguna geocerca
 
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
@@ -858,6 +861,34 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   id <- df_activos$data.id$id[df_activos$data.name == tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA]
   url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
   json_envio_plataforma <- paste('{"linea_',linea,'":', 1,
+                                 '}',sep = "")
+
+  post <- httr::POST(url = url_telemetria,
+                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                     body = json_envio_plataforma,
+                     verify= FALSE,
+                     encode = "json",verbose()
+  )
+
+
+  # RECOGIDA DE TELEMETRÍA ENTRADAS SALIDAS Y VOLCADO EN ACTIVO TIPO PARADA
+  keys <- URLencode(c("Entradas,Salidas"))
+  url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+  peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+  # Tratamiento datos. De raw a dataframe
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  df <- df[,-c(3)]
+
+  colnames(df) <- c("ts","Entradas","Salidas")
+  df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
+  df <- df[1,]
+
+  # Guardado a telemetría activo tipo parada
+  id <- df_activos$data.id$id[df_activos$data.name == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA]
+  url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
+  json_envio_plataforma <- paste('{"Entradas":',df$Entradas,',','"Salidas":',df$Salidas,',"Salidas_',linea,'":',df$Salidas,',"Entradas_',linea,'":',df$Entradas,
                                  '}',sep = "")
 
   post <- httr::POST(url = url_telemetria,
