@@ -889,7 +889,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #id <- df_activos$data.id$id[df_activos$data.name == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA]
   #url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
   #json_envio_plataforma <- paste('{"Entradas":',df$Entradas,',','"Salidas":',df$Salidas,',"Salidas_',linea,'":',df$Salidas,',"Entradas_',linea,'":',df$Entradas,
-                                 '}',sep = "")
+  #                              '}',sep = "")
 
 #post <- httr::POST(url = url_telemetria,
 #                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
