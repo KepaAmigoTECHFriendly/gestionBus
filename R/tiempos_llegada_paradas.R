@@ -870,33 +870,37 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                      encode = "json",verbose()
   )
 
+  tryCatch({
+    # RECOGIDA DE TELEMETRÍA ENTRADAS SALIDAS Y VOLCADO EN ACTIVO TIPO PARADA
+    keys <- URLencode(c("Entradas,Salidas"))
+    url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+    peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
-  # RECOGIDA DE TELEMETRÍA ENTRADAS SALIDAS Y VOLCADO EN ACTIVO TIPO PARADA
-  #keys <- URLencode(c("Entradas,Salidas"))
-  #url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
-  #peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    # Tratamiento datos. De raw a dataframe
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    df <- df[,-c(3)]
 
-  # Tratamiento datos. De raw a dataframe
-  #df <- jsonlite::fromJSON(rawToChar(peticion$content))
-  #df <- as.data.frame(df)
-  #df <- df[,-c(3)]
+    colnames(df) <- c("ts","Entradas","Salidas")
+    df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
+    df <- df[1,]
 
-  #colnames(df) <- c("ts","Entradas","Salidas")
-  #df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
-  #df <- df[1,]
+    # Guardado a telemetría activo tipo parada
+    id <- df_activos$data.id$id[df_activos$data.name == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA]
+    url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
+    json_envio_plataforma <- paste('{"Entradas":',df$Entradas,',','"Salidas":',df$Salidas,',"Salidas_',linea,'":',df$Salidas,',"Entradas_',linea,'":',df$Entradas,
+                                  '}',sep = "")
 
-  # Guardado a telemetría activo tipo parada
-  #id <- df_activos$data.id$id[df_activos$data.name == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA]
-  #url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
-  #json_envio_plataforma <- paste('{"Entradas":',df$Entradas,',','"Salidas":',df$Salidas,',"Salidas_',linea,'":',df$Salidas,',"Entradas_',linea,'":',df$Entradas,
-  #                              '}',sep = "")
+    post <- httr::POST(url = url_telemetria,
+                         add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                         body = json_envio_plataforma,
+                         verify= FALSE,
+                         encode = "json",verbose()
+    )
 
-#post <- httr::POST(url = url_telemetria,
-#                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-#                     body = json_envio_plataforma,
-#                     verify= FALSE,
-#                     encode = "json",verbose()
-#  )
+  },error = function(e){
+    print("ERROR POR EXCEPCIÓN AL INTENTAR RECOGER EL DATO DE ENTRADAS Y SALIDAS")
+  })
 
 
 
