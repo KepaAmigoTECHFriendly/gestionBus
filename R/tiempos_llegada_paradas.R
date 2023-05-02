@@ -719,9 +719,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
 
   # NO HAY DATOS DE BUS, POR LO QUE REALIZO PETICIÓN
-  if(nrow(df_datos_bus_sin_na) == 0){
-    # NO ESTÁ EN GEOCERCA, POR LO QUE ENVÍO LA PETICIÓN DE REINICIO
-    print("SE TERMINA EL PROGRAMA NO HAY DATOS ---> REUTRN (0)")
+  if(nrow(df_datos_bus_sin_na) == 0 || any(df_datos_bus_sin_na$spe > 5)){
+    print("SE RESETEAN LOS ACCESOS")
+
 
     # Llamada de petición a reinicio de aforo
     tryCatch({
@@ -744,7 +744,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
     })
 
-    return(0)
+    if(nrow(df_datos_bus_sin_na) == 0){
+      # NO ESTÁ EN GEOCERCA, POR LO QUE ENVÍO LA PETICIÓN DE REINICIO
+      print("SE TERMINA EL PROGRAMA NO HAY DATOS ---> REUTRN (0)")
+      return(0)
+    }
 
   }  # Acaba el programa si el autobus no está en ninguna geocerca
 
