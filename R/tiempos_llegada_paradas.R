@@ -580,8 +580,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     df <- as.data.frame(df)
-    df_horario_ultimo_trayecto_linea_sentido <- df[df$data.type == "Línea BUS",]
-    df_horario_ultimo_trayecto_linea_sentido <- df[df$data.name == paste("Línea ",linea,sep = ""),]
+    L_BUS <- unique(df$data.type)[grep(" BUS",unique(df$data.type))]
+    df_horario_ultimo_trayecto_linea_sentido <- df[df$data.type == L_BUS,]
+    llinea <- grep(paste(" ",linea,sep = ""),df_horario_ultimo_trayecto_linea_sentido$data.name)
+    df_horario_ultimo_trayecto_linea_sentido <- df_horario_ultimo_trayecto_linea_sentido[llinea,]
 
     dia_semana <- wday(Sys.Date()) #Domingo == 1
     if(dia_semana != 1 | dia_semana != 7){
