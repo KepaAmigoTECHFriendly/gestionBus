@@ -437,10 +437,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
     tryCatch({
 
-      id_lineas <- "07c323a0-43ee-11ed-b077-bb6dc81b6e02"
-
       # LLAMADA A N8N PARA REALIZAR CÁLCULO DE TIEMPOS DE TRAYECTO SUBIDA BAJADA POR LÍNEA
-      url_api_tiempos_linea <- paste("https://n8n.plasencia.es/webhook/c068223b-d950-42fc-9601-acadfc0cf948?id_dispositivo=",id_lineas,"&linea=",linea,"&sentido=",sentido,sep = "")
+      url_api_tiempos_linea <- paste("https://n8n.plasencia.es/webhook/c068223b-d950-42fc-9601-acadfc0cf948?id_dispositivo=",id_dispositivo,"&linea=",linea,"&sentido=",sentido,sep = "")
       peticion <- GET(url_api_tiempos_linea, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
     },error = function(e){
       print("ERROR POR EXCEPCIÓN AL INTENTAR LLAMADA API RESET LINEA")

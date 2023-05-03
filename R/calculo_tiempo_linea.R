@@ -201,7 +201,9 @@ calculo_tiempo_linea <- function(id_dispositivo, linea, sentido){
 
   clave <- paste("tiempo_linea_",linea,"_sentido_",sentido,sep = "")
 
-  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id_dispositivo, "/SERVER_SCOPE",sep = "")
+  id_lineas <- "07c323a0-43ee-11ed-b077-bb6dc81b6e02"
+
+  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id_lineas, "/timeseries/ANY",sep = "")
   json_envio_plataforma <- paste('{"',clave,'":"', tiempo_linea,'"',
                                  '}',sep = "")
 
