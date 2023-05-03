@@ -190,6 +190,7 @@ calculo_tiempo_linea <- function(id_dispositivo, linea, sentido){
   }else{
     # Finalizo el programa
     print("Se han detectado paso por más de 2 paradas cabecera en menos de 40 minutos")
+    return(0)
   }
 
 
