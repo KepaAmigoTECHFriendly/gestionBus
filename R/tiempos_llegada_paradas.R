@@ -434,6 +434,12 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         sentido <- 1  # Subiendo
       }
     }
+
+    # LLAMADA A N8N PARA REALIZAR CÁLCULO DE TIEMPOS DE TRAYECTO SUBIDA BAJADA POR LÍNEA
+    url_api_tiempos_linea <- paste("https://n8n.plasencia.es/webhook/c068223b-d950-42fc-9601-acadfc0cf948?id_dispositivo=",id_dispositivo,"&linea=",linea,"&sentido=",sentido,sep = "")
+    peticion <- GET(url_api_tiempos_linea, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
+
+
   }else{ # El bus está en trayecto. Para coger el sentido, es necesario recoger el atributo
     keys <- URLencode(c("parada_destino,sentido"))
     url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
@@ -477,6 +483,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }
     }
   }
+
+
 
 
 
