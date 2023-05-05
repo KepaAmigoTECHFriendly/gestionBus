@@ -441,7 +441,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       url_api_tiempos_linea <- paste("https://n8n.plasencia.es/webhook/c068223b-d950-42fc-9601-acadfc0cf948?id_dispositivo=",id_dispositivo,"&linea=",linea,"&sentido=",sentido,sep = "")
       peticion <- GET(url_api_tiempos_linea, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
     },error = function(e){
-      print("ERROR POR EXCEPCIÓN AL INTENTAR LLAMADA API RESET LINEA")
+      print("ERROR POR EXCEPCIÓN AL INTENTAR LLAMADA API CALCULO TIEMPOS LINEA")
     })
 
 
@@ -735,54 +735,55 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # NO HAY DATOS DE BUS, POR LO QUE REALIZO PETICIÓN
   if(nrow(df_datos_bus_sin_na) == 0){
-    print("SE RESETEAN LOS ACCESOS")
+    #print("SE RESETEAN LOS ACCESOS")
     # Llamada de petición a reinicio de aforo
-    tryCatch({
+    #tryCatch({
       # Escribir en API para resetear aforo
-      if(nrow(df_datos_bus_sin_na) == 0){
-        url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
+    #if(nrow(df_datos_bus_sin_na) == 0){
+    #url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
         # GET NÚMERO BUS
-        keys <- URLencode(c("Número"))
-        url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
-        peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    #keys <- URLencode(c("Número"))
+    #url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    #peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
-        df <- jsonlite::fromJSON(rawToChar(peticion$content))
-        df <- as.data.frame(df)
-        numero <- df$value
+    #df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    #df <- as.data.frame(df)
+    #numero <- df$value
 
-        url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
-        peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
-      }
-    },error = function(e){
-      print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
-    })
+    #url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
+    #peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
+    #}
+    #},error = function(e){
+    #  print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
+    #})
 
     print("SE TERMINA EL PROGRAMA NO HAY DATOS ---> REUTRN (0)")
     return(0)
-
-  }else{ # Acaba el programa si el autobus no está en ninguna geocerca
-    if(any(df_datos_bus_sin_na$spe > 5)){
-      # Llamada de petición a reinicio de aforo
-      tryCatch({
-        # Escribir en API para resetear aforo
-        url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
-        # GET NÚMERO BUS
-        keys <- URLencode(c("Número"))
-        url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
-        peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-        df <- jsonlite::fromJSON(rawToChar(peticion$content))
-        df <- as.data.frame(df)
-        numero <- df$value
-
-        url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
-        peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
-
-      },error = function(e){
-        print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
-      })
-    }
   }
+
+  #else{ # Acaba el programa si el autobus no está en ninguna geocerca
+    #if(any(df_datos_bus_sin_na$spe > 5)){
+      # Llamada de petición a reinicio de aforo
+    #tryCatch({
+        # Escribir en API para resetear aforo
+    #url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
+        # GET NÚMERO BUS
+    #keys <- URLencode(c("Número"))
+    #url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+        #peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+    #df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    #df <- as.data.frame(df)
+    #numero <- df$value
+
+    #url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
+    #peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
+
+    #},error = function(e){
+    #print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
+    #})
+    #}
+  #}
 
 
 
@@ -790,6 +791,38 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts descendente
 
   ultima_posicion_en_geocerca <- df_datos_sin_paradas_duplicadas[1,]
+
+  # LLAMADA A API RECUENTO ENTRADAS Y SALIDAS AUTOBUSES
+  tryCatch({
+    # Get activo tip "PARADA"
+    url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+    peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    df_activos <- df[df$data.type == "parada",]
+    df_activos <- df_activos[which(df_activos$data.name %in% ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA),]
+    id_parada_api_recuentos <- df_activos$data.id$id
+
+    # Escribir en API para resetear aforo
+    url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
+    # GET NÚMERO BUS
+    keys <- URLencode(c("Número"))
+    url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    df <- as.data.frame(df)
+    numero <- df$value
+
+    url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,"/",linea,"/",id_parada_api_recuentos,sep = "")
+    peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
+  },error = function(e){
+    print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
+  })
+
+
+
 
   tiempos_a_marquesinas_restantes <- df_tiempos[df_tiempos$ID_PARADA == ultima_posicion_en_geocerca$ID_PARADA,]
   #tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] > 0]
@@ -908,37 +941,37 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                      encode = "json",verbose()
   )
 
-  tryCatch({
+  #tryCatch({
     # RECOGIDA DE TELEMETRÍA ENTRADAS SALIDAS Y VOLCADO EN ACTIVO TIPO PARADA
-    keys <- URLencode(c("Entradas,Salidas"))
-    url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
-    peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    #keys <- URLencode(c("Entradas,Salidas"))
+    #url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+    #peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
     # Tratamiento datos. De raw a dataframe
-    df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    df <- as.data.frame(df)
-    df <- df[,-c(3)]
+    #df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    #df <- as.data.frame(df)
+    #df <- df[,-c(3)]
 
-    colnames(df) <- c("ts","Entradas","Salidas")
-    df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
-    df <- df[1,]
+    #colnames(df) <- c("ts","Entradas","Salidas")
+    #df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
+    #df <- df[1,]
 
     # Guardado a telemetría activo tipo parada
-    id <- df_activos$data.id$id[df_activos$data.name == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA]
-    url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
-    json_envio_plataforma <- paste('{"Entradas":',df$Entradas,',','"Salidas":',df$Salidas,',"Salidas_',linea,'":',df$Salidas,',"Entradas_',linea,'":',df$Entradas,
-                                  '}',sep = "")
+    #id <- df_activos$data.id$id[df_activos$data.name == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA]
+    #url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
+    #json_envio_plataforma <- paste('{"Entradas":',df$Entradas,',','"Salidas":',df$Salidas,',"Salidas_',linea,'":',df$Salidas,',"Entradas_',linea,'":',df$Entradas,
+    #                              '}',sep = "")
 
-    post <- httr::POST(url = url_telemetria,
-                         add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                         body = json_envio_plataforma,
-                         verify= FALSE,
-                         encode = "json",verbose()
-    )
+    #post <- httr::POST(url = url_telemetria,
+    #                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+    #                     body = json_envio_plataforma,
+    #                     verify= FALSE,
+    #                     encode = "json",verbose()
+    #)
 
-  },error = function(e){
-    print("ERROR POR EXCEPCIÓN AL INTENTAR RECOGER EL DATO DE ENTRADAS Y SALIDAS")
-  })
+  #},error = function(e){
+    #print("ERROR POR EXCEPCIÓN AL INTENTAR RECOGER EL DATO DE ENTRADAS Y SALIDAS")
+  #})
 
 
 
