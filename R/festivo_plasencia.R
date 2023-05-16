@@ -84,4 +84,6 @@ festivo_plasencia <- function(){
                      encode = "json",verbose()
   )
 
+  return(1)
+
 }
