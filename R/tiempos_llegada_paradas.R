@@ -73,7 +73,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     posicion_fichero <- match("paradas_bus_plasencia_L_V.csv",ficheros_en_ruta)
   }
 
-  df_paradas <- read.csv(as.character(ficheros_en_ruta[posicion_fichero]), sep = ",")
+  df_paradas <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[posicion_fichero]),sep=""), sep = ",")
 
   # Linea 1
   df_paradas_linea_1_subida <- df_paradas[df_paradas$linea_1 == 1 & (df_paradas$sentido == 1 | df_paradas$sentido >=2),]
@@ -679,21 +679,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Referencias tiempos
   if(linea == 1){
     if(sentido == 0){
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 2){
     if(sentido == 0){
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 3){
     if(sentido == 0){
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }
 
@@ -853,21 +853,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   if(linea == 1){
     if(sentido_contrario == 0){
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 2){
     if(sentido_contrario == 0){
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 3){
     if(sentido_contrario == 0){
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }
 
