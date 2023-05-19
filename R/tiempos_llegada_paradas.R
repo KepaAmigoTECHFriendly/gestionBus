@@ -31,13 +31,48 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
+  # ------------------------------------------------------------------------------
+  # PETICIÓN TOKENs THB
+  # ------------------------------------------------------------------------------
+
+  cuerpo <- '{"username":"api-gestion-buses@plataforma.es","password":"VH43w4zPuB@3a*@YzvjbH9kZ*MPG^mKy"}'
+  post <- httr::POST(url = "http://plataforma:9090/api/auth/login",
+                     add_headers("Content-Type"="application/json","Accept"="application/json"),
+                     body = cuerpo,
+                     verify= FALSE,
+                     encode = "json",verbose()
+  )
+
+  resultado_peticion_token <- httr::content(post)
+  auth_thb <- paste("Bearer",resultado_peticion_token$token)
+
+
+
+
 
   # ------------------------------------------------------------------------------
   # 0) - REFERENCIA PARADAS
   # ------------------------------------------------------------------------------
 
-  ficheros_en_ruta <- list.files(system.file('extdata', package = 'gestionBus'), full.names = TRUE)
-  posicion_fichero <- grep("paradas_bus_plasencia",ficheros_en_ruta)
+  keys <- URLencode(c("festivo"))
+  url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/07c323a0-43ee-11ed-b077-bb6dc81b6e02/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+  peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+  # Tratamiento datos. De raw a dataframe
+  df <- jsonlite::fromJSON(rawToChar(peticion$content))
+  df <- as.data.frame(df)
+  es_festivo <- df$value
+
+
+  fecha <- Sys.Date()
+  dia_num <- as.POSIXlt(fecha)$wday
+
+  ficheros_en_ruta <- list.files("/extra_data")
+  if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+    posicion_fichero <- match("paradas_bus_plasencia_S_D_F.csv",ficheros_en_ruta)
+  }else{
+    posicion_fichero <- match("paradas_bus_plasencia_L_V.csv",ficheros_en_ruta)
+  }
+
   df_paradas <- read.csv(as.character(ficheros_en_ruta[posicion_fichero]), sep = ",")
 
   # Linea 1
@@ -51,22 +86,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Linea 3
   df_paradas_linea_3_subida <- df_paradas[df_paradas$linea_3 == 1 & (df_paradas$sentido == 1 | df_paradas$sentido >=2),]
   df_paradas_linea_3_bajada <- df_paradas[df_paradas$linea_3 == 1 & (df_paradas$sentido == 0 | df_paradas$sentido >=2),]
-
-
-  # ------------------------------------------------------------------------------
-  # PETICIÓN TOKENs THB
-  # ------------------------------------------------------------------------------
-
-  cuerpo <- '{"username":"kepa@techfriendly.es","password":"kepatech"}'
-  post <- httr::POST(url = "https://plataforma.plasencia.es/api/auth/login",
-                     add_headers("Content-Type"="application/json","Accept"="application/json"),
-                     body = cuerpo,
-                     verify= FALSE,
-                     encode = "json",verbose()
-  )
-
-  resultado_peticion_token <- httr::content(post)
-  auth_thb <- paste("Bearer",resultado_peticion_token$token)
 
 
 
@@ -85,7 +104,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     linea_guion <- linea_guion
 
     # 1) GET ACTIVOS
-    url_thb_fechas <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+    url_thb_fechas <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
     peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -100,7 +119,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     for(i in 1:nrow(df_activos)){
       print(i)
 
-      url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
+      url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
 
       if(linea_guion == 0 | linea_guion == 1){
 
@@ -216,7 +235,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 0.1) - RECOGIDA IDs PARA SABER NÚMERO DE AUTOBUSES QUE CIRCULAN POR LÍNEA Y CALCULAR PRODUCTO DE TIEMPO
   # ------------------------------------------------------------------------------
   # Get dispositivos plataforma
-  url_thb <- "https://plataforma.plasencia.es/api/tenant/devices?pageSize=10000&page=0"
+  url_thb <- "http://plataforma:9090/api/tenant/devices?pageSize=10000&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
@@ -228,7 +247,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   keys <- URLencode(c("active, Línea"))
   for(i in 1:length(ids_gps)){
 
-    url_gps <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",ids_gps[i],"/values/attributes?",keys,sep = "")
+    url_gps <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",ids_gps[i],"/values/attributes?",keys,sep = "")
     peticion <- GET(url_gps, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -273,7 +292,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   fecha_2 <- format(as.numeric(as.POSIXct(fecha_2))*1000,scientific = F)
 
   keys <- URLencode(c("lat,lon,spe"))
-  url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+  url_thb_fechas <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
   peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
   # Tratamiento datos. De raw a dataframe
@@ -424,8 +443,16 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }else if(linea == 2){
       if(id_parada_inicial == 66){ # Hospital
         sentido <- 0  # Bajando
-      }else if(id_parada_inicial == 55){ # Estación de tren
-        sentido <- 1  # Subiendo
+      }else{ # Estación de tren
+        if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+          if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
+            sentido <- 1  # Subiendo
+          }
+        }else{
+          if(id_parada_inicial == 55){
+            sentido <- 1  # Subiendo
+          }
+        }
       }
     }else if(linea == 3){
       if(id_parada_inicial == 66){ # Hospital
@@ -438,7 +465,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     tryCatch({
 
       # LLAMADA A N8N PARA REALIZAR CÁLCULO DE TIEMPOS DE TRAYECTO SUBIDA BAJADA POR LÍNEA
-      url_api_tiempos_linea <- paste("https://n8n.plasencia.es/webhook/c068223b-d950-42fc-9601-acadfc0cf948?id_dispositivo=",id_dispositivo,"&linea=",linea,"&sentido=",sentido,sep = "")
+      url_api_tiempos_linea <- paste("http://n8n:443/webhook/c068223b-d950-42fc-9601-acadfc0cf948?id_dispositivo=",id_dispositivo,"&linea=",linea,"&sentido=",sentido,sep = "")
       peticion <- GET(url_api_tiempos_linea, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
     },error = function(e){
       print("ERROR POR EXCEPCIÓN AL INTENTAR LLAMADA API CALCULO TIEMPOS LINEA")
@@ -447,7 +474,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   }else{ # El bus está en trayecto. Para coger el sentido, es necesario recoger el atributo
     keys <- URLencode(c("parada_destino,sentido"))
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
     peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -507,8 +534,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }else if(linea == 2){
     if(sentido == 0){
-      parada_destino <- "Estación de tren"
-      parada_destino_activos_parada <- "Estación de tren"
+      if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+        parada_destino <- "PIR Los Monjes"
+        parada_destino_activos_parada <- "PIR Los Monjes"
+      }else{
+        parada_destino <- "Estación de tren"
+        parada_destino_activos_parada <- "Estación de tren"
+      }
     }else{
       parada_destino <- "Hospital"
       parada_destino_activos_parada <- "Hospital"
@@ -524,7 +556,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   }
 
   # Escritura parada destino en entidad tipo dispositivo GPS
-  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
+  url <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
   json_envio_plataforma <- paste('{"parada_destino":"', parada_destino,'",', '"sentido":', sentido,
                                  '}',sep = "")
   post <- httr::POST(url = url,
@@ -537,7 +569,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # Escritura parada destino en entidad tipo activo Parada
   # GET ACTIVOS TIPO "PARADA"
-  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -571,10 +603,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                "Hospital" ={parada_destino_activos_parada <- "Estación de tren"},
         )
       }
-
     }
 
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos_parada_escritura_destino$data.id$id[i], "/SERVER_SCOPE",sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", df_activos_parada_escritura_destino$data.id$id[i], "/SERVER_SCOPE",sep = "")
 
     post <- httr::POST(url = url,
                        add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
@@ -588,7 +619,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(flag_ultimo_trayecto == FALSE){
     # GET HORARIOS ÚLTIMO TRAYECTO POR LÍNEA Y SENTIDO
     # GET ACTIVOS TIPO "Línea BUS"
-    url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+    url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
     peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -615,7 +646,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }
     }
 
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_horario_ultimo_trayecto_linea_sentido$data.id$id,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_horario_ultimo_trayecto_linea_sentido$data.id$id,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
     peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -638,24 +669,31 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 3) - ACTUALIZACIÓN TIEMPOS DE LLEGADA A CADA PARADA
   #-----------------------------------------------------------------------------
 
+  ficheros_en_ruta <- list.files("/extra_data")
+  if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+    sufijo <- "_S_D_F"
+  }else{
+    sufijo <- "_L_V"
+  }
+
   # Referencias tiempos
   if(linea == 1){
     if(sentido == 0){
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L1.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L1.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 2){
     if(sentido == 0){
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L2.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L2.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 3){
     if(sentido == 0){
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L3.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L3.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }
 
@@ -735,57 +773,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # NO HAY DATOS DE BUS, POR LO QUE REALIZO PETICIÓN
   if(nrow(df_datos_bus_sin_na) == 0){
-    #print("SE RESETEAN LOS ACCESOS")
-    # Llamada de petición a reinicio de aforo
-    #tryCatch({
-      # Escribir en API para resetear aforo
-    #if(nrow(df_datos_bus_sin_na) == 0){
-    #url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
-        # GET NÚMERO BUS
-    #keys <- URLencode(c("Número"))
-    #url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
-    #peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-    #df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    #df <- as.data.frame(df)
-    #numero <- df$value
-
-    #url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
-    #peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
-    #}
-    #},error = function(e){
-    #  print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
-    #})
-
     print("SE TERMINA EL PROGRAMA NO HAY DATOS ---> REUTRN (0)")
     return(0)
   }
-
-  #else{ # Acaba el programa si el autobus no está en ninguna geocerca
-    #if(any(df_datos_bus_sin_na$spe > 5)){
-      # Llamada de petición a reinicio de aforo
-    #tryCatch({
-        # Escribir en API para resetear aforo
-    #url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
-        # GET NÚMERO BUS
-    #keys <- URLencode(c("Número"))
-    #url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
-        #peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-    #df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    #df <- as.data.frame(df)
-    #numero <- df$value
-
-    #url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,sep = "")
-    #peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
-
-    #},error = function(e){
-    #print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
-    #})
-    #}
-  #}
-
-
 
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts descendente
@@ -795,7 +785,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # LLAMADA A API RECUENTO ENTRADAS Y SALIDAS AUTOBUSES
   tryCatch({
     # Get activo tip "PARADA"
-    url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+    url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
     peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -805,17 +795,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     id_parada_api_recuentos <- df_activos$data.id$id
 
     # Escribir en API para resetear aforo
-    url_api <- "https://encuestas.plasencia.es:2222/bus_stats_reset/"
+    url_api <- "http://consulta-parking:2222/bus_stats_reset/"
     # GET NÚMERO BUS
     keys <- URLencode(c("Número"))
-    url_thb <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    url_thb <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
     peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     df <- as.data.frame(df)
     numero <- df$value
 
-    url_api <- paste("https://encuestas.plasencia.es:2222/bus_stats_reset/",numero,"/",linea,"/",id_parada_api_recuentos,sep = "")
+    url_api <- paste("http://consulta-parking:2222/bus_stats_reset/",numero,"/",linea,"/",id_parada_api_recuentos,sep = "")
     peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
   },error = function(e){
     print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
@@ -844,6 +834,15 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #-----------------------------------------------------------------------------
   # Este bus es el encargado de escribir el tiempo de llegada futuro en el sentido contrario que circula ahora
 
+
+  ficheros_en_ruta <- list.files("/extra_data")
+  if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+    sufijo <- "_S_D_F"
+  }else{
+    sufijo <- "_L_V"
+  }
+
+
   # Referencia tiempos sentido contrario
   if(sentido == 0){
     sentido_contrario <- 1
@@ -851,23 +850,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     sentido_contrario <- 0
   }
 
+
   if(linea == 1){
     if(sentido_contrario == 0){
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L1.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L1.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L1",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 2){
     if(sentido_contrario == 0){
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L2.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L2.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 3){
     if(sentido_contrario == 0){
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_bajada_L3.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
-      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[grep("matriz_tiempos_subida_L3.csv",ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+      df_tiempos_contrario <- read.csv(as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }
 
@@ -903,7 +903,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #-----------------------------------------------------------------------------
 
   # GET ACTIVOS TIPO "PARADA"
-  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -930,7 +930,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # ENVIO TELEMETRÍA A ACTIVO TIPO "PARADA" DE PASO POR PARADA. PERMITE RECOGER INDICADORES
   id <- df_activos$data.id$id[df_activos$data.name == tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA]
-  url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
+  url_telemetria <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
   json_envio_plataforma <- paste('{"linea_',linea,'":', 1,
                                  '}',sep = "")
 
@@ -941,85 +941,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                      encode = "json",verbose()
   )
 
-  #tryCatch({
-    # RECOGIDA DE TELEMETRÍA ENTRADAS SALIDAS Y VOLCADO EN ACTIVO TIPO PARADA
-    #keys <- URLencode(c("Entradas,Salidas"))
-    #url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
-    #peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-    # Tratamiento datos. De raw a dataframe
-    #df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    #df <- as.data.frame(df)
-    #df <- df[,-c(3)]
-
-    #colnames(df) <- c("ts","Entradas","Salidas")
-    #df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
-    #df <- df[1,]
-
-    # Guardado a telemetría activo tipo parada
-    #id <- df_activos$data.id$id[df_activos$data.name == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA]
-    #url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
-    #json_envio_plataforma <- paste('{"Entradas":',df$Entradas,',','"Salidas":',df$Salidas,',"Salidas_',linea,'":',df$Salidas,',"Entradas_',linea,'":',df$Entradas,
-    #                              '}',sep = "")
-
-    #post <- httr::POST(url = url_telemetria,
-    #                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-    #                     body = json_envio_plataforma,
-    #                     verify= FALSE,
-    #                     encode = "json",verbose()
-    #)
-
-  #},error = function(e){
-    #print("ERROR POR EXCEPCIÓN AL INTENTAR RECOGER EL DATO DE ENTRADAS Y SALIDAS")
-  #})
-
-
-
-
-
-  # CÁLCULO DE AFORO Y ESCRITURA EN TELEMETRÍA
-  #keys <- URLencode(c("Aforo"))
-  #url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
-  #peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-
-  # Tratamiento datos. De raw a dataframe
-  #df <- jsonlite::fromJSON(rawToChar(peticion$content))
-  #df <- as.data.frame(df)
-  #df <- df[,-c(3,5)]
-
-  #colnames(df) <- c("ts","Aforo")
-  #df$fecha_time <- as.POSIXct(as.numeric(df$ts)/1000, origin = "1970-01-01")
-  #aforo <- df$Aforo[1]
-  #pos <- which(colnames(df_tiempos) %in% ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA)
-  #if(pos == 3){pos <- 4}
-  #tiempo_a_restar <- df_tiempos[df_tiempos$NOMBRE_PARADA_GEOCERCA == ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA, (pos - 1)]
-  #ref_tiempo <- df$fecha_time[1]
-  #minute(ref_tiempo) <- minute(df$fecha_time[1]) + tiempo_a_restar
-  #df <- df[df$fecha_time > ref_tiempo,]
-  #if(length(unique(df$Aforo)) > 1){
-  #  df <- df[!duplicated(df$Aforo),]
-  #  flujo <- as.numeric(df$Aforo[1]) - as.numeric(df$Aforo[2])
-  #}else{
-  #  flujo <- as.numeric(df$Aforo[1]) - as.numeric(df$Aforo[2])
-  #}
-
-  #id <- df_activos$data.id$id[df_activos$data.name == tiempos_a_marquesinas_restantes$NOMBRE_PARADA_GEOCERCA]
-  #url_telemetria <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id, "/timeseries/ANY?scope=ANY",sep = "")
-  #json_envio_plataforma <- paste('{"Aforo":',aforo,',','"Flujo":',flujo,
-  #                               '}',sep = "")
-
-  #post <- httr::POST(url = url_telemetria,
-  #                   add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-  #                   body = json_envio_plataforma,
-  #                   verify= FALSE,
-  #                   encode = "json",verbose()
-  #)
-
-
-
-
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
-  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
@@ -1039,7 +962,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   nombre_parada <- c()
   for(i in 1:nrow(df_valor_atributos_actual)){
     nombre_parada <- c(nombre_parada, df_valor_atributos_actual$data.name[i])
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
     peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -1062,7 +985,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   nombre_parada <- c()
   for(i in 1:nrow(df_valor_atributos_actual)){
     nombre_parada <- c(nombre_parada, df_valor_atributos_actual$data.name[i])
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
     peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -1233,7 +1156,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
     # Escritura en atributos
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
     if(linea == 1){
       if(flag_solo_atributo_2 == FALSE){
         json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":"', tiempo_atributos,'"',
@@ -1356,7 +1279,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-
+  if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+    if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
+      return(0)
+    }
+  }
 
 
 
@@ -1366,7 +1293,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #-----------------------------------------------------------------------------
 
   # GET ACTIVOS
-  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -1391,7 +1318,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #tiempos_a_marquesinas_restantes_contrario[tiempos_a_marquesinas_restantes_contrario == "-"] <- "> 30 minutos"
 
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
-  url_thb <- "https://plataforma.plasencia.es/api/tenant/assets?pageSize=500&page=0"
+  url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
@@ -1411,7 +1338,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   nombre_parada <- c()
   for(i in 1:nrow(df_valor_atributos_actual)){
     nombre_parada <- c(nombre_parada, df_valor_atributos_actual$data.name[i])
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
     peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -1435,7 +1362,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   nombre_parada <- c()
   for(i in 1:nrow(df_valor_atributos_actual)){
     nombre_parada <- c(nombre_parada, df_valor_atributos_actual$data.name[i])
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_valor_atributos_actual$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
     peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
@@ -1614,7 +1541,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
     # Escritura en atributos
-    url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
     if(linea == 1){
       json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":"', tiempo_atributos,'"',
                                      '}',sep = "")
