@@ -45,7 +45,7 @@ alarmas_bus <- function(id_dispositivo,tiempo_maximo_parado){
   # ------------------------------------------------------------------------------
 
   cuerpo <- '{"username":"kepa@techfriendly.es","password":"kepatech"}'
-  post <- httr::POST(url = "https://plataforma.plasencia.es/api/auth/login",
+  post <- httr::POST(url = "http://plataforma:9090/api/auth/login",
                      add_headers("Content-Type"="application/json","Accept"="application/json"),
                      body = cuerpo,
                      verify= FALSE,
@@ -66,7 +66,7 @@ alarmas_bus <- function(id_dispositivo,tiempo_maximo_parado){
   fecha_2 <- format(as.numeric(as.POSIXct(fecha_2))*1000,scientific = F)
 
   keys <- URLencode(c("lat,lon,spe"))
-  url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+  url_thb_fechas <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
   peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
   # Tratamiento datos. De raw a dataframe
@@ -104,7 +104,7 @@ alarmas_bus <- function(id_dispositivo,tiempo_maximo_parado){
   }
 
   # Escritura atributos alarma en entidad: dispositivo tipo GPS
-  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
+  url <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
   json_envio_plataforma <- paste('{"alarma_bus_parado":"', alarma_bus_parado,'"',
                                  '}',sep = "")
   post <- httr::POST(url = url,
@@ -128,7 +128,7 @@ alarmas_bus <- function(id_dispositivo,tiempo_maximo_parado){
   fecha_2 <- format(as.numeric(as.POSIXct(fecha_2))*1000,scientific = F)
 
   keys <- URLencode(c("lat,lon,spe"))
-  url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+  url_thb_fechas <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
   peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
   # Tratamiento datos. De raw a dataframe
@@ -231,7 +231,7 @@ alarmas_bus <- function(id_dispositivo,tiempo_maximo_parado){
   }
 
   # Escritura atributos alarma en entidad: dispositivo tipo GPS
-  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
+  url <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
   json_envio_plataforma <- paste('{"alarma_ausencia_datos":"', alarma_ausencia_datos,'"',
                                  '}',sep = "")
   post <- httr::POST(url = url,

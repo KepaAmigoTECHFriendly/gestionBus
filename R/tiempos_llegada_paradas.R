@@ -66,7 +66,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   fecha <- Sys.Date()
   dia_num <- as.POSIXlt(fecha)$wday
 
-  ficheros_en_ruta <- list.files("/extra_data")
+  ficheros_en_ruta <- list.files("/opt/extra_data")
   if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
     posicion_fichero <- match("paradas_bus_plasencia_S_D_F.csv",ficheros_en_ruta)
   }else{
@@ -669,7 +669,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 3) - ACTUALIZACIÓN TIEMPOS DE LLEGADA A CADA PARADA
   #-----------------------------------------------------------------------------
 
-  ficheros_en_ruta <- list.files("/extra_data")
+  ficheros_en_ruta <- list.files("/opt/extra_data")
   if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
     sufijo <- "_S_D_F"
   }else{
@@ -835,7 +835,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Este bus es el encargado de escribir el tiempo de llegada futuro en el sentido contrario que circula ahora
 
 
-  ficheros_en_ruta <- list.files("/extra_data")
+  ficheros_en_ruta <- list.files("/opt/extra_data")
   if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
     sufijo <- "_S_D_F"
   }else{

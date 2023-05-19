@@ -49,7 +49,7 @@ calculo_tiempo_linea <- function(id_dispositivo, linea, sentido){
   # ------------------------------------------------------------------------------
 
   cuerpo <- '{"username":"kepa@techfriendly.es","password":"kepatech"}'
-  post <- httr::POST(url = "https://plataforma.plasencia.es/api/auth/login",
+  post <- httr::POST(url = "http://plataforma:9090/api/auth/login",
                      add_headers("Content-Type"="application/json","Accept"="application/json"),
                      body = cuerpo,
                      verify= FALSE,
@@ -72,7 +72,7 @@ calculo_tiempo_linea <- function(id_dispositivo, linea, sentido){
   fecha_2 <- format(as.numeric(as.POSIXct(fecha_2))*1000,scientific = F)
 
   keys <- URLencode(c("lat,lon,spe"))
-  url_thb_fechas <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
+  url_thb_fechas <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/timeseries?limit=10000&keys=",keys,"&startTs=",fecha_1,"&endTs=",fecha_2,sep = "")
   peticion <- GET(url_thb_fechas, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
 
   # Tratamiento datos. De raw a dataframe
@@ -203,7 +203,7 @@ calculo_tiempo_linea <- function(id_dispositivo, linea, sentido){
 
   id_lineas <- "07c323a0-43ee-11ed-b077-bb6dc81b6e02"
 
-  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id_lineas, "/timeseries/ANY",sep = "")
+  url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", id_lineas, "/timeseries/ANY",sep = "")
   json_envio_plataforma <- paste('{"',clave,'":"', tiempo_linea,'"',
                                  '}',sep = "")
 

@@ -57,7 +57,7 @@ festivo_plasencia <- function(){
   # ------------------------------------------------------------------------------
 
   cuerpo <- '{"username":"kepa@techfriendly.es","password":"kepatech"}'
-  post <- httr::POST(url = "https://plataforma.plasencia.es/api/auth/login",
+  post <- httr::POST(url = "http://plataforma:9090/api/auth/login",
                      add_headers("Content-Type"="application/json","Accept"="application/json"),
                      body = cuerpo,
                      verify= FALSE,
@@ -73,7 +73,7 @@ festivo_plasencia <- function(){
   # ------------------------------------------------------------------------------
 
   id_activo <- "07c323a0-43ee-11ed-b077-bb6dc81b6e02"
-  url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/ASSET/", id_activo, "/SERVER_SCOPE",sep = "")
+  url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", id_activo, "/SERVER_SCOPE",sep = "")
   json_envio_plataforma <- paste('{"festivo":', festivo,
                                  '}',sep = "")
 
