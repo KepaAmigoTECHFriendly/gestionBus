@@ -1279,11 +1279,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-  if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
-    if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
-      return(0)
-    }
-  }
+  #if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+    #if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
+      #return(0)
+    #}
+  €}
 
 
 
