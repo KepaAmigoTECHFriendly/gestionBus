@@ -1283,7 +1283,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     #if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
       #return(0)
     #}
-  €}
+  #}
 
 
 
