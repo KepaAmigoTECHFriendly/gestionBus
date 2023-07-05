@@ -1279,11 +1279,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-  #if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
-    #if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
-      #return(0)
-    #}
-  #}
+  if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+    if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
+      return(0)
+    }
+  }
 
 
 
@@ -1486,7 +1486,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 if(t == 150){
                   tiempo_atributos <- paste(round(max(tiempos_a_marquesinas_restantes_contrario[,3:ncol(tiempos_a_marquesinas_restantes_contrario)]) + tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
                 }else{
-                  tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t), " minutos", sep = "")
+                  tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes_contrario[,(i+2)]*t*2), " minutos", sep = "")
                 }
                 tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
               }else{
