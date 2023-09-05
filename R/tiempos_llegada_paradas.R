@@ -805,7 +805,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df <- as.data.frame(df)
     numero <- df$value
 
-    url_api <- paste("http://consulta-parking:2222/bus_stats_reset/",numero,"/",linea,"/",id_parada_api_recuentos,sep = "")
+    url_api <- paste("http://consulta-parking:2222/bus_stats_reset/",numero,"/",linea,"/",id_parada_api_recuentos,"/",id_dispositivo,sep = "")
     peticion <- GET(url_api, add_headers("Content-Type"="application/json","Accept"="application/json"), timeout(3))
   },error = function(e){
     print("ERROR POR EXCEPCIÓN AL INTENTAR RESETAR EL DATO DE AFORO")
