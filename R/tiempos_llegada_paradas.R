@@ -253,7 +253,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     print(i)
     activo_atributo <- df$value[grep("active",df$key)]
-    if(activo_atributo == "FALSE"){next}
+    if(activo_atributo == "FALSE"){
+      next
+    }
     linea_atributo <- df$value[grep("Línea",df$key)]
     linea_vector <- c(linea_vector, linea_atributo)
   }
