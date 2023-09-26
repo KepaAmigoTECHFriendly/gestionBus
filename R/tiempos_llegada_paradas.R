@@ -1018,12 +1018,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }else{
           tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
           if(tiempo_actualizacion_atributo_en_segundos > 60 & df_datos_sin_paradas_duplicadas$spe[1] > 9){ # si han pasado > 60 segundos estando en parada y velocidad es > 9km/h, escribo el siguiente tiempo
-            tiempo_atributos <- df_tiempos_actuales_2$value[i]
+            #tiempo_atributos <- df_tiempos_actuales_2$value[i]
+            tiempo_atributos <- max(as.numeric(tiempos_a_marquesinas_restantes[1,2:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE) + 3
 
             if(t == 150){
               tiempo_atributo_2  <- round(t - as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])))
             }else{
-              tiempo_atributo_2  <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) * t
+              #tiempo_atributo_2  <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) * t
+              tiempo_atributo_2  <- tiempo_atributos * 2
             }
 
           }else{
