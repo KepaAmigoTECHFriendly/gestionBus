@@ -1117,6 +1117,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }else{
                 next
               }
+            }else{
+              if(names(which.min(tiempos_a_marquesinas_restantes[1,2:ncol(tiempos_a_marquesinas_restantes)])) == colnames(tiempos_a_marquesinas_restantes)[(i+2)]){  # si es la marquesina que no está en parada con menos tiempo
+                diferencia_tiempo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+                if(diferencia_tiempo_en_segundos >= 30 & tiempos_a_marquesinas_restantes[,(i+2)] > 1){ #Se resta 1 munutos al tiempo actual y tiene > de 1 minuto
+                  tiempos_a_marquesinas_restantes[,(i+2)] <- tiempos_a_marquesinas_restantes[,(i+2)] - 1
+                }
+              }
             }
           }
         }else{ # Cierre comprobación si existe tiempo en plataforma
