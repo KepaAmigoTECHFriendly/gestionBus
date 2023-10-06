@@ -400,15 +400,15 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     if(any(id_posicion_geocerca[,1])){
 
       # RESETEO ATRIBUTO aforo_real
-      json_envio_plataforma <- paste('{"aforo_real":"', 0,'"',
-                                     '}',sep = "")
-      url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
-      post <- httr::POST(url = url,
-                         add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                         body = json_envio_plataforma,
-                         verify= FALSE,
-                         encode = "json",verbose()
-      )
+      #json_envio_plataforma <- paste('{"aforo_real":"', 0,'"',
+      #                               '}',sep = "")
+      #url <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
+      #post <- httr::POST(url = url,
+      #                   add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+      #                   body = json_envio_plataforma,
+      #                   verify= FALSE,
+      #                   encode = "json",verbose()
+      #)
 
       id_geocerca_actual <- match(TRUE,id_posicion_geocerca[,1])  # Get id de la geocerca en la que se encuentra el bus
 
