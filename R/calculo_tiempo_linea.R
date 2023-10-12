@@ -61,6 +61,23 @@ calculo_tiempo_linea <- function(id_dispositivo, linea, sentido){
 
 
 
+
+  # ------------------------------------------------------------------------------
+  # RESETEO ATRIBUTO aforo_real
+  # ------------------------------------------------------------------------------
+
+  json_envio_plataforma <- paste('{"aforo_real":"', 0,'"',
+                                 '}',sep = "")
+  url <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/", id_dispositivo, "/SERVER_SCOPE",sep = "")
+  post <- httr::POST(url = url,
+                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                     body = json_envio_plataforma,
+                     verify= FALSE,
+                     encode = "json",verbose()
+  )
+
+
+
   # ------------------------------------------------------------------------------
   # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBÚS
   # ------------------------------------------------------------------------------
