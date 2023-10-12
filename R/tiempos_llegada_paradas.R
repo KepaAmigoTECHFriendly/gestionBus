@@ -335,7 +335,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_paradas_iniciales <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == 2,]  # Get paradas iniciales de la línea objetivo
 
   # SI ESTAMOS A INICIO DE TRAYECTO DE LA LINEA 1, INCORPORAMOS A COLONIA GUADALUPE COMO PARADA INICIAL EN LA SUBIDA
-  if(hora_actual > "07:20" & hora_actual < "07:40"){
+  if(hora_actual > "07:15" & hora_actual < "07:40"){
     df_colonia_guadalupe_subida <- df_paradas[df_paradas$id == 43,]
     df_paradas_iniciales <- rbind(df_paradas_iniciales, df_colonia_guadalupe_subida)
   }

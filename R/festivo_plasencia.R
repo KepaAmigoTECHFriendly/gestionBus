@@ -25,7 +25,7 @@ festivo_plasencia <- function(){
   if(mes < 10){
     num <- paste("0",mes,sep = "")
   }else{
-    num <- as.character(i)
+    num <- as.character(mes)
   }
 
   url <- "https://calendarios.ideal.es/laboral/extremadura/caceres/plasencia"
