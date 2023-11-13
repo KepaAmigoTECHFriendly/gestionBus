@@ -18,40 +18,6 @@
 
 festivo_plasencia <- function(){
 
-  fecha <- Sys.Date()
-  mes <- month(fecha)
-  dia <- day(fecha)
-
-  if(mes < 10){
-    num <- paste("0",mes,sep = "")
-  }else{
-    num <- as.character(mes)
-  }
-
-  url <- "https://calendarios.ideal.es/laboral/extremadura/caceres/plasencia"
-  html_inicial <- url %>% GET(., timeout(30)) %>% read_html()
-
-  festivos <- c()
-  selector_xpath <- paste("//table[contains(@class, 'bm-calendar bm-calendar-month-",num," bm-calendar-year-2023')]//td[contains(@class, 'bm-calendar-state-nacional')]",sep = "")
-  if(!identical(sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text),list())){
-    festivos <- c(festivos, sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text))
-  }
-  selector_xpath <- paste("//table[contains(@class, 'bm-calendar bm-calendar-month-",num," bm-calendar-year-2023')]//td[contains(@class, 'bm-calendar-state-autonomico')]",sep = "")
-  if(!identical(sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text),list())){
-    festivos <- c(festivos, sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text))
-  }
-  selector_xpath <- paste("//table[contains(@class, 'bm-calendar bm-calendar-month-",num," bm-calendar-year-2023')]//td[contains(@class, 'bm-calendar-state-local')]",sep = "")
-  if(!identical(sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text),list())){
-    festivos <- c(festivos, sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text))
-  }
-
-  if(!is.na(match(dia,as.numeric(festivos)))){
-    festivo <- 1
-  }else{
-    festivo <- 0
-  }
-
-
   # ------------------------------------------------------------------------------
   # PETICIÓN TOKENs THB
   # ------------------------------------------------------------------------------
@@ -67,22 +33,60 @@ festivo_plasencia <- function(){
   resultado_peticion_token <- httr::content(post)
   auth_thb <- paste("Bearer",resultado_peticion_token$token)
 
+  tryCatch({
+    fecha <- Sys.Date()
+    mes <- month(fecha)
+    dia <- day(fecha)
 
-  # ------------------------------------------------------------------------------
-  # GUARDADO EN PLATAFORMA
-  # ------------------------------------------------------------------------------
+    if(mes < 10){
+      num <- paste("0",mes,sep = "")
+    }else{
+      num <- as.character(mes)
+    }
 
-  id_activo <- "07c323a0-43ee-11ed-b077-bb6dc81b6e02"
-  url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", id_activo, "/SERVER_SCOPE",sep = "")
-  json_envio_plataforma <- paste('{"festivo":', festivo,
-                                 '}',sep = "")
+    url <- "https://calendarios.ideal.es/laboral/extremadura/caceres/plasencia"
+    html_inicial <- url %>% GET(., timeout(30)) %>% read_html()
 
-  post <- httr::POST(url = url,
-                     add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                     body = json_envio_plataforma,
-                     verify= FALSE,
-                     encode = "json",verbose()
-  )
+    festivos <- c()
+    selector_xpath <- paste("//table[contains(@class, 'bm-calendar bm-calendar-month-",num," bm-calendar-year-2023')]//td[contains(@class, 'bm-calendar-state-nacional')]",sep = "")
+    if(!identical(sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text),list())){
+      festivos <- c(festivos, sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text))
+    }
+    selector_xpath <- paste("//table[contains(@class, 'bm-calendar bm-calendar-month-",num," bm-calendar-year-2023')]//td[contains(@class, 'bm-calendar-state-autonomico')]",sep = "")
+    if(!identical(sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text),list())){
+      festivos <- c(festivos, sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text))
+    }
+    selector_xpath <- paste("//table[contains(@class, 'bm-calendar bm-calendar-month-",num," bm-calendar-year-2023')]//td[contains(@class, 'bm-calendar-state-local')]",sep = "")
+    if(!identical(sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text),list())){
+      festivos <- c(festivos, sapply(xml_find_all(html_inicial, xpath = selector_xpath), xml_text))
+    }
+
+    if(!is.na(match(dia,as.numeric(festivos)))){
+      festivo <- 1
+    }else{
+      festivo <- 0
+    }
+
+
+    # ------------------------------------------------------------------------------
+    # GUARDADO EN PLATAFORMA
+    # ------------------------------------------------------------------------------
+
+    id_activo <- "07c323a0-43ee-11ed-b077-bb6dc81b6e02"
+    url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", id_activo, "/SERVER_SCOPE",sep = "")
+    json_envio_plataforma <- paste('{"festivo":', festivo,
+                                   '}',sep = "")
+
+    post <- httr::POST(url = url,
+                       add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                       body = json_envio_plataforma,
+                       verify= FALSE,
+                       encode = "json",verbose()
+    )
+
+  },error = function(e){
+    print("Error en la obtención del festivo")
+  })
 
   return(1)
 

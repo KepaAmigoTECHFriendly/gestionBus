@@ -19,6 +19,15 @@
 tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+  #                                                         1
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+
+
   linea_original <- linea
   flag_ultimo_trayecto <- grepl("Último", linea_original)
 
@@ -278,6 +287,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Generación de geocercas en paradas
   paradas_separadas_id <- st_cast(paradas_utm, "POINT")
   geocerca_TALLER <- st_buffer(paradas_separadas_id, 70)
+
+
+
+
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+  #                                                         2
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
 
 
 
@@ -665,6 +685,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+  #                                                         3
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+
 
 
 
@@ -817,23 +845,32 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-  tiempos_a_marquesinas_restantes <- df_tiempos[df_tiempos$ID_PARADA == ultima_posicion_en_geocerca$ID_PARADA,]
-  #tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] > 0]
-  tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] < 0] <- "-"
-  tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] == 0] <- "-"
+  #---------------------------------------------------------------------------------------------
+  # 4.1)  OBTENCIÓN DE TIEMPOS DE LLEGADA DEL AUTOBÚS EN LAS PARADAS DE SU SENTIDO
+  #---------------------------------------------------------------------------------------------
+  tryCatch({
+    tiempos_a_marquesinas_restantes <- df_tiempos[df_tiempos$ID_PARADA == ultima_posicion_en_geocerca$ID_PARADA,]
+    #tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] > 0]
+    tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] < 0] <- "-"
+    tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] == 0] <- "-"
 
-  # Suma de 5' si tienen tienmpo asignado a las paradas iniciales, ya que el tiempo no es el de llegada, si no el de salida
-  posicion_paradas_iniciales <- which(colnames(tiempos_a_marquesinas_restantes) %in% df_paradas_iniciales$name)
-  for(i in posicion_paradas_iniciales){
-    if(tiempos_a_marquesinas_restantes[1,i] != "-"){
-      tiempos_a_marquesinas_restantes[1,i] <- tiempos_a_marquesinas_restantes[1,i] + 1
+    # Suma de 5' si tienen tienmpo asignado a las paradas iniciales, ya que el tiempo no es el de llegada, si no el de salida
+    posicion_paradas_iniciales <- which(colnames(tiempos_a_marquesinas_restantes) %in% df_paradas_iniciales$name)
+    for(i in posicion_paradas_iniciales){
+      if(tiempos_a_marquesinas_restantes[1,i] != "-"){
+        tiempos_a_marquesinas_restantes[1,i] <- tiempos_a_marquesinas_restantes[1,i] + 1
+      }
     }
-  }
+  },error = function(e){
+    return(0)
+  })
+
+
 
 
 
   #------------------------------------------------------------------------------
-  # 4) - CÁLCULO TIEMPOS LLEGADA EN SENTIDO CONTRARIO
+  # 4.2) - CÁLCULO TIEMPOS LLEGADA EN SENTIDO CONTRARIO
   #-----------------------------------------------------------------------------
   # Este bus es el encargado de escribir el tiempo de llegada futuro en el sentido contrario que circula ahora
 
@@ -944,6 +981,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                      encode = "json",verbose()
   )
 
+
+
+
+
   # RECOGIDA DE VALOR ATRIBUTOS EN MARQUESINAS OBJETIVO PARA DECIDIR SI ESCRIBIR O NO
   url_thb <- "http://plataforma:9090/api/tenant/assets?pageSize=500&page=0"
   peticion <- GET(url_thb, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
@@ -997,6 +1038,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   }
   df_tiempos_actuales_2$name <- nombre_parada
   df_tiempos_actuales_2 <- df_tiempos_actuales_2[order(df_tiempos_actuales_2$name, decreasing = FALSE),]
+
+
+
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+  #                                                         4
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+
 
 
   # 4) Actualización atributos tiempo_llegada_linea_x. Actualización tiempos de llegada autobús actual.
@@ -1301,6 +1353,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
+
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+  #                                                         5
+  #==============================================================================================================
+  #==============================================================================================================
+  #==============================================================================================================
+
+
+
   #------------------------------------------------------------------------------
   # 6) - ACTUALIZACIÓN ATRIBUTOS SENTIDO CONTRARIO
   #-----------------------------------------------------------------------------
@@ -1399,9 +1462,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       flag_cabecera <- FALSE
     }
 
-
-
-
     flag_escritura_primer_atributo <- FALSE
 
     if(flag_ultimo_trayecto == TRUE){
@@ -1411,14 +1471,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
       # GESTIÓN INDEPENDIENTE SI ES CABECERA
       if(flag_cabecera){
-
         pos_parada_cabecera <- match(nombre_parada_cabecera, colnames(tiempos_a_marquesinas_restantes))
         if(is.na(pos_parada_cabecera)){
           next
         }
-        print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
         if((tiempos_a_marquesinas_restantes[,pos_parada_cabecera] == "En parada" | grepl("\\d", tiempos_a_marquesinas_restantes[,pos_parada_cabecera])) & t != 150 ){ # Si está en parada o tiene número asignado, salto
-          print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    NEXT")
           next
         }else{
           # Comparo el tiempo calculado a la marquesina en sentido contrario con el tiempo guardado en paltaforma
