@@ -224,10 +224,22 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   # Datos recogidos por plataforma
   id_dispositivo <- as.character(id_dispositivo)
+  #if(grepl("Último", linea)){
+  #  linea <- as.numeric(gsub(" - Último trayecto","",linea))
+  #}else if(linea == "Fuera de servicio" & hora_actual < "22:30"){
+  #  return(0)
+  #}else{
+  #  if(linea == "Fuera de servicio" & hora_actual > "22:30"){
+  #    linea <- 1
+  #  }else{
+  #    linea <- as.numeric(linea)
+  #  }
+  #}
+
   if(grepl("Último", linea)){
     linea <- as.numeric(gsub(" - Último trayecto","",linea))
   }else if(linea == "Fuera de servicio" & hora_actual < "22:30"){
-    return(0)
+    linea <- linea
   }else{
     if(linea == "Fuera de servicio" & hora_actual > "22:30"){
       linea <- 1
@@ -235,6 +247,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       linea <- as.numeric(linea)
     }
   }
+
+
+
 
 
 
@@ -273,7 +288,20 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(length(grep(linea,linea_vector)) > 1){
     t <- 1.3
   }else{
-    t <- 150
+    if(linea == "Fuera de servicio"){
+      algun_bus <- intersect(c(1,2), linea_vector)
+      if(identical(algun_bus, numeric(0))){  # Si no hay autobuses operando con asignación de línea
+        paradas_a_guion(0)
+      }else{
+        if(length(algun_bus) == 1){
+          diferencia_bus <- setdiff(c(1,2),algun_bus)
+          paradas_a_guion(diferencia_bus)
+        }
+      }
+      paradas_a_guion(0)
+    }else{
+      t <- 150
+    }
   }
 
 
