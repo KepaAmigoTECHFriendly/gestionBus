@@ -124,89 +124,117 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df_paradas <- df_paradas[order(df_paradas$name, decreasing = FALSE),]
 
 
-    # 4) Creación atributos tiempo_llegada_linea_x
-    for(i in 1:nrow(df_activos)){
-      print(i)
-
-      url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
-
-      if(linea_guion == 0 | linea_guion == 1){
-
-        if(df_paradas$linea_1[i] == 1){
-
-          json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":', '"-"',
-                                         '}',sep = "")
-
-          post <- httr::POST(url = url,
-                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                             body = json_envio_plataforma,
-                             verify= FALSE,
-                             encode = "json",verbose()
-          )
-
-          json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":', '"-"',
-                                         '}',sep = "")
-
-          post <- httr::POST(url = url,
-                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                             body = json_envio_plataforma,
-                             verify= FALSE,
-                             encode = "json",verbose()
-          )
-        }
-      }
-
-      if(linea_guion == 0 | linea_guion == 2){
-        if(df_paradas$linea_2[i] == 1){
-          json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":', '"-"',
-                                         '}',sep = "")
-
-          post <- httr::POST(url = url,
-                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                             body = json_envio_plataforma,
-                             verify= FALSE,
-                             encode = "json",verbose()
-          )
-
-          json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":', '"-"',
-                                         '}',sep = "")
-
-          post <- httr::POST(url = url,
-                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                             body = json_envio_plataforma,
-                             verify= FALSE,
-                             encode = "json",verbose()
-          )
-        }
-      }
-
-      if(linea_guion == 0 | linea_guion == 3){
-        if(df_paradas$linea_3[i] == 1){
-
-          json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":', '"-"',
-                                         '}',sep = "")
-
-          post <- httr::POST(url = url,
-                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                             body = json_envio_plataforma,
-                             verify= FALSE,
-                             encode = "json",verbose()
-          )
-
-          json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":', '"-"',
-                                         '}',sep = "")
-
-          post <- httr::POST(url = url,
-                             add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
-                             body = json_envio_plataforma,
-                             verify= FALSE,
-                             encode = "json",verbose()
-          )
-        }
-      }
+    # Comprueba si no es necesario ejecutar la función porque ya se ha ejecutado previamente
+    # Atributo tiempo de llegada plataforma
+    if(linea_guion == 1){
+      keys <- URLencode(c("tiempo_llegada_linea_1"))
+    }else if(linea_guion == 2){
+      keys <- URLencode(c("tiempo_llegada_linea_2"))
+    }else if(linea_guion == 3){
+      keys <- URLencode(c("tiempo_llegada_linea_3"))
+    }else{
+      keys <- URLencode(c("tiempo_llegada_linea_1,tiempo_llegada_linea_2"))
     }
 
+
+    df_tiempos_actuales <- data.frame()
+    nombre_parada <- c()
+    for(i in 1:10){
+      nombre_parada <- c(nombre_parada, df_paradas$data.name[i])
+      url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_paradas$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+      peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+      # Tratamiento datos. De raw a dataframe
+      df <- jsonlite::fromJSON(rawToChar(peticion$content))
+      df <- as.data.frame(df)
+      df_tiempos_actuales <- rbind(df_tiempos_actuales,df)
+    }
+
+    if(!any(grepl("minutos",df_tiempos_actuales$value))){
+      return(3)  # Termina la ejecución del programa
+    }else{ # Continua la rutina
+      # 4) Creación atributos tiempo_llegada_linea_x
+      for(i in 1:nrow(df_activos)){
+        print(i)
+
+        url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
+
+        if(linea_guion == 0 | linea_guion == 1){
+
+          if(df_paradas$linea_1[i] == 1){
+
+            json_envio_plataforma <- paste('{"tiempo_llegada_linea_1":', '"-"',
+                                           '}',sep = "")
+
+            post <- httr::POST(url = url,
+                               add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                               body = json_envio_plataforma,
+                               verify= FALSE,
+                               encode = "json",verbose()
+            )
+
+            json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_1":', '"-"',
+                                           '}',sep = "")
+
+            post <- httr::POST(url = url,
+                               add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                               body = json_envio_plataforma,
+                               verify= FALSE,
+                               encode = "json",verbose()
+            )
+          }
+        }
+
+        if(linea_guion == 0 | linea_guion == 2){
+          if(df_paradas$linea_2[i] == 1){
+            json_envio_plataforma <- paste('{"tiempo_llegada_linea_2":', '"-"',
+                                           '}',sep = "")
+
+            post <- httr::POST(url = url,
+                               add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                               body = json_envio_plataforma,
+                               verify= FALSE,
+                               encode = "json",verbose()
+            )
+
+            json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_2":', '"-"',
+                                           '}',sep = "")
+
+            post <- httr::POST(url = url,
+                               add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                               body = json_envio_plataforma,
+                               verify= FALSE,
+                               encode = "json",verbose()
+            )
+          }
+        }
+
+        if(linea_guion == 0 | linea_guion == 3){
+          if(df_paradas$linea_3[i] == 1){
+
+            json_envio_plataforma <- paste('{"tiempo_llegada_linea_3":', '"-"',
+                                           '}',sep = "")
+
+            post <- httr::POST(url = url,
+                               add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                               body = json_envio_plataforma,
+                               verify= FALSE,
+                               encode = "json",verbose()
+            )
+
+            json_envio_plataforma <- paste('{"tiempo_2_llegada_linea_3":', '"-"',
+                                           '}',sep = "")
+
+            post <- httr::POST(url = url,
+                               add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb),
+                               body = json_envio_plataforma,
+                               verify= FALSE,
+                               encode = "json",verbose()
+            )
+          }
+        }
+      }
       return(3)
+    }
   }
 
 
@@ -383,9 +411,15 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_paradas_iniciales <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == 2,]  # Get paradas iniciales de la línea objetivo
 
   # SI ESTAMOS A INICIO DE TRAYECTO DE LA LINEA 1, INCORPORAMOS A COLONIA GUADALUPE COMO PARADA INICIAL EN LA SUBIDA
-  if(hora_actual > "07:15" & hora_actual < "07:40"){
+  if(hora_actual > "07:15" & hora_actual < "07:50"){
     df_colonia_guadalupe_subida <- df_paradas[df_paradas$id == 43,]
     df_paradas_iniciales <- rbind(df_paradas_iniciales, df_colonia_guadalupe_subida)
+  }
+
+  # SI ESTAMOS A INICIO DE TRAYECTO DE LA LINEA 2, INCORPORAMOS A PUERTA BERROZANA COMO PARADA INICIAL EN LA BAJADA
+  if(hora_actual > "07:20" & hora_actual < "07:30"){
+    df_puerta_berrozana <- df_paradas[df_paradas$id == 110,]
+    df_paradas_iniciales <- rbind(df_paradas_iniciales, df_puerta_berrozana)
   }
 
 
@@ -488,12 +522,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     if(linea == 1){
       if(id_parada_inicial == 65 | id_parada_inicial == 59){ # Hogar de Nazaret o Gabriel y Galán 1
         sentido <- 0  # Bajando
-      }else if(id_parada_inicial == 115 | id_parada_inicial == 15){ # Sociosanitario o Bomberos
-        sentido <- 1  # Subiendo
+      }else{
+        if(hora_actual > "07:15" & hora_actual < "07:50"){
+          if(id_parada_inicial == 115 | id_parada_inicial == 15 | id_parada_inicial == 43){ # Sociosanitario, Bomberos o Colonia Guadalupe
+            sentido <- 1  # Subiendo
+          }
+        }else{
+          if(id_parada_inicial == 115 | id_parada_inicial == 15){ # Sociosanitario o Bomberos
+            sentido <- 1  # Subiendo
+          }
+        }
       }
     }else if(linea == 2){
       if(id_parada_inicial == 66){ # Hospital
         sentido <- 0  # Bajando
+      }else if(hora_actual > "07:20" & hora_actual < "07:30"){
+          if(id_parada_inicial == 66 | id_parada_inicial == 110){ # Hospital o Puerta Berrozana
+            sentido <- 0  # Bajando
+          }
       }else{ # Estación de tren
         if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
           if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
@@ -1199,14 +1245,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                   next
                 }
               }
-              #else{
-                #if(names(which.min(tiempos_a_marquesinas_restantes[1,2:ncol(tiempos_a_marquesinas_restantes)])) == colnames(tiempos_a_marquesinas_restantes)[(i+2)]){  # si es la marquesina que no está en parada con menos tiempo
-                #  diferencia_tiempo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
-                #  if(diferencia_tiempo_en_segundos >= 30 & tiempos_a_marquesinas_restantes[,(i+2)] > 1){ #Se resta 1 munutos al tiempo actual y tiene > de 1 minuto
-                #    tiempos_a_marquesinas_restantes[,(i+2)] <- tiempos_a_marquesinas_restantes[,(i+2)] - 1
-                #  }
-                #}
-              #}
             }
           }else{ # Cierre comprobación si existe tiempo en plataforma
             if(flag_ultimo_trayecto == FALSE){
@@ -1246,6 +1284,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
 
       } # Cierre else de no tiene valor == "En parada"
+
+
+      # Control del valor a escribir
+      if(flag_solo_atributo_2 == FALSE){
+        # tiempo_atributos, es decir, tiempo 1
+        if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 65){
+          tiempo_atributos <- paste(62,gsub("[0-9]", "", tiempo_atributos),sep = "")
+        }
+      }
+      if(tiempo_atributo_2 != FALSE){
+        # tiempo_atributo_2, es decir, tiempo 2
+        if(as.numeric(gsub("[^0-9.]", "", tiempo_atributo_2)) > 130){
+          tiempo_atributo_2 <- paste(121,gsub("[0-9]", "", tiempo_atributo_2),sep = "")
+        }
+      }
 
 
       # Escritura en atributos
@@ -1636,6 +1689,20 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         } # Cierre no es cabecera
 
       } # Cierre else de flag_ultimo_trayecto == TRUE
+
+
+
+      # Control del valor a escribir
+      # tiempo_atributos, es decir, tiempo 1
+      if(flag_escritura_primer_atributo != FALSE){
+        if(as.numeric(gsub("[^0-9.]", "", tiempo_atributo_tiempo_1)) > 65){
+          tiempo_atributo_tiempo_1 <- paste(62,gsub("[0-9]", "", tiempo_atributo_tiempo_1),sep = "")
+        }
+      }
+      # tiempo_atributos, es decir, tiempo 2
+      if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 130){
+        tiempo_atributos <- paste(121,gsub("[0-9]", "", tiempo_atributos),sep = "")
+      }
 
 
       # Escritura en atributos
