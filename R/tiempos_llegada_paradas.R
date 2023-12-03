@@ -1301,16 +1301,19 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tiempo_atributos <- paste(tiempo_atributos, " minutos", sep = "")
             }
           }
+          # tiempo_atributos, es decir, tiempo 1
+          if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 65){
+            tiempo_atributos <- paste(62,gsub("[0-9]", "", tiempo_atributos),sep = "")
+          }
         }
-        # tiempo_atributos, es decir, tiempo 1
-        if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 65){
-          tiempo_atributos <- paste(62,gsub("[0-9]", "", tiempo_atributos),sep = "")
-        }
+
       }
       if(tiempo_atributo_2 != FALSE){
-        # tiempo_atributo_2, es decir, tiempo 2
-        if(as.numeric(gsub("[^0-9.]", "", tiempo_atributo_2)) > 130){
-          tiempo_atributo_2 <- paste(121,gsub("[0-9]", "", tiempo_atributo_2),sep = "")
+        if(tiempo_atributo_2 != "-"){
+          # tiempo_atributo_2, es decir, tiempo 2
+          if(as.numeric(gsub("[^0-9.]", "", tiempo_atributo_2)) > 130){
+            tiempo_atributo_2 <- paste(121,gsub("[0-9]", "", tiempo_atributo_2),sep = "")
+          }
         }
       }
 
@@ -1718,16 +1721,19 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tiempo_atributo_tiempo_1 <- paste(tiempo_atributo_tiempo_1, " minutos", sep = "")
             }
           }
+          if(as.numeric(gsub("[^0-9.]", "", tiempo_atributo_tiempo_1)) > 65){
+            tiempo_atributo_tiempo_1 <- paste(62,gsub("[0-9]", "", tiempo_atributo_tiempo_1),sep = "")
+          }
         }
 
-        if(as.numeric(gsub("[^0-9.]", "", tiempo_atributo_tiempo_1)) > 65){
-          tiempo_atributo_tiempo_1 <- paste(62,gsub("[0-9]", "", tiempo_atributo_tiempo_1),sep = "")
-        }
       }
       # tiempo_atributos, es decir, tiempo 2
-      if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 130){
-        tiempo_atributos <- paste(121,gsub("[0-9]", "", tiempo_atributos),sep = "")
+      if(tiempo_atributos != "-"){
+        if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 130){
+          tiempo_atributos <- paste(121,gsub("[0-9]", "", tiempo_atributos),sep = "")
+        }
       }
+
 
 
       # Escritura en atributos
