@@ -1288,6 +1288,15 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
       # Control del valor a escribir
       if(flag_solo_atributo_2 == FALSE){
+        if(tiempo_atributos != "-"){
+          if(!grepl("minuto",tiempo_atributos)){
+            if(tiempo_atributos == 1){
+              tiempo_atributos <- paste(tiempo_atributos, " minuto", sep = "")
+            }else{
+              tiempo_atributos <- paste(tiempo_atributos, " minutos", sep = "")
+            }
+          }
+        }
         # tiempo_atributos, es decir, tiempo 1
         if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 65){
           tiempo_atributos <- paste(62,gsub("[0-9]", "", tiempo_atributos),sep = "")
@@ -1695,6 +1704,17 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       # Control del valor a escribir
       # tiempo_atributos, es decir, tiempo 1
       if(flag_escritura_primer_atributo != FALSE){
+
+        if(tiempo_atributo_tiempo_1 != "-"){
+          if(!grepl("minuto",tiempo_atributo_tiempo_1)){
+            if(tiempo_atributo_tiempo_1 == 1){
+              tiempo_atributo_tiempo_1 <- paste(tiempo_atributo_tiempo_1, " minuto", sep = "")
+            }else{
+              tiempo_atributo_tiempo_1 <- paste(tiempo_atributo_tiempo_1, " minutos", sep = "")
+            }
+          }
+        }
+
         if(as.numeric(gsub("[^0-9.]", "", tiempo_atributo_tiempo_1)) > 65){
           tiempo_atributo_tiempo_1 <- paste(62,gsub("[0-9]", "", tiempo_atributo_tiempo_1),sep = "")
         }
