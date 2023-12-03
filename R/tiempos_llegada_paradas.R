@@ -524,11 +524,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         sentido <- 0  # Bajando
       }else{
         if(hora_actual > "07:15" & hora_actual < "07:50"){
-          if(id_parada_inicial == 115 | id_parada_inicial == 15 | id_parada_inicial == 43){ # Sociosanitario, Bomberos o Colonia Guadalupe
+          if(id_parada_inicial == 76| id_parada_inicial == 15 | id_parada_inicial == 43){ # ITV, Bomberos o Colonia Guadalupe
             sentido <- 1  # Subiendo
           }
         }else{
-          if(id_parada_inicial == 15){ # Sociosanitario o Bomberos
+          if(id_parada_inicial == 15 | id_parada_inicial == 76){ # Bomberos o ITV
             sentido <- 1  # Subiendo
           }
         }
