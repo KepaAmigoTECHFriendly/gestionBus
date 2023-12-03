@@ -416,6 +416,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df_paradas_iniciales <- rbind(df_paradas_iniciales, df_colonia_guadalupe_subida)
   }
 
+  df_bomberos <- df_paradas[df_paradas$id == 15,]
+  df_paradas_iniciales <- rbind(df_paradas_iniciales, df_bomberos)
+  df_itv<- df_paradas[df_paradas$id == 76,]
+  df_paradas_iniciales <- rbind(df_paradas_iniciales, df_itv)
+
   # SI ESTAMOS A INICIO DE TRAYECTO DE LA LINEA 2, INCORPORAMOS A PUERTA BERROZANA COMO PARADA INICIAL EN LA BAJADA
   if(hora_actual > "07:20" & hora_actual < "07:30"){
     df_puerta_berrozana <- df_paradas[df_paradas$id == 110,]
