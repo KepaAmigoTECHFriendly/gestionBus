@@ -137,11 +137,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
 
 
+    hora <- hour(Sys.time()) + 1
+    hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
+    minuto <- minute(Sys.time())
+    minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
+    hora_actual <- paste(as.character(hora),":",minuto,sep = "")
+
+    if(hora_actual > "22:20"){
+      longitud <- nrow(df_activos)
+    }else{
+      longitud <- 10
+    }
+
+
+
     df_tiempos_actuales <- data.frame()
     nombre_parada <- c()
-    for(i in 1:10){
-      nombre_parada <- c(nombre_parada, df_paradas$data.name[i])
-      url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_paradas$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+    for(i in 1:longitud){
+      url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/",df_activos$data.id$id[i],"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
       peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
       # Tratamiento datos. De raw a dataframe
       df <- jsonlite::fromJSON(rawToChar(peticion$content))
