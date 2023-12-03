@@ -528,7 +528,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             sentido <- 1  # Subiendo
           }
         }else{
-          if(id_parada_inicial == 115 | id_parada_inicial == 15){ # Sociosanitario o Bomberos
+          if(id_parada_inicial == 15){ # Sociosanitario o Bomberos
             sentido <- 1  # Subiendo
           }
         }
