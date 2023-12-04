@@ -1311,7 +1311,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
       # Control del valor a escribir
       if(flag_solo_atributo_2 == FALSE){
-        if(tiempo_atributos != "-"){
+        if(tiempo_atributos != "-" & tiempo_atributos != "En parada"){
           if(!grepl("minuto",tiempo_atributos)){
             if(tiempo_atributos == 1){
               tiempo_atributos <- paste(tiempo_atributos, " minuto", sep = "")
@@ -1746,7 +1746,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
       }
       # tiempo_atributos, es decir, tiempo 2
-      if(tiempo_atributos != "-"){
+      if(tiempo_atributos != "-" & tiempo_atributos != "En parada"){
         if(as.numeric(gsub("[^0-9.]", "", tiempo_atributos)) > 130){
           tiempo_atributos <- paste(121,gsub("[0-9]", "", tiempo_atributos),sep = "")
         }
