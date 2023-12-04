@@ -143,11 +143,16 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
     hora_actual <- paste(as.character(hora),":",minuto,sep = "")
 
-    if(hora_actual > "22:20"){
-      longitud <- nrow(df_activos)
+    if(hora_actual > "07:40"){
+      if(hora_actual > "22:20"){
+        longitud <- nrow(df_activos)
+      }else{
+        longitud <- 10
+      }
     }else{
-      longitud <- 10
+      return(3)
     }
+
 
 
 
