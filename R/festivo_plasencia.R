@@ -37,6 +37,7 @@ festivo_plasencia <- function(){
     fecha <- Sys.Date()
     mes <- month(fecha)
     dia <- day(fecha)
+    ano <- year(fecha)
 
     if(mes < 10){
       num <- paste("0",mes,sep = "")
@@ -44,7 +45,7 @@ festivo_plasencia <- function(){
       num <- as.character(mes)
     }
 
-    url <- "https://calendarios.ideal.es/laboral/extremadura/caceres/plasencia"
+    url <- paste("https://calendarios.ideal.es/laboral/extremadura/caceres/plasencia/",ano,sep = "")
     html_inicial <- url %>% GET(., timeout(30)) %>% read_html()
 
     festivos <- c()

@@ -27,6 +27,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #==============================================================================================================
   #==============================================================================================================
 
+  if(linea == "Servicio especial"){
+    return(4)
+  }
 
   linea_original <- linea
   flag_ultimo_trayecto <- grepl("Último", linea_original)
@@ -143,7 +146,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
     hora_actual <- paste(as.character(hora),":",minuto,sep = "")
 
-    if(hora_actual > "07:40" & runif(1) <= 0.2){
+    if(hora_actual > "11:40" & runif(1) <= 0.1){
       if(hora_actual > "22:20"){
         longitud <- nrow(df_activos)
       }else{
@@ -429,7 +432,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_paradas_iniciales <- df_trabajo_paradas_linea_objetivo[df_trabajo_paradas_linea_objetivo$sentido == 2,]  # Get paradas iniciales de la línea objetivo
 
   # SI ESTAMOS A INICIO DE TRAYECTO DE LA LINEA 1, INCORPORAMOS A COLONIA GUADALUPE COMO PARADA INICIAL EN LA SUBIDA
-  if(hora_actual > "07:15" & hora_actual < "07:50"){
+  if(hora_actual > "07:15" & hora_actual < "07:40"){
     df_colonia_guadalupe_subida <- df_paradas[df_paradas$id == 43,]
     df_paradas_iniciales <- rbind(df_paradas_iniciales, df_colonia_guadalupe_subida)
   }
@@ -454,7 +457,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   paradas_utm <- st_transform(paradas_sfc, "+proj=utm +zone=29")
   # Generación de geocercas en paradas
   paradas_separadas_id <- st_cast(paradas_utm, "POINT")
-  geocercas <- st_buffer(paradas_separadas_id, 70)
+  geocercas <- st_buffer(paradas_separadas_id, 150)
 
   df_datos_bus <- df_datos_bus[order(df_datos_bus$ts, decreasing = TRUE),]  # Orden datos bus decreciente por marca temporal
   df_datos_bus <- df_datos_bus[1:10,]
@@ -946,6 +949,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 4.1)  OBTENCIÓN DE TIEMPOS DE LLEGADA DEL AUTOBÚS EN LAS PARADAS DE SU SENTIDO
   #---------------------------------------------------------------------------------------------
   tryCatch({
+    # ELiminación de casuisticas en paradas iniciales
+    df_paradas_iniciales <- df_paradas_iniciales[-which(df_paradas_iniciales$id %in% c(43,110,15,76,59)), ]
+
     tiempos_a_marquesinas_restantes <- df_tiempos[df_tiempos$ID_PARADA == ultima_posicion_en_geocerca$ID_PARADA,]
     #tiempos_a_marquesinas_restantes <- tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] > 0]
     tiempos_a_marquesinas_restantes[,tiempos_a_marquesinas_restantes[1,] < 0] <- "-"

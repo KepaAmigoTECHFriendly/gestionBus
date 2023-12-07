@@ -18,6 +18,9 @@
 
 calculo_tiempo_linea <- function(id_dispositivo, linea, sentido){
 
+  if(linea == "Servicio especial"){
+    return(4)
+  }
   linea <- linea
   sentido <- as.numeric(sentido)
   id_dispositivo <- as.character(id_dispositivo)
