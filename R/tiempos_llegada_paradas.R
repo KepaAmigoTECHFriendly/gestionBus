@@ -147,7 +147,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
     hora_actual <- paste(as.character(hora),":",minuto,sep = "")
 
-    if(hora_actual > "21:40" & runif(1) <= 0.1){
+    if(hora_actual > "08:40" & runif(1) <= 0.1){
       if(hora_actual > "22:20"){
         longitud <- nrow(df_activos)
       }else{
@@ -346,9 +346,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         if(length(algun_bus) == 1){
           diferencia_bus <- setdiff(c(1,2),algun_bus)
           paradas_a_guion(diferencia_bus)
+        }else{
+          return(3)
         }
       }
-      paradas_a_guion(0)
     }else{
       t <- 150
     }
