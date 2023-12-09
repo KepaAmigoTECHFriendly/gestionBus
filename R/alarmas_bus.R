@@ -44,7 +44,8 @@ alarmas_bus <- function(id_dispositivo,tiempo_maximo_parado){
   # PETICIÓN TOKENs THB
   # ------------------------------------------------------------------------------
 
-  cuerpo <- '{"username":"kepa@techfriendly.es","password":"kepatech"}'
+  cuerpo <- fromJSON("/opt/extra_data/config_cred.json")
+  cuerpo <- paste('{"username":"',cuerpo$username,'","password":"',cuerpo$password,'"}',sep = "")
   post <- httr::POST(url = "http://plataforma:9090/api/auth/login",
                      add_headers("Content-Type"="application/json","Accept"="application/json"),
                      body = cuerpo,

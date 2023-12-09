@@ -133,7 +133,8 @@ linea_sin_autobus <- function(linea){
   # PETICIÓN TOKENs THB
   # ------------------------------------------------------------------------------
 
-  cuerpo <- '{"username":"api-gestion-buses@plataforma.es","password":"VH43w4zPuB@3a*@YzvjbH9kZ*MPG^mKy"}'
+  cuerpo <- fromJSON("/opt/extra_data/config_cred.json")
+  cuerpo <- paste('{"username":"',cuerpo$username,'","password":"',cuerpo$password,'"}',sep = "")
   post <- httr::POST(url = "http://plataforma:9090/api/auth/login",
                      add_headers("Content-Type"="application/json","Accept"="application/json"),
                      body = cuerpo,

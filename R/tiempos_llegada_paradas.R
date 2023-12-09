@@ -47,7 +47,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # PETICIÓN TOKENs THB
   # ------------------------------------------------------------------------------
 
-  cuerpo <- '{"username":"api-gestion-buses@plataforma.es","password":"VH43w4zPuB@3a*@YzvjbH9kZ*MPG^mKy"}'
+  cuerpo <- fromJSON("/opt/extra_data/config_cred.json")
+  cuerpo <- paste('{"username":"',cuerpo$username,'","password":"',cuerpo$password,'"}',sep = "")
   post <- httr::POST(url = "http://plataforma:9090/api/auth/login",
                      add_headers("Content-Type"="application/json","Accept"="application/json"),
                      body = cuerpo,
@@ -146,7 +147,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
     hora_actual <- paste(as.character(hora),":",minuto,sep = "")
 
-    if(hora_actual > "11:40" & runif(1) <= 0.1){
+    if(hora_actual > "21:40" & runif(1) <= 0.1){
       if(hora_actual > "22:20"){
         longitud <- nrow(df_activos)
       }else{
