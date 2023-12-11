@@ -1264,16 +1264,58 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 }
               }
             }else{  # El bus actual tiene número
-              if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes[,(i+2)]))){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
-                diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
-                if(diferencia_tiempo_en_minutos >= 5){
-                  if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
-                    tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+              if(flag_ultimo_trayecto == TRUE){
+                keys <- URLencode(c("Línea"))
+                # REVISAR TIMESTAMP DE ASIGNACIÓN LÍNEA. SI DIFERENCIA DE TIEMPO ES MAYOR A 50 MINUTOS --> ESTABLECER GUIÓN.
+                url_gps <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=",keys,sep = "")
+                peticion <- GET(url_gps, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+                # Tratamiento datos. De raw a dataframe
+                df <- jsonlite::fromJSON(rawToChar(peticion$content))
+                ts_linea <- df$lastUpdateTs
+                ts_linea <- as.POSIXct(as.numeric(as.character(ts_linea))/1000,origin="1970-01-01", tz="GMT-1")
+                diferencia_ts_linea <- as.numeric(difftime(Sys.time(),ts_linea,units = "mins"))
+                if(diferencia_ts_linea > 50){
+                  tiempo_atributos <- "-"
+                }else{
+                  if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes[,(i+2)]))){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
+                    diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+                    if(diferencia_tiempo_en_minutos >= 5){
+                      if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
+                        tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+                      }else{
+                        tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+                      }
+                    }else{
+                      next
+                    }
                   }else{
-                    tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+                    if(names(which.min(tiempos_a_marquesinas_restantes[1,2:ncol(tiempos_a_marquesinas_restantes)])) == colnames(tiempos_a_marquesinas_restantes)[(i+2)]){  # si es la marquesina que no está en parada con menos tiempo
+                      diferencia_tiempo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+                      if(diferencia_tiempo_en_segundos >= 30 & tiempos_a_marquesinas_restantes[,(i+2)] > 1){ #Se resta 1 munutos al tiempo actual y tiene > de 1 minuto
+                        tiempos_a_marquesinas_restantes[,(i+2)] <- tiempos_a_marquesinas_restantes[,(i+2)] - 1
+                      }
+                    }
+                  }
+                }
+              }else{  # No es último trayecto
+                if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes[,(i+2)]))){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
+                  diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+                  if(diferencia_tiempo_en_minutos >= 5){
+                    if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
+                      tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+                    }else{
+                      tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+                    }
+                  }else{
+                    next
                   }
                 }else{
-                  next
+                  if(names(which.min(tiempos_a_marquesinas_restantes[1,2:ncol(tiempos_a_marquesinas_restantes)])) == colnames(tiempos_a_marquesinas_restantes)[(i+2)]){  # si es la marquesina que no está en parada con menos tiempo
+                    diferencia_tiempo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+                    if(diferencia_tiempo_en_segundos >= 30 & tiempos_a_marquesinas_restantes[,(i+2)] > 1){ #Se resta 1 munutos al tiempo actual y tiene > de 1 minuto
+                      tiempos_a_marquesinas_restantes[,(i+2)] <- tiempos_a_marquesinas_restantes[,(i+2)] - 1
+                    }
+                  }
                 }
               }
             }
@@ -1299,7 +1341,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
           }else{
             if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
-              next
+              if(flag_ultimo_trayecto == TRUE){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
+                tiempo_atributos <- "-"
+              }else{
+                next
+              }
             }else{
               tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
             }
