@@ -1299,7 +1299,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
           }else{
             if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
-              if(flag_ultimo_trayecto == TRUE){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
+              if(grepl("Último", linea_original)){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
                 tiempo_atributos <- "-"
               }else{
                 next
