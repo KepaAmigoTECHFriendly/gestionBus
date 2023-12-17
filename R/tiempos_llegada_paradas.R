@@ -1615,6 +1615,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       flag_escritura_primer_atributo <- FALSE
 
       if(flag_ultimo_trayecto == TRUE){
+        if(t == 150){
+          flag_escritura_primer_atributo <- TRUE
+          tiempo_atributo_tiempo_1 <- "-"
+        }
         tiempo_atributos <- "-"
       }else{
 
