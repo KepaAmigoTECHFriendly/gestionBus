@@ -562,7 +562,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(nrow(df_datos_sin_paradas_duplicadas) != 0){  # El bus se encuentra en una parada de inicio
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
 
-    if(dif_tiempo_linea > 10){
+    if(dif_tiempo_linea > 15){
       paradas_a_guion(linea)
     }else{
 
@@ -618,44 +618,50 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
   }else{ # El bus está en trayecto. Para coger el sentido, es necesario recoger el atributo
-    keys <- URLencode(c("parada_destino,sentido"))
-    url <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
-    peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
-    # Tratamiento datos. De raw a dataframe
-    df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    df <- as.data.frame(df)
-    if(any(grepl("sentido",df$key))){
-      sentido <- as.numeric(df$value[grep("sentido",df$key)])
-    }else{  # No hay atributo de sentido previamente calculado, por lo que es necesario calcularlo por diferencia de latitudes
-      if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
-        # Comprobación de sentido por diferencia de longitudes
-        if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
-          sentido <- 0
-        }else{
-          sentido <- 1
-        }
-      }else{
-        id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
-        if(id_parada_inicial == 65 | id_parada_inicial == 59 | id_parada_inicial == 66){ # Paradas de salida en sentido bajando
-          sentido_parada <- 0  # Bajando
-        }else{
-          sentido_parada <- 1  # Subiendo
-        }
 
-        # Comprobación de sentido por diferencia de longitudes
-        if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
-          sentido_lat <- 0
-        }else{
-          sentido_lat <- 1
-        }
+    if(dif_tiempo_linea > 30){
+      paradas_a_guion(linea)
+    }else{
 
-        sentido <- sentido_lat + sentido_parada
-        if(sentido == 0 | sentido == 2){ # Se ha obtenido correctamente el sentido del bus
-          if(sentido == 2){
+      keys <- URLencode(c("parada_destino,sentido"))
+      url <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes/SERVER_SCOPE?keys=", keys,sep = "")
+      peticion <- GET(url, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+      # Tratamiento datos. De raw a dataframe
+      df <- jsonlite::fromJSON(rawToChar(peticion$content))
+      df <- as.data.frame(df)
+      if(any(grepl("sentido",df$key))){
+        sentido <- as.numeric(df$value[grep("sentido",df$key)])
+      }else{  # No hay atributo de sentido previamente calculado, por lo que es necesario calcularlo por diferencia de latitudes
+        if(nrow(df_datos_sin_paradas_duplicadas) == 0){  # Cojo el sentido solo por la diferencia de longitudes ya que no he encontrado parada de inicio
+          # Comprobación de sentido por diferencia de longitudes
+          if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
+            sentido <- 0
+          }else{
             sentido <- 1
           }
         }else{
-          return(0)  # No se puede asegurar el sentido del autobus
+          id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
+          if(id_parada_inicial == 65 | id_parada_inicial == 59 | id_parada_inicial == 66){ # Paradas de salida en sentido bajando
+            sentido_parada <- 0  # Bajando
+          }else{
+            sentido_parada <- 1  # Subiendo
+          }
+
+          # Comprobación de sentido por diferencia de longitudes
+          if((df_datos_bus$lat[1] - df_datos_bus$lat[nrow(df_datos_bus)]) > 0) { # Si la resta de la primera y última latitud es negativa, está subiendo
+            sentido_lat <- 0
+          }else{
+            sentido_lat <- 1
+          }
+
+          sentido <- sentido_lat + sentido_parada
+          if(sentido == 0 | sentido == 2){ # Se ha obtenido correctamente el sentido del bus
+            if(sentido == 2){
+              sentido <- 1
+            }
+          }else{
+            return(0)  # No se puede asegurar el sentido del autobus
+          }
         }
       }
     }
