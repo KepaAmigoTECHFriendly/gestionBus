@@ -334,7 +334,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     linea_vector <- c(linea_vector, linea_atributo)
   }
 
-  linea_vector <- as.numeric(linea_vector)
+  linea_vector <- as.numeric(gsub(" - Último trayecto","",linea_vector))
   if(length(grep(linea,linea_vector)) > 1){
     t <- 1.3
   }else{
