@@ -355,6 +355,20 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }
 
+  # Recogida ts línea
+  if(grepl("Último", linea_original)){
+    keys <- URLencode(c("Línea"))
+    url_linea <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes?",keys,sep = "")
+    peticion <- GET(url_linea, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
+    # Tratamiento datos. De raw a dataframe
+    df <- jsonlite::fromJSON(rawToChar(peticion$content))
+    pos_linea <- grep("Línea",df$key)
+    ts_linea <- df$lastUpdateTs[pos_linea]
+    dif_tiempo_linea <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(ts_linea))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+  }else{
+    dif_tiempo_linea <- 0
+  }
+
 
   # GEOCERCA TALLER
   lat_taller <- 40.01177086390611
@@ -547,43 +561,49 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Cálculo sentido si está en parada de inicio
   if(nrow(df_datos_sin_paradas_duplicadas) != 0){  # El bus se encuentra en una parada de inicio
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
-    if(linea == 1){
-      if(id_parada_inicial == 65 | id_parada_inicial == 59){ # Hogar de Nazaret o Gabriel y Galán 1
-        sentido <- 0  # Bajando
-      }else{
-        if(hora_actual > "07:15" & hora_actual < "07:50"){
-          if(id_parada_inicial == 76| id_parada_inicial == 15 | id_parada_inicial == 43){ # ITV, Bomberos o Colonia Guadalupe
-            sentido <- 1  # Subiendo
-          }
+
+    if(dif_tiempo_linea > 10){
+      paradas_a_guion(linea)
+    }else{
+
+      if(linea == 1){
+        if(id_parada_inicial == 65 | id_parada_inicial == 59){ # Hogar de Nazaret o Gabriel y Galán 1
+          sentido <- 0  # Bajando
         }else{
-          if(id_parada_inicial == 15 | id_parada_inicial == 76){ # Bomberos o ITV
-            sentido <- 1  # Subiendo
+          if(hora_actual > "07:15" & hora_actual < "07:50"){
+            if(id_parada_inicial == 76| id_parada_inicial == 15 | id_parada_inicial == 43){ # ITV, Bomberos o Colonia Guadalupe
+              sentido <- 1  # Subiendo
+            }
+          }else{
+            if(id_parada_inicial == 15 | id_parada_inicial == 76){ # Bomberos o ITV
+              sentido <- 1  # Subiendo
+            }
           }
         }
-      }
-    }else if(linea == 2){
-      if(id_parada_inicial == 66){ # Hospital
-        sentido <- 0  # Bajando
-      }else if(hora_actual > "07:20" & hora_actual < "07:30"){
-          if(id_parada_inicial == 66 | id_parada_inicial == 110){ # Hospital o Puerta Berrozana
-            sentido <- 0  # Bajando
-          }
-      }else{ # Estación de tren
-        if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
-          if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
-            sentido <- 1  # Subiendo
-          }
-        }else{
-          if(id_parada_inicial == 55){
-            sentido <- 1  # Subiendo
+      }else if(linea == 2){
+        if(id_parada_inicial == 66){ # Hospital
+          sentido <- 0  # Bajando
+        }else if(hora_actual > "07:20" & hora_actual < "07:30"){
+            if(id_parada_inicial == 66 | id_parada_inicial == 110){ # Hospital o Puerta Berrozana
+              sentido <- 0  # Bajando
+            }
+        }else{ # Estación de tren
+          if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+            if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
+              sentido <- 1  # Subiendo
+            }
+          }else{
+            if(id_parada_inicial == 55){
+              sentido <- 1  # Subiendo
+            }
           }
         }
-      }
-    }else if(linea == 3){
-      if(id_parada_inicial == 66){ # Hospital
-        sentido <- 0  # Bajando
-      }else if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
-        sentido <- 1  # Subiendo
+      }else if(linea == 3){
+        if(id_parada_inicial == 66){ # Hospital
+          sentido <- 0  # Bajando
+        }else if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
+          sentido <- 1  # Subiendo
+        }
       }
     }
 
@@ -962,7 +982,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     # Suma de 5' si tienen tienmpo asignado a las paradas iniciales, ya que el tiempo no es el de llegada, si no el de salida
     posicion_paradas_iniciales <- which(colnames(tiempos_a_marquesinas_restantes) %in% df_paradas_iniciales$name)
     for(i in posicion_paradas_iniciales){
-      if(tiempos_a_marquesinas_restantes[1,i] != "-"){
+      if(grepl("Último", linea_original)){
+        tiempos_a_marquesinas_restantes[1,i] <- "-"
+      }else{
         tiempos_a_marquesinas_restantes[1,i] <- tiempos_a_marquesinas_restantes[1,i] + 1
       }
     }
