@@ -358,7 +358,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Recogida ts línea
   if(grepl("Último", linea_original)){
     keys <- URLencode(c("Línea"))
-    url_linea <- paste("https://plataforma.plasencia.es/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes?",keys,sep = "")
+    url_linea <- paste("http://plataforma:9090/api/plugins/telemetry/DEVICE/",id_dispositivo,"/values/attributes?",keys,sep = "")
     peticion <- GET(url_linea, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
