@@ -619,7 +619,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   }else{ # El bus está en trayecto. Para coger el sentido, es necesario recoger el atributo
 
-    if(dif_tiempo_linea > 30){
+    if(dif_tiempo_linea > 28){
       paradas_a_guion(linea)
     }else{
 
@@ -991,9 +991,22 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       if(grepl("Último", linea_original)){
         tiempos_a_marquesinas_restantes[1,i] <- "-"
       }else{
-        tiempos_a_marquesinas_restantes[1,i] <- tiempos_a_marquesinas_restantes[1,i] + 1
+        if(tiempos_a_marquesinas_restantes[1,i] != "-" & tiempos_a_marquesinas_restantes[1,i] != "En parada"){
+          tiempos_a_marquesinas_restantes[1,i] <- tiempos_a_marquesinas_restantes[1,i] + 1
+        }
       }
     }
+
+    num_guiones <- sum(grepl("-", tiempos_a_marquesinas_restantes[1,]))
+    porcentaje_guiones <- (num_guiones / length(tiempos_a_marquesinas_restantes[1,])) * 100
+    if(dif_tiempo_linea > 15){
+      if(porcentaje_guiones < 15){
+        paradas_a_guion(linea)
+      }
+    }else if(dif_tiempo_linea > 28){
+      paradas_a_guion(linea)
+    }
+
   },error = function(e){
     return(0)
   })
