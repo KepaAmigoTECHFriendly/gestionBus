@@ -335,7 +335,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   }
 
   lineas_coincidentes <- linea_vector[grep(linea_original,linea_vector)]
-  lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
+  #lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
 
   linea_vector <- as.numeric(gsub(" - Último trayecto","",linea_vector))
   if(length(grep(linea,linea_vector)) > 1){
@@ -356,6 +356,18 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }else{
       t <- 150
     }
+  }
+
+  if(t != 150 & grepl("Último", linea_original)){
+    if(length(lineas_coincidentes) < 2){
+      lineas_coincidentes <- FALSE
+    }else{
+      lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
+    }
+  }else if(t != 150){
+    lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
+  }else{
+    lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
   }
 
   # Recogida ts línea
