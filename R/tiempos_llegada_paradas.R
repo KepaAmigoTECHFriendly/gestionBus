@@ -334,6 +334,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     linea_vector <- c(linea_vector, linea_atributo)
   }
 
+  lineas_coincidentes <- linea_vector[grep(linea_original,linea_vector)]
+  lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
+
   linea_vector <- as.numeric(gsub(" - Último trayecto","",linea_vector))
   if(length(grep(linea,linea_vector)) > 1){
     t <- 1.3
@@ -562,7 +565,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(nrow(df_datos_sin_paradas_duplicadas) != 0){  # El bus se encuentra en una parada de inicio
     id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
 
-    if(dif_tiempo_linea > 15){
+    if(dif_tiempo_linea > 15 & lineas_coincidentes){
       paradas_a_guion(linea)
     }else{
 
@@ -619,7 +622,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   }else{ # El bus está en trayecto. Para coger el sentido, es necesario recoger el atributo
 
-    if(dif_tiempo_linea > 28){
+    if(dif_tiempo_linea > 28 & lineas_coincidentes){
       paradas_a_guion(linea)
     }else{
 
@@ -988,7 +991,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     # Suma de 5' si tienen tienmpo asignado a las paradas iniciales, ya que el tiempo no es el de llegada, si no el de salida
     posicion_paradas_iniciales <- which(colnames(tiempos_a_marquesinas_restantes) %in% df_paradas_iniciales$name)
     for(i in posicion_paradas_iniciales){
-      if(grepl("Último", linea_original)){
+      if(grepl("Último", linea_original) & lineas_coincidentes){
         tiempos_a_marquesinas_restantes[1,i] <- "-"
       }else{
         if(tiempos_a_marquesinas_restantes[1,i] != "-" & tiempos_a_marquesinas_restantes[1,i] != "En parada"){
@@ -999,11 +1002,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
     num_guiones <- sum(grepl("-", tiempos_a_marquesinas_restantes[1,]))
     porcentaje_guiones <- (num_guiones / length(tiempos_a_marquesinas_restantes[1,])) * 100
-    if(dif_tiempo_linea > 15){
+    if(dif_tiempo_linea > 15 & lineas_coincidentes){
       if(porcentaje_guiones < 15){
         paradas_a_guion(linea)
       }
-    }else if(dif_tiempo_linea > 28){
+    }else if(dif_tiempo_linea > 28 & lineas_coincidentes){
       paradas_a_guion(linea)
     }
 
@@ -1205,7 +1208,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
       # CUANDO LLEGA A LA FILA DE LA PARADA EN LA QUE SE ENCUENTRA, SE REGISTRA UN VALOR = en_parada
       if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada"){
-        if(flag_ultimo_trayecto == TRUE){
+        if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
+          tiempo_atributos <- df_tiempos_actuales$value[i]
+        }else if(flag_ultimo_trayecto == TRUE & lineas_coincidentes){
           tiempo_atributos <- "-"
         }else{ # Decido si volver a escribir en parada si el valor de plataforma es != "-" y en base al tiempo que haya pasado desde el último valor de "En parada" en atributo plataforma
           if(df_tiempos_actuales$value[i] == "-" | df_tiempos_actuales$value[i] == "En parada"){
@@ -1234,7 +1239,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
       }else{  # El valor del tiempo restante es numérico o "-"
         if(df_tiempos_actuales$value[i] == "En parada"){ # Si en la plataforma está el registro de "En parada"
-          if(flag_ultimo_trayecto == TRUE){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
+          if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
+            tiempo_atributos <- df_tiempos_actuales$value[i]
+          }else if(flag_ultimo_trayecto == TRUE & lineas_coincidentes){
             tiempo_atributos <- "-"
           }else{
             if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, compruebo al valor del atributo 2
@@ -1271,7 +1278,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           # Comprobación de si existe ya un tiempo asignado en plataforma
           if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "-" & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número en plataforma, salto a comprobar si el bus actual tiene número asignado para esa parada
             if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, compruebo si es último trayecto y si no es, el valor del segundo tiempo en plataforma
-              if(flag_ultimo_trayecto == TRUE){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
+              if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
+                tiempo_atributos <- df_tiempos_actuales$value[i]
+              }else if(flag_ultimo_trayecto == TRUE & lineas_coincidentes){
                 tiempo_atributos <- "-"
               }else{
                 if(df_tiempos_actuales_2$value[i] == "En parada"){
@@ -1340,10 +1349,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
           }else{
             if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
-              if(grepl("Último", linea_original)){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
+              if(grepl("Último", linea_original) & lineas_coincidentes){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
                 tiempo_atributos <- "-"
               }else{
-                next
+                tiempo_atributos <- df_tiempos_actuales$value[i]
               }
             }else{
               tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
@@ -1530,6 +1539,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     #==============================================================================================================
     #==============================================================================================================
     #==============================================================================================================
+
+
+    if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
+      return(5)
+    }
 
 
 
