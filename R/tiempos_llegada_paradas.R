@@ -1221,7 +1221,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       # CUANDO LLEGA A LA FILA DE LA PARADA EN LA QUE SE ENCUENTRA, SE REGISTRA UN VALOR = en_parada
       if(tiempos_a_marquesinas_restantes[,(i+2)] == "En parada"){
         if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
-          tiempo_atributos <- df_tiempos_actuales$value[i]
+          tiempo_atributos <- df_tiempos_actuales_2$value[i]
         }else if(flag_ultimo_trayecto == TRUE & lineas_coincidentes){
           tiempo_atributos <- "-"
         }else{ # Decido si volver a escribir en parada si el valor de plataforma es != "-" y en base al tiempo que haya pasado desde el último valor de "En parada" en atributo plataforma
@@ -1252,7 +1252,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       }else{  # El valor del tiempo restante es numérico o "-"
         if(df_tiempos_actuales$value[i] == "En parada"){ # Si en la plataforma está el registro de "En parada"
           if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
-            tiempo_atributos <- df_tiempos_actuales$value[i]
+            tiempo_atributos <- df_tiempos_actuales_2$value[i]
           }else if(flag_ultimo_trayecto == TRUE & lineas_coincidentes){
             tiempo_atributos <- "-"
           }else{
@@ -1291,7 +1291,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           if(grepl("\\d", df_tiempos_actuales$value[i]) & df_tiempos_actuales$value[i] != "-" & df_tiempos_actuales$value[i] != "> 30 minutos" & df_tiempos_actuales$value[i] != "> 30 minutos minutos"){ # si hay número en plataforma, salto a comprobar si el bus actual tiene número asignado para esa parada
             if(!grepl("\\d", tiempos_a_marquesinas_restantes[,(i+2)]) | tiempos_a_marquesinas_restantes[,(i+2)] == "> 30 minutos"){ # Si el bus actual no tiene número para esa parada, compruebo si es último trayecto y si no es, el valor del segundo tiempo en plataforma
               if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
-                tiempo_atributos <- df_tiempos_actuales$value[i]
+                tiempo_atributos <- df_tiempos_actuales_2$value[i]
               }else if(flag_ultimo_trayecto == TRUE & lineas_coincidentes){
                 tiempo_atributos <- "-"
               }else{
