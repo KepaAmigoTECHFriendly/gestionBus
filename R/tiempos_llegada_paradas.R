@@ -590,8 +590,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               sentido <- 1  # Subiendo
             }
           }else{
-            if(id_parada_inicial == 15 | id_parada_inicial == 76){ # Bomberos o ITV
-              sentido <- 1  # Subiendo
+            #if(id_parada_inicial == 15 | id_parada_inicial == 76){ # Bomberos o ITV
+            #  sentido <- 1  # Subiendo
+            #}
+            if(id_parada_inicial == 115){ # Sociosanitario
+              if(df_datos_sin_paradas_duplicadas$spe < 15){
+                sentido <- 1  # Subiendo
+              }
             }
           }
         }
