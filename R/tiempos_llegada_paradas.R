@@ -567,6 +567,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
+  df_datos_bus_sin_na <- df_datos_bus_sin_na[order(df_datos_bus_sin_na$ts),]  # Orden por ts
+  dif_latitudes <- df_datos_bus_sin_na$lat[1] - df_datos_bus_sin_na$lat[2]
   df_datos_sin_paradas_duplicadas <- df_datos_bus_sin_na[!duplicated(df_datos_bus_sin_na$NOMBRE_PARADA_GEOCERCA), ]
   df_datos_sin_paradas_duplicadas <- df_datos_sin_paradas_duplicadas[order(df_datos_sin_paradas_duplicadas$ts, decreasing = TRUE),]  # Orden por ts
 
@@ -594,7 +596,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             #  sentido <- 1  # Subiendo
             #}
             if(id_parada_inicial == 115){ # Sociosanitario
-              if(df_datos_sin_paradas_duplicadas$spe < 15){
+              if(dif_latitudes < 0){
                 sentido <- 1  # Subiendo
               }
             }
