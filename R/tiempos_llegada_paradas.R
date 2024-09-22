@@ -34,9 +34,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   linea_original <- linea
   flag_ultimo_trayecto <- grepl("Último", linea_original)
 
-  hora <- hour(Sys.time()) + 1
+  hora <- hour(fecha_actualizada)
   hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
-  minuto <- minute(Sys.time())
+  minuto <- minute(fecha_actualizada)
   minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
   hora_actual <- paste(as.character(hora),":",minuto,sep = "")
 
@@ -140,10 +140,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       keys <- URLencode(c("tiempo_llegada_linea_1,tiempo_llegada_linea_2"))
     }
 
-
-    hora <- hour(Sys.time()) + 1
+    fecha_actualizada <- Sys.time() + 60*60*2
+    hora <- hour(fecha_actualizada)
     hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
-    minuto <- minute(Sys.time())
+    minuto <- minute(fecha_actualizada)
     minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
     hora_actual <- paste(as.character(hora),":",minuto,sep = "")
 
@@ -379,7 +379,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     pos_linea <- grep("Línea",df$key)
     ts_linea <- df$lastUpdateTs[pos_linea]
-    dif_tiempo_linea <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(ts_linea))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+    dif_tiempo_linea <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(ts_linea))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
   }else{
     dif_tiempo_linea <- 0
   }
@@ -415,8 +415,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # 1) - RECEPCIÓN GEOPOSICIONAMIENTO AUTOBÚS
   # ------------------------------------------------------------------------------
 
-  fecha_1 <- Sys.time() - 60*10 # Timestamp actual menos 20 mins
-  fecha_2 <- Sys.time()
+  fecha_1 <- fecha_actualizada - 60*10 # Timestamp actual menos 20 mins
+  fecha_2 <- fecha_actualizada
 
   fecha_1 <- format(as.numeric(as.POSIXct(fecha_1))*1000,scientific = F)
   fecha_2 <- format(as.numeric(as.POSIXct(fecha_2))*1000,scientific = F)
@@ -825,9 +825,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     df <- as.data.frame(df)
     df_horario_ultimo_trayecto <- df$value
-    hora <- hour(Sys.time())
+    hora <- hour(fecha_actualizada)
     hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
-    hora_actual <- paste(as.character(hora),":",as.character(minute(Sys.time())),sep = "")
+    hora_actual <- paste(as.character(hora),":",as.character(minute(fecha_actualizada)),sep = "")
     if(hora_actual > df_horario_ultimo_trayecto){  # Estamos en el último tryeto
       flag_ultimo_trayecto <- TRUE
     }
@@ -1239,7 +1239,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tiempo_atributos <-tiempos_a_marquesinas_restantes[,(i+2)]
             }
           }else{
-            tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+            tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
             if(tiempo_actualizacion_atributo_en_segundos > 60 & df_datos_sin_paradas_duplicadas$spe[1] > 9){ # si han pasado > 60 segundos estando en parada y velocidad es > 9km/h, escribo el siguiente tiempo
               #tiempo_atributos <- df_tiempos_actuales_2$value[i]
               tiempo_atributos <- max(as.numeric(tiempos_a_marquesinas_restantes[1,2:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE) + 3
@@ -1280,7 +1280,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 tiempo_atributo_2 <- "-"  # Asigno > 60 mins a tiempo atributo 2
               }
             }else{  # Si el bus actual si tiene número de minutos en la parada restantes asigno ese valor
-              tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+              tiempo_actualizacion_atributo_en_segundos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
               if(tiempo_actualizacion_atributo_en_segundos > 20){ # Si lleva más de 20 segundos con asignación "En parada"
                 if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
                   tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
@@ -1334,7 +1334,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }
             }else{  # El bus actual tiene número
               if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes[,(i+2)]))){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
-                diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+                diferencia_tiempo_en_minutos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
                 if(diferencia_tiempo_en_minutos >= 5){
                   if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
                     tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
@@ -1691,7 +1691,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               tmax <- 20
             }
 
-            diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+            diferencia_tiempo_en_minutos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
             if(diferencia_tiempo_en_minutos >= 2){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 2, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
               flag_escritura_primer_atributo <- TRUE
             }
@@ -1767,7 +1767,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                   tiempo_atributo_tiempo_1 <- paste(tiempos_a_marquesinas_restantes_contrario[,(i+2)], " minutos", sep = "")
                 }else{
                   # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
-                  diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+                  diferencia_tiempo_en_minutos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
                   if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
                     flag_escritura_primer_atributo <- TRUE
                     if(t == 150){
@@ -1780,7 +1780,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 }
               }else{
                 # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
-                diferencia_tiempo_en_minutos <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+                diferencia_tiempo_en_minutos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
                 if(diferencia_tiempo_en_minutos >= 5){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
                   flag_escritura_primer_atributo <- TRUE
                   if(t == 150){
@@ -1797,7 +1797,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           # Comprobación si voy a escribir en el primer atributo, si no, si este tiene == "En Parada", si lleva más de 60" le asigno tiempo contrario y a tiempo contrario *1,5
           if(flag_escritura_primer_atributo == FALSE){
             if(df_tiempos_actuales_contrario$value[i] == "En parada"){
-              diferencia_tiempo_en_segundos<- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
+              diferencia_tiempo_en_segundos<- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "secs"))
               if(diferencia_tiempo_en_segundos >= 60){
                 flag_escritura_primer_atributo <- TRUE
                 if(t == 150){
