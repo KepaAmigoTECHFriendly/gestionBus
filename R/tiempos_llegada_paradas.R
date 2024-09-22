@@ -433,6 +433,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   print(df)
   df <- df[,-c(3,5)]
 
+  print("Llegoooo")
+
   colnames(df) <- c("ts","lat","lon","spe")
   df$spe <- gsub("*. km/h","",df$spe)
   df$spe <- as.numeric(df$spe)
@@ -511,7 +513,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }
 
-  print("Llegoooo")
+  
 
 
 
