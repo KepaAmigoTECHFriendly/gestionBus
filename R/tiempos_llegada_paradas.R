@@ -511,6 +511,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }
 
+  print("Llegoooo")
+
 
 
 
@@ -691,7 +693,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }
 
-  print("Llegoooo")
+  
 
 
 
