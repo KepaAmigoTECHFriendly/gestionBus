@@ -27,6 +27,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #==============================================================================================================
   #==============================================================================================================
 
+  print("Llegoooo 1")
+
   if(linea == "Servicio especial"){
     return(4)
   }
@@ -336,6 +338,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     linea_vector <- c(linea_vector, linea_atributo)
   }
 
+  print("Llegoooo")
+
   lineas_coincidentes <- linea_vector[grep(linea_original,linea_vector)]
   #lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
 
@@ -410,7 +414,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #==============================================================================================================
 
 
-  print("Llegoooo")
+  
 
 
   # ------------------------------------------------------------------------------
