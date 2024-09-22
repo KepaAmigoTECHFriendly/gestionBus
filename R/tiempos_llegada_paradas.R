@@ -34,6 +34,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   linea_original <- linea
   flag_ultimo_trayecto <- grepl("Último", linea_original)
 
+  fecha_actualizada <- Sys.time() + 60*60*2
+
   hora <- hour(fecha_actualizada)
   hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
   minuto <- minute(fecha_actualizada)
@@ -140,7 +142,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       keys <- URLencode(c("tiempo_llegada_linea_1,tiempo_llegada_linea_2"))
     }
 
-    fecha_actualizada <- Sys.time() + 60*60*2
+    
     hora <- hour(fecha_actualizada)
     hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
     minuto <- minute(fecha_actualizada)
