@@ -1337,7 +1337,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                         tiempo_atributo_2  <- as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales_2$value[i])) * t
                       }
                     }else{
-                      next
+                      # 1) TIENE QUE HABER PASADO LA PARADA
+                      if(t == 150){  # Solo 1 bus
+                        if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
+                          tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
+                          tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
+                          tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+                        }
+                      }
                     }
                   }else{
                     next
@@ -1383,7 +1390,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               if(grepl("Último", linea_original) & lineas_coincidentes){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
                 tiempo_atributos <- "-"
               }else{
-                tiempo_atributos <- df_tiempos_actuales$value[i]
+                if(t == 150){
+                  tiempo_atributos <- paste(round(tiempo_atributos), " minutos", sep = "")
+                }else{
+                  tiempo_atributos <- df_tiempos_actuales$value[i]
+                }
               }
             }else{
               tiempo_atributos <- paste(round(tiempos_a_marquesinas_restantes[,(i+2)]), " minutos", sep = "")
