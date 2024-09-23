@@ -1361,7 +1361,12 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                     tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
                   }
                 }else{
-                  next
+                    if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
+                      tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
+                    }else{
+                      tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minutos", sep = "")
+                    }
+                  
                 }
               }
             }
