@@ -1356,7 +1356,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             }else{  # El bus actual tiene número
               if(as.numeric(gsub(".*?([0-9]+).*", "\\1",df_tiempos_actuales$value[i])) < as.numeric(gsub(".*?([0-9]+).*", "\\1",tiempos_a_marquesinas_restantes[,(i+2)]))){ # Si el número que hay ahora registrado en plataforma es menor que el del presente bus, compruebo momento de última actualización.
                 diferencia_tiempo_en_minutos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
-                if(diferencia_tiempo_en_minutos >= 5){
+                if(diferencia_tiempo_en_minutos >= 2){
                   if(tiempos_a_marquesinas_restantes[,(i+2)] == 1){
                     tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,(i+2)], " minuto", sep = "")
                   }else{
