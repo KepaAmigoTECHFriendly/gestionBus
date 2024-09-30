@@ -1378,8 +1378,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               if(!is.na(posicion_parada)){
                 tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,posicion_parada], " minutos", sep = "")
               }
-            }
-          }else{
+            }else{
             # DEBERÍA IR UN NEXT O EN EL MEJOR DE LOS CASOS LO DE DOBLAR EL TIEMPO
             if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
               tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
