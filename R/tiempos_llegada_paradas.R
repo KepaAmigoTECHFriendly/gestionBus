@@ -1379,11 +1379,12 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,posicion_parada], " minutos", sep = "")
               }
             }else{
-            # DEBERÍA IR UN NEXT O EN EL MEJOR DE LOS CASOS LO DE DOBLAR EL TIEMPO
-            if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
-              tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
-              tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
-              tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+              # DEBERÍA IR UN NEXT O EN EL MEJOR DE LOS CASOS LO DE DOBLAR EL TIEMPO
+              if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
+                tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
+                tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
+                tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+              }
             }
           }
         }
