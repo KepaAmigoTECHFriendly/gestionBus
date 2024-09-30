@@ -1404,7 +1404,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               if(grepl("Último", linea_original) & lineas_coincidentes){  # Si es el último trayecto, escribo el valor "-" para desasignar tiempo
                 tiempo_atributos <- "-"
               }else{
-                if(t == 150){
+                if(t == 150 | df_tiempos_actuales$value[i] == "-"){
                   if(!grepl("min",tiempo_atributos)){
                     tiempo_atributos <- paste(round(tiempo_atributos), " minutos", sep = "")
                   }
