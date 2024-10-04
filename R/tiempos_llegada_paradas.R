@@ -141,7 +141,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }else if(linea_guion == 3){
       keys <- URLencode(c("tiempo_llegada_linea_3"))
     }else{
-      keys <- URLencode(c("tiempo_llegada_linea_1,tiempo_llegada_linea_2"))
+      keys <- URLencode(c("tiempo_llegada_linea_1,tiempo_llegada_linea_2,tiempo_llegada_linea_3"))
     }
 
     
