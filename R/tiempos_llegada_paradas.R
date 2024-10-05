@@ -1458,7 +1458,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }else{
                 if(t == 150 | df_tiempos_actuales$value[i] == "-"){
                   if(!grepl("min",tiempo_atributos)){
-                    if(!grepl("-",tiempo_atributos){
+                    if(!grepl("-",tiempo_atributos)){
                       tiempo_atributos <- paste(round(tiempo_atributos), " minutos", sep = "")
                     }
                   }
