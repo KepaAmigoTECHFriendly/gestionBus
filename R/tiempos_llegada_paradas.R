@@ -1110,6 +1110,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   tiempos_a_marquesinas_restantes_contrario[,tiempos_a_marquesinas_restantes_contrario[1,] < 0] <- "-"
   tiempos_a_marquesinas_restantes_contrario[,tiempos_a_marquesinas_restantes_contrario[1,] == 0] <- "-"
 
+  print("ENTRO A TIEMPOS_MARQ_CONTRARIO")
+  print(tiempos_a_marquesinas_restantes_contrario)
+
   # Suma de 5' para todas las paradas del sentido contrario (siguiente bus)
   posicion_paradas_iniciales <- which(colnames(tiempos_a_marquesinas_restantes_contrario) %in% df_paradas_iniciales$name)
   for(i in 3:ncol(tiempos_a_marquesinas_restantes_contrario)){
@@ -1117,6 +1120,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       tiempos_a_marquesinas_restantes_contrario[1,i] <- tiempos_a_marquesinas_restantes_contrario[1,i] + 1
     }
   }
+
+  print("ENTRO A TIEMPOS_MARQ_CONTRARIO 2")
 
 
 
