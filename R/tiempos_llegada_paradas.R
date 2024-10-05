@@ -1109,8 +1109,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   tiempos_a_marquesinas_restantes_contrario <- df_tiempos_contrario[grep(parada_destino,df_tiempos_contrario$NOMBRE_PARADA_GEOCERCA),]
   print("ENTRO A TIEMPOS_MARQ_CONTRARIO")
+  print(tiempos_a_marquesinas_restantes_contrario)
   # Suma de tiempo máximo sentido actual a tiempo sentido contrario
   max_tiempo_sentido_actual <- max(as.numeric(tiempos_a_marquesinas_restantes[,3:ncol(tiempos_a_marquesinas_restantes)]), na.rm = TRUE)
+  print("MAX TIEMPO")
+  print(max_tiempo_sentido_actual)
   tiempos_a_marquesinas_restantes_contrario[,3:ncol(tiempos_a_marquesinas_restantes_contrario)] <- tiempos_a_marquesinas_restantes_contrario[,3:ncol(tiempos_a_marquesinas_restantes_contrario)] + max_tiempo_sentido_actual
   print("ENTRO A TIEMPOS_MARQ_CONTRARIO 2")
   tiempos_a_marquesinas_restantes_contrario[,tiempos_a_marquesinas_restantes_contrario[1,] < 0] <- "-"
