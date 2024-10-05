@@ -1418,17 +1418,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }
             }
           }else{ # Cierre comprobación si existe tiempo en plataforma
-            if(flag_ultimo_trayecto == FALSE){
-              posicion_parada <- match(df_tiempos_actuales$name[i], colnames(tiempos_a_marquesinas_restantes_contrario))
+            if(flag_ultimo_trayecto == TRUE){
+              posicion_parada <- match(df_tiempos_actuales$name[i], colnames(tiempos_a_marquesinas_restantes))
               if(!is.na(posicion_parada)){
-                tiempo_atributos <- paste(tiempos_a_marquesinas_restantes_contrario[,posicion_parada], " minutos", sep = "")
+                tiempo_atributos <- paste(tiempos_a_marquesinas_restantes[,posicion_parada], " minutos", sep = "")
               }
             }else{
               # DEBERÍA IR UN NEXT O EN EL MEJOR DE LOS CASOS LO DE DOBLAR EL TIEMPO
               if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
-                tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
-                tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
-                tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+                if(t == 150){  # Solo 1 bus
+                  if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
+                    tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
+                    tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
+                    tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+                  }
+                }
+                #tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
+                #tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
+                #tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
               }
             }
           }
@@ -1451,7 +1458,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }else{
                 if(t == 150 | df_tiempos_actuales$value[i] == "-"){
                   if(!grepl("min",tiempo_atributos)){
-                    tiempo_atributos <- paste(round(tiempo_atributos), " minutos", sep = "")
+                    if(!grepl("-",tiempo_atributos){
+                      tiempo_atributos <- paste(round(tiempo_atributos), " minutos", sep = "")
+                    }
                   }
                 }else{
                   tiempo_atributos <- df_tiempos_actuales$value[i]
@@ -1472,6 +1481,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
         }
 
       } # Cierre else de no tiene valor == "En parada"
+
+      if(grepl("-",tiempo_atributos) & grepl("min",tiempo_atributos)){
+        tiempo_atributos <- "-"
+      }
 
 
       # Control del valor a escribir
