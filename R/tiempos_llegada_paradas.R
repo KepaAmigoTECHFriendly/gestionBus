@@ -838,9 +838,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
     df <- as.data.frame(df)
     df_horario_ultimo_trayecto <- df$value
-    hora <- hour(fecha_actualizada)
-    hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
-    hora_actual <- paste(as.character(hora),":",as.character(minute(fecha_actualizada)),sep = "")
+    #hora <- hour(fecha_actualizada)
+    #hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
+    #hora_actual <- paste(as.character(hora),":",as.character(minute(fecha_actualizada)),sep = "")
     if(hora_actual > df_horario_ultimo_trayecto){  # Estamos en el último tryeto
       flag_ultimo_trayecto <- TRUE
     }
@@ -1625,14 +1625,11 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-    if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
-      print("ENTRO FESTIVO TRAS SENTIDO ACTUAL")
-      print(hora_actual)
-      if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
-        print("ENTRO Y TERMINO ANTES DE TIEMPO")
-        return(0)
-      }
-    }
+    #if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
+    #  if(ultima_posicion_en_geocerca$NOMBRE_PARADA_GEOCERCA != "Hospital" & hora_actual < "07:50"){
+    #    return(0)
+    #  }
+    #}
 
 
 
