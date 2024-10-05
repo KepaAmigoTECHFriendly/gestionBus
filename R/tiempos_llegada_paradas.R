@@ -898,6 +898,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }
 
+  print("REFERENCIA TIEMPOS")
+  print(ficheros_en_ruta)
+  print(sufijo)
+  print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
+  print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
+  print(df_tiempos)
+
 
   # Búsqueda de última geocerca donde ha estado o está el autobús
   lat <- df_trabajo_paradas$latitud
