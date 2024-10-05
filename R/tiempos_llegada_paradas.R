@@ -1870,7 +1870,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                 }else{
                   # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
                   diferencia_tiempo_en_minutos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
-                  if(diferencia_tiempo_en_minutos >= 3){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+                  if(diferencia_tiempo_en_minutos >= 1){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
                     flag_escritura_primer_atributo <- TRUE
                     if(t == 150){
                       tiempo_atributos <- paste(round(max(tiempos_a_marquesinas_restantes_contrario[,3:ncol(tiempos_a_marquesinas_restantes_contrario)]) + tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
@@ -1883,7 +1883,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               }else{
                 # Decido si escribir o no en el primer atributo en base a último tiempo de actualización
                 diferencia_tiempo_en_minutos <- as.numeric(difftime(fecha_actualizada,as.POSIXct(as.numeric(as.character(df_tiempos_actuales_contrario$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
-                if(diferencia_tiempo_en_minutos >= 3){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
+                if(diferencia_tiempo_en_minutos >= 1){ # Si la diferencia de tiempo de actualización respecto el tiempo actual es > 5, escribo en primer atributo valor del segundo atributo, ya que solo hay 1 bus
                   flag_escritura_primer_atributo <- TRUE
                   if(t == 150){
                     tiempo_atributos <- paste(round(max(tiempos_a_marquesinas_restantes_contrario[,3:ncol(tiempos_a_marquesinas_restantes_contrario)]) + tiempos_a_marquesinas_restantes_contrario[,(i+2)]), " minutos", sep = "")
