@@ -83,13 +83,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   fecha <- Sys.Date()
   dia_num <- as.POSIXlt(fecha)$wday
 
-  print("DIA SEMANA")
-  print(dia_num)
-
   ficheros_en_ruta <- list.files("/opt/extra_data")
   if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
     posicion_fichero <- match("paradas_bus_plasencia_S_D_F.csv",ficheros_en_ruta)
-    print("ENTRO DIA SEMANA")
   }else{
     posicion_fichero <- match("paradas_bus_plasencia_L_V.csv",ficheros_en_ruta)
   }
@@ -107,6 +103,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Linea 3
   df_paradas_linea_3_subida <- df_paradas[df_paradas$linea_3 == 1 & (df_paradas$sentido == 1 | df_paradas$sentido >=2),]
   df_paradas_linea_3_bajada <- df_paradas[df_paradas$linea_3 == 1 & (df_paradas$sentido == 0 | df_paradas$sentido >=2),]
+
+
+
+  print("REFERENCIA PARADAS")
+  print("SUBIDA")
+  print(df_paradas_linea_2_subida)
+  print("BAJADA")
+  print(df_paradas_linea_2_bajada)
 
 
 
