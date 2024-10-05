@@ -1103,14 +1103,21 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     parada_destino <- "PIR Los Monjes 2"
   }
 
+  print(df_tiempos_contrario)
+  print("PARADA DESTINO")
+  print(parada_destino)
+
   tiempos_a_marquesinas_restantes_contrario <- df_tiempos_contrario[grep(parada_destino,df_tiempos_contrario$NOMBRE_PARADA_GEOCERCA),]
+  print("ENTRO A TIEMPOS_MARQ_CONTRARIO")
   # Suma de tiempo máximo sentido actual a tiempo sentido contrario
   max_tiempo_sentido_actual <- max(as.numeric(tiempos_a_marquesinas_restantes[,3:ncol(tiempos_a_marquesinas_restantes)]), na.rm = TRUE)
   tiempos_a_marquesinas_restantes_contrario[,3:ncol(tiempos_a_marquesinas_restantes_contrario)] <- tiempos_a_marquesinas_restantes_contrario[,3:ncol(tiempos_a_marquesinas_restantes_contrario)] + max_tiempo_sentido_actual
+  print("ENTRO A TIEMPOS_MARQ_CONTRARIO 2")
   tiempos_a_marquesinas_restantes_contrario[,tiempos_a_marquesinas_restantes_contrario[1,] < 0] <- "-"
+  print("ENTRO A TIEMPOS_MARQ_CONTRARIO 3")
   tiempos_a_marquesinas_restantes_contrario[,tiempos_a_marquesinas_restantes_contrario[1,] == 0] <- "-"
 
-  print("ENTRO A TIEMPOS_MARQ_CONTRARIO")
+  
   print(tiempos_a_marquesinas_restantes_contrario)
 
   # Suma de 5' para todas las paradas del sentido contrario (siguiente bus)
@@ -1121,7 +1128,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }
 
-  print("ENTRO A TIEMPOS_MARQ_CONTRARIO 2")
+  print("ENTRO A TIEMPOS_MARQ_CONTRARIO 4")
 
 
 
