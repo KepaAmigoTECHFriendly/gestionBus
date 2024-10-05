@@ -83,9 +83,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   fecha <- Sys.Date()
   dia_num <- as.POSIXlt(fecha)$wday
 
+  print("DIA SEMANA")
+  print(dia_num)
+
   ficheros_en_ruta <- list.files("/opt/extra_data")
   if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
     posicion_fichero <- match("paradas_bus_plasencia_S_D_F.csv",ficheros_en_ruta)
+    print("ENTRO DIA SEMANA")
   }else{
     posicion_fichero <- match("paradas_bus_plasencia_L_V.csv",ficheros_en_ruta)
   }
@@ -434,7 +438,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # Tratamiento datos. De raw a dataframe
   df <- jsonlite::fromJSON(rawToChar(peticion$content))
   df <- as.data.frame(df)
-  print(df)
+  #print(df)
   df <- df[,-c(3,5)]
 
   
@@ -1229,6 +1233,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #==============================================================================================================
   #==============================================================================================================
 
+  print("ENTRO DÍA ENTRE SEMANA")
+
   tryCatch({
 
     # 4) Actualización atributos tiempo_llegada_linea_x. Actualización tiempos de llegada autobús actual.
@@ -1605,6 +1611,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     #==============================================================================================================
     #==============================================================================================================
 
+    print("ENTRO CONTRARIO")
 
     if(flag_ultimo_trayecto == TRUE & !lineas_coincidentes){
       return(5)
