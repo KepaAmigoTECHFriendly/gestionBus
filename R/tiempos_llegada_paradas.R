@@ -1074,6 +1074,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     sentido_contrario <- 0
   }
 
+  print("Sentido contrario")
+  print(sentido_contrario)
+
 
   if(linea == 1){
     if(sentido_contrario == 0){
@@ -1083,8 +1086,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }else if(linea == 2){
     if(sentido_contrario == 0){
+      print("ENTRO DF CONTRARIO LINEA 2 BAJADA")
       df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }else{
+      print("ENTRO DF CONTRARIO LINEA 2 SUBIDA")
       df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }else if(linea == 3){
@@ -1094,6 +1099,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
       df_tiempos_contrario <- read.csv(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L3",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""), sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
     }
   }
+
+  print("DF TIEMPOS CONTRARIO")
+
+  print(df_tiempos_contrario)
 
 
   if(parada_destino == "P. La Data"){
@@ -1107,9 +1116,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   print(sufijo)
   print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
   print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
-  print("DF TIEMPOS CONTRARIO")
-
-  print(df_tiempos_contrario)
+  
   print("PARADA DESTINO")
   print(parada_destino)
 
