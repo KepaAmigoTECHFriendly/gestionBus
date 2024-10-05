@@ -27,7 +27,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #==============================================================================================================
   #==============================================================================================================
 
-  print("Llegoooo 1")
+  
 
   if(linea == "Servicio especial"){
     return(4)
@@ -106,13 +106,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
 
 
-  print("REFERENCIA PARADAS")
-  print("SUBIDA")
-  print(df_paradas_linea_2_subida)
-  print("BAJADA")
-  print(df_paradas_linea_2_bajada)
-
-
 
 
 
@@ -188,7 +181,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }else{ # Continua la rutina
       # 4) Creación atributos tiempo_llegada_linea_x
       for(i in 1:nrow(df_activos)){
-        print(i)
+        
 
         url <- paste("http://plataforma:9090/api/plugins/telemetry/ASSET/", df_activos$data.id$id[i], "/SERVER_SCOPE",sep = "")
 
@@ -337,7 +330,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     peticion <- GET(url_gps, add_headers("Content-Type"="application/json","Accept"="application/json","X-Authorization"=auth_thb))
     # Tratamiento datos. De raw a dataframe
     df <- jsonlite::fromJSON(rawToChar(peticion$content))
-    print(i)
+    
     activo_atributo <- df$value[grep("active",df$key)]
     if(activo_atributo == "FALSE"){
       next
@@ -346,7 +339,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     linea_vector <- c(linea_vector, linea_atributo)
   }
 
-  print("Llegoooo")
+  
 
   lineas_coincidentes <- linea_vector[grep(linea_original,linea_vector)]
   #lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
@@ -898,13 +891,6 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
   }
 
-  print("REFERENCIA TIEMPOS")
-  print(ficheros_en_ruta)
-  print(sufijo)
-  print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
-  print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
-  print(df_tiempos)
-
 
   # Búsqueda de última geocerca donde ha estado o está el autobús
   lat <- df_trabajo_paradas$latitud
@@ -978,6 +964,9 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   df_datos_bus$NOMBRE_PARADA_GEOCERCA <- NOMBRE_PARADA_GEOCERCA
 
   df_datos_bus_sin_na <- na.omit(df_datos_bus)
+
+  print("¿HAY DATOS PARA CONTINUAR?")
+  print(nrow(df_datos_bus_sin_na))
 
   # NO HAY DATOS DE BUS, POR LO QUE REALIZO PETICIÓN
   if(nrow(df_datos_bus_sin_na) == 0){
@@ -1113,6 +1102,12 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   if(parada_destino == "PIR Los Monjes"){
     parada_destino <- "PIR Los Monjes 2"
   }
+
+  print("SUFIJO CONTRARIO")
+  print(sufijo)
+  print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_bajada_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
+  print(paste("/opt/extra_data/",as.character(ficheros_en_ruta[match(paste("matriz_tiempos_subida_L2",sufijo,".csv",sep = ""),ficheros_en_ruta)]),sep=""))
+  print("DF TIEMPOS CONTRARIO")
 
   print(df_tiempos_contrario)
   print("PARADA DESTINO")
@@ -1259,7 +1254,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   #==============================================================================================================
   #==============================================================================================================
 
-  print("ENTRO DÍA ENTRE SEMANA")
+  print("ENTRO SENTIDO ACTUAL")
 
   tryCatch({
 
