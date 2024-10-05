@@ -2006,6 +2006,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
 
   },error = function(e){
+    print(paste("Ocurrió un error:", e$message))
     return(0)
   })
 
