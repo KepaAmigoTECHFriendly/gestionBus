@@ -606,7 +606,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             #if(id_parada_inicial == 15 | id_parada_inicial == 76){ # Bomberos o ITV
             #  sentido <- 1  # Subiendo
             #}
-            if(id_parada_inicial == 115){ # Sociosanitario
+            if(id_parada_inicial == 76 | id_parada_inicial == 15 | id_parada_inicial == 115){ # Sociosanitario
               if(dif_latitudes < 0){
                 sentido <- 1  # Subiendo
               }
