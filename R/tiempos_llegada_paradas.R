@@ -1386,12 +1386,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                         next
                       }
                     }
-                  }else{
+                  }else{ # df_tiempos_actuales_2 == "-"
                     if(t == 150){  # Solo 1 bus
                       if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
                         tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
                         tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
                         tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+                        tiempo_atributo_2 <- tiempo_atributos*2
                       }
                     }
                     
@@ -1752,6 +1753,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     df_tiempos_actuales_2_contrario$name <- nombre_parada
     df_tiempos_actuales_2_contrario <- df_tiempos_actuales_2_contrario[order(df_tiempos_actuales_2_contrario$name, decreasing = FALSE),]
 
+
+
+
+    
 
     # 4) Actualización atributos tiempo_2_llegada_linea_x. Actualiza el atributo del tiempo de llegada del bus de sentido contrario (segundo bus del sentido contrario)
     for(i in 1:nrow(df_activos)){
