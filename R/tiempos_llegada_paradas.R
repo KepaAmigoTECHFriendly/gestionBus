@@ -588,25 +588,26 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   # CÁLCULO SENTIDO
   # Cálculo sentido si está en parada de inicio
   if(nrow(df_datos_sin_paradas_duplicadas) != 0){  # El bus se encuentra en una parada de inicio
-    id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
+    #id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA[1]
+    id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
 
     if(dif_tiempo_linea > 15 & lineas_coincidentes){
       paradas_a_guion(linea)
     }else{
 
       if(linea == 1){
-        if(id_parada_inicial == 65 | id_parada_inicial == 59){ # Hogar de Nazaret o Gabriel y Galán 1
+        if(any(grepl(65,id_parada_inicial)) | any(grepl(59,id_parada_inicial))){ # Hogar de Nazaret o Gabriel y Galán 1
           sentido <- 0  # Bajando
         }else{
           if(hora_actual > "07:15" & hora_actual < "07:50"){
-            if(id_parada_inicial == 76| id_parada_inicial == 15 | id_parada_inicial == 43){ # ITV, Bomberos o Colonia Guadalupe
+            if(any(grepl(76,id_parada_inicial)) | any(grepl(15,id_parada_inicial)) | any(grepl(43,id_parada_inicial))){ # ITV, Bomberos o Colonia Guadalupe
               sentido <- 1  # Subiendo
             }
           }else{
             #if(id_parada_inicial == 15 | id_parada_inicial == 76){ # Bomberos o ITV
             #  sentido <- 1  # Subiendo
             #}
-            if(id_parada_inicial == 76 | id_parada_inicial == 15 | id_parada_inicial == 115){ # Sociosanitario
+            if(any(grepl(76,id_parada_inicial)) | any(grepl(15,id_parada_inicial)) | any(grepl(115,id_parada_inicial))){ # ITV, Bomberos o Sociosanitario
               if(dif_latitudes < 0){
                 sentido <- 1  # Subiendo
               }
@@ -614,27 +615,27 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           }
         }
       }else if(linea == 2){
-        if(id_parada_inicial == 66){ # Hospital
+        if(any(grepl(66,id_parada_inicial))){ # Hospital
           sentido <- 0  # Bajando
         }else if(hora_actual > "07:20" & hora_actual < "07:30"){
-            if(id_parada_inicial == 66 | id_parada_inicial == 110){ # Hospital o Puerta Berrozana
+            if(any(grepl(66,id_parada_inicial)) | any(grepl(110,id_parada_inicial))){ # Hospital o Puerta Berrozana
               sentido <- 0  # Bajando
             }
         }else{ # Estación de tren
           if(dia_num == 6 | dia_num == 0 | es_festivo == 1){
-            if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
+            if(any(grepl(100,id_parada_inicial)) | any(grepl(99,id_parada_inicial))){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
               sentido <- 1  # Subiendo
             }
           }else{
-            if(id_parada_inicial == 55){
+            if(any(grepl(55,id_parada_inicial))){
               sentido <- 1  # Subiendo
             }
           }
         }
       }else if(linea == 3){
-        if(id_parada_inicial == 66){ # Hospital
+        if(any(grepl(66,id_parada_inicial))){ # Hospital
           sentido <- 0  # Bajando
-        }else if(id_parada_inicial == 100 | id_parada_inicial == 99){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
+        }else if(any(grepl(100,id_parada_inicial)) | any(grepl(99,id_parada_inicial))){ # PIR Los Monjes 2 o PIR Los Monjes 1_subida
           sentido <- 1  # Subiendo
         }
       }
@@ -674,7 +675,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
           }
         }else{
           id_parada_inicial <- df_datos_sin_paradas_duplicadas$ID_PARADA
-          if(id_parada_inicial == 65 | id_parada_inicial == 59 | id_parada_inicial == 66){ # Paradas de salida en sentido bajando
+          if(any(grepl(65,id_parada_inicial)) | any(grepl(59,id_parada_inicial)) | any(grepl(66,id_parada_inicial))){ # Paradas de salida en sentido bajando
             sentido_parada <- 0  # Bajando
           }else{
             sentido_parada <- 1  # Subiendo
