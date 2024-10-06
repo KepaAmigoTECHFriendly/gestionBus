@@ -323,6 +323,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
   ids_gps <- df_dispositivos_gps$data.id$id
 
   linea_vector <- c()
+  sentido_vector <- c()
   keys <- URLencode(c("active, Línea"))
   for(i in 1:length(ids_gps)){
 
@@ -337,11 +338,13 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
     linea_atributo <- df$value[grep("Línea",df$key)]
     linea_vector <- c(linea_vector, linea_atributo)
+    sentido_vector <- c(sentido_vector,df$value[grep("sentido",df$key)])
   }
 
   
 
   lineas_coincidentes <- linea_vector[grep(linea_original,linea_vector)]
+  sentidos_coincidentes <- sentido_vector[grep(linea_original,linea_vector)]
   #lineas_coincidentes <- length(unique(lineas_coincidentes)) == 1
 
   linea_vector <- as.numeric(gsub(" - Último trayecto","",linea_vector))
@@ -611,10 +614,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
               if(dif_latitudes < 0){
                 sentido <- 1  # Subiendo
               }
-            }else if(any(grepl(76,id_parada_inicial)) | any(grepl(15,id_parada_inicial))){ # ITV o Bomberos
-              if(dif_latitudes < 0){
-                sentido <- 1  # Subiendo
-              }
+            #}else if(any(grepl(76,id_parada_inicial)) | any(grepl(15,id_parada_inicial))){ # ITV o Bomberos
+             # if(dif_latitudes < 0){
+              #  sentido <- 1  # Subiendo
+              #}
             }
           }
         }
@@ -1388,7 +1391,24 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                           tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
                         }
                       }else{
-                        next
+                        if(tiempos_a_marquesinas_restantes[,(i+2)] == "-"){
+                          if(length(sentidos_coincidentes) == 2 & sentidos_coincidentes[1] == sentidos_coincidentes[2]){
+                            vector_tiempo_marquesinas_restantes <- tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]
+                            vector_numerico <- as.numeric(vector_tiempo_marquesinas_restantes)
+                            num_valores_numericos <- sum(!is.na(vector_numerico))
+                            if(num_valores_numericos <= 5){
+                              print("ENTROOOOO EN VALORES NUMÉRICOOOOOOOSSSS")
+                              diferencia_tiempo_en_minutos_caso <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
+                              if(diferencia_tiempo_en_minutos_caso > 2){
+                                tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
+                                tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
+                                tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+                              }
+                            }
+                          }
+                        }else{
+                          next
+                        }
                       }
                     }
                   }else{ # df_tiempos_actuales_2 == "-"
