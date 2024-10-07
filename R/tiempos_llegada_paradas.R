@@ -1488,7 +1488,14 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                   }
                 }else{
                   #tiempo_atributos <- df_tiempos_actuales$value[i]
-                  next
+                  if(length(sentidos_coincidentes) == 2 & sentidos_coincidentes[1] == sentidos_coincidentes[2]){
+                    tiempo_atributos <- paste(round(tiempo_atributos), " minutos", sep = "")
+                  }else{
+                    print("ENTROOOO ANTES DE SALTAR")
+                    #tiempo_atributos <- df_tiempos_actuales$value[i]
+                    next # Escribirá el segundo
+                    #ESTO ES LO QUE ROMPE
+                  }
                 }
               }
             }else{
