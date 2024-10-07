@@ -1487,7 +1487,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                     }
                   }
                 }else{
-                  tiempo_atributos <- df_tiempos_actuales$value[i]
+                  #tiempo_atributos <- df_tiempos_actuales$value[i]
+                  next
                 }
               }
             }else{
