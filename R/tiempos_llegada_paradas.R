@@ -613,6 +613,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
             if(any(grepl(115,id_parada_inicial))){ # Sociosanitario
               if(dif_latitudes < 0){
                 sentido <- 1  # Subiendo
+              }else{
+                sentido <- 0
               }
             }else if(any(grepl(76,id_parada_inicial)) | any(grepl(15,id_parada_inicial))){ # ITV o Bomberos
               sentido <- 0  # Subiendo
@@ -1401,6 +1403,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                                 tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
                                 tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
                                 tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
+                              }else{
+                                next
                               }
                             }
                           }
