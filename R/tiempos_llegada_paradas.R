@@ -1406,6 +1406,8 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                               }else{
                                 next
                               }
+                            }else{
+                              next
                             }
                           }
                         }else{
