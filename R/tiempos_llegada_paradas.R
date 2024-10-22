@@ -1330,7 +1330,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                     vector_tiempo_marquesinas_restantes <- tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]
                     vector_numerico <- as.numeric(vector_tiempo_marquesinas_restantes)
                     num_valores_numericos <- sum(!is.na(vector_numerico))
-                    if(num_valores_numericos <= 12){
+                    if(num_valores_numericos <= 17){
                       print("ENTROOOOO EN VALORES NUMÉRICOOOOOOOSSSS 1")
                       diferencia_tiempo_en_minutos_caso <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
                       if(diferencia_tiempo_en_minutos_caso > 0.1){
@@ -1417,10 +1417,10 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
                             vector_tiempo_marquesinas_restantes <- tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]
                             vector_numerico <- as.numeric(vector_tiempo_marquesinas_restantes)
                             num_valores_numericos <- sum(!is.na(vector_numerico))
-                            if(num_valores_numericos <= 12){
+                            if(num_valores_numericos <= 17){
                               print("ENTROOOOO EN VALORES NUMÉRICOOOOOOOSSSS")
                               diferencia_tiempo_en_minutos_caso <- as.numeric(difftime(Sys.time(),as.POSIXct(as.numeric(as.character(df_tiempos_actuales$lastUpdateTs[i]))/1000, origin="1970-01-01", tz="GMT-1"),units = "mins"))
-                              if(diferencia_tiempo_en_minutos_caso > 0.5){
+                              if(diferencia_tiempo_en_minutos_caso > 0.2){
                                 tiempo_max <- max(as.numeric(tiempos_a_marquesinas_restantes[1,3:ncol(tiempos_a_marquesinas_restantes)]),na.rm = TRUE)
                                 tiempo_desde_cabecera_a_parada <- df_tiempos[1,which(colnames(df_tiempos) == df_tiempos_actuales$name[i])]
                                 tiempo_atributos <- tiempo_max + 30 + tiempo_desde_cabecera_a_parada
