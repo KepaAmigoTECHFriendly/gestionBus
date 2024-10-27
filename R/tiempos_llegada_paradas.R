@@ -38,7 +38,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
 
   fecha_actualizada <- Sys.time()
 
-  hora <- hour(fecha_actualizada)+2
+  hora <- hour(fecha_actualizada)+1
   hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
   minuto <- minute(fecha_actualizada)
   minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
@@ -146,7 +146,7 @@ tiempos_llegada_paradas <- function(id_dispositivo, linea){
     }
 
     
-    hora <- hour(fecha_actualizada)+2
+    hora <- hour(fecha_actualizada)+1
     hora <- ifelse(hora < 10, paste("0",as.character(hora),sep = ""),hora)
     minuto <- minute(fecha_actualizada)
     minuto <- ifelse(minuto < 10, paste("0",as.character(minuto),sep = ""),as.character(minuto))
